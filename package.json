@@ -1,0 +1,39 @@
+{
+    "name": "payments-api",
+    "version": "1.0.0",
+    "description": "This is the API for the payments-api module.",
+    "main": "src/app.ts",    
+    "repository": "https://bitbucket.org/spotmetrics/payments-api.git",
+    "author": "Carlos Moreira <carlos.moreira@spotmetrics.com>",
+    "private": true,
+    "scripts": {
+        "dev": "tsc-watch --onSuccess \"node ./dist/app.js\""
+    },
+    "dependencies": {
+        "ajv": "6.11.0",
+        "aws-sdk": "2.610.0",
+        "axios": "^0.19.2",
+        "bluebird": "3.7.2",
+        "cors": "2.8.5",
+        "dotenv": "8.2.0",
+        "express": "4.17.1",
+        "fs": "0.0.1-security",
+        "lodash": "4.17.15",
+        "moment": "2.24.0",
+        "moment-timezone": "^0.5.31",
+        "path": "0.12.7",
+        "pg": "7.17.1",
+        "pg-hstore": "2.3.3",
+        "reflect-metadata": "0.1.13",
+        "sequelize": "5.21.3",
+        "sequelize-typescript": "1.1.0",
+        "stream": "0.0.2",
+        "ts-node": "8.6.2",
+        "tsc": "1.20150623.0",
+        "tsc-watch": "4.1.0",
+        "typedi": "0.8.0",
+        "typescript": "3.7.5",
+        "underscore": "1.9.2",
+        "winston": "3.2.1"
+    }
+}
