@@ -2,21 +2,24 @@
     "name": "payments-api",
     "version": "1.0.0",
     "description": "This is the API for the payments-api module.",
-    "main": "src/app.ts",    
+    "main": "src/app.ts",
     "repository": "https://bitbucket.org/spotmetrics/payments-api.git",
     "author": "Carlos Moreira <carlos.moreira@spotmetrics.com>",
     "private": true,
     "scripts": {
-        "dev": "tsc-watch --onSuccess \"node ./dist/app.js\""
+        "dev": "tsc-watch --onSuccess \"node ./dist/app.js\"",
+        "migrations:new": "bash scripts/migrations-new.sh",
+        "migrations:run": "bash scripts/migrations-run.sh"
     },
     "dependencies": {
         "ajv": "6.11.0",
         "aws-sdk": "2.610.0",
-        "axios": "^0.19.2",
+        "axios": "^0.20.0",
         "bluebird": "3.7.2",
         "cors": "2.8.5",
         "dotenv": "8.2.0",
         "express": "4.17.1",
+        "express-basic-auth": "^1.2.0",
         "fs": "0.0.1-security",
         "lodash": "4.17.15",
         "moment": "2.24.0",

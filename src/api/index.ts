@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import email from './routes/email';
+import { Router } from "express";
+import client from "./routes/client";
 
 export default () => {
-    const app = Router();
-    email(app);
-    return app;
-}
+  const app = Router();
+  client(app);
+  return app;
+};

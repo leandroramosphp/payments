@@ -1,0 +1,12 @@
+begin;
+
+--- Suas alteracoes aqui!
+
+
+--- Commit de versionamento
+
+--- 										'2019-05-07', 'Nome Sobrenome', 'xxx'
+INSERT INTO __db_version(version_date, author, comments) VALUES(null, null, null);
+
+
+commit;

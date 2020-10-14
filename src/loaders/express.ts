@@ -42,6 +42,9 @@ export default async ({ app }: { app: express.Application }) => {
                 }
             });
         } else {
+            if(err.code && err.status && err.message) {
+                return res.status(err.status).json({message: err.message, status: err.status, code: err.code});
+            }
             res.json({
                 error: {
                     message: err.message,

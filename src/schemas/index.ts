@@ -1,9 +1,3 @@
-import email from './email';
-import sms from './sms';
-import push from './push';
+import client from "./client";
 
-export default [
-    email,
-    sms,
-    push
-];
+export default [client];
