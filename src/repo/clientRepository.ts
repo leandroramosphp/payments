@@ -1,11 +1,9 @@
-
-
 import { IClientDTOInput } from '../interfaces/IClient';
 import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
 
 export class clientRepository {
-  async createClient(output): Promise<any> {
+  async registerClient(output, input: IClientDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {  
         
@@ -14,9 +12,9 @@ export class clientRepository {
           VALUES(:client_id, :mall_id, :id_zoop)
           `, {
           replacements: {
-            client_id: 367387,
-            mall_id: 6,
-            id_zoop: output.data.id
+            client_id: +input.clientId,
+            mall_id: +input.mallId,
+            id_zoop: output.id
           }, type: QueryTypes.INSERT
         });              
 

@@ -4,8 +4,8 @@ export abstract class ClientInteface {
 
 export interface IClientDTOInput {   
     id: string
-    client_id: number
-    mall_id: number
+    clientId: string
+    mallId: string
     id_zoop: string
     username:string
     authorization: string

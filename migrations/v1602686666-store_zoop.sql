@@ -2,8 +2,7 @@ begin;
 
 CREATE TABLE store_zoop(
     id	SERIAL NOT NULL PRIMARY KEY,
-    client_id TEXT NOT NULL,
-    mall_id TEXT NOT NULL    
+    store_id INTEGER NOT NULL
 )
 
 ALTER TABLE client_zoop ADD CONSTRAINT client_id_fk FOREIGN KEY(client_id) REFERENCES client_mall(client_id);

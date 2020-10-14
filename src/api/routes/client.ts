@@ -9,7 +9,7 @@ const route = Router();
 export default (app: Router) => {
     app.use('/create-client', route); 
     route.post('/',        
-        //middlewares.validateInput('createClientSchema'),
+        middlewares.validateInput('createClientSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -24,7 +24,8 @@ export default (app: Router) => {
                 const ClientRequest: IClientDTOInput = {
                     ...req.query,
                     ...req.body,
-                    ...req.params                    
+                    ...req.params,
+                    ...req.headers                
                 }
                 const response = await ClientInstance.createClient(ClientRequest);
                 res.status(200).json(response);

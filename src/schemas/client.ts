@@ -3,6 +3,17 @@ const createClientSchema =
     "title": "createClientSchema",
     "type": "object",
     "properties": {
+        "x-access-token": {
+            "type": "string"
+        },
+        "clientId": {
+            "type": "string",            
+            "pattern": "^[0-9]+$"
+        },  
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },  
         "marketPlaceId": {
             "type": "string"
         },  
@@ -67,7 +78,7 @@ const createClientSchema =
             "required": []
           }
     },
-    "required": ["first_name","last_name","taxpayer_id", "email", "address"]
+    "required": ["x-access-token", "clientId", "mallId", "first_name","last_name","taxpayer_id", "email", "address"]
 }
 
 export default [

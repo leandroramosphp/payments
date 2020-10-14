@@ -16,24 +16,22 @@ export default class ClientService extends ClientInteface {
 
     public createClient = async (input: IClientDTOInput): Promise<any>  => {
         try {            
-            //this.logger.silly('Calling createClientSchema');     
+            this.logger.silly('Calling createClientSchema');     
             
-            var output =  await this._clientController.createClient((await axios.post(
+            var client =  (await axios.post(
                 config.PaymentsApi.hostClient + config.PaymentsApi.endpoints.createClient,
                 input,
-                {         
-                    headers : {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    },
+                {                                       
                     auth : {
                         username: config.PaymentsApi.username,
                         password: config.PaymentsApi.password
                     },
                 }
-            )))
+            )).data                            
+
+            var output = await this._clientController.registerClient(client, input)
                     
-            return Promise.resolve(output.data);
+            return Promise.resolve(output);
         }                    
         catch (e) {
             return Promise.reject(e);

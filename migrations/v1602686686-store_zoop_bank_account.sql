@@ -3,8 +3,7 @@ begin;
 CREATE TABLE store_zoop_bank_account(
     id	SERIAL NOT NULL PRIMARY KEY,
     client_id TEXT NOT NULL,
-    mall_id TEXT NOT NULL,
-    data_gravacao TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now()
+    mall_id TEXT NOT NULL    
 )
 
 ALTER TABLE client_zoop ADD CONSTRAINT client_id_fk FOREIGN KEY(client_id) REFERENCES client_mall(client_id);
