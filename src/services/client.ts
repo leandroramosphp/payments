@@ -21,7 +21,10 @@ export default class ClientService extends ClientInteface {
             var client =  (await axios.post(
                 config.PaymentsApi.hostClient + config.PaymentsApi.endpoints.createClient,
                 input,
-                {                                       
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     auth : {
                         username: config.PaymentsApi.username,
                         password: config.PaymentsApi.password
