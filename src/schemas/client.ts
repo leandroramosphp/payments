@@ -13,26 +13,23 @@ const createClientSchema =
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },  
-        "marketPlaceId": {
-            "type": "string"
-        },  
-        "username":{
+        },          
+        "firstName": {
             "type": "string"
         },
-        "password":{
-            "type": "string"
-        },
-        "first_name": {
-            "type": "string"
-        },
-        "last_name":  {
-            "type": "string"
-        },
-        "taxpayer_id": {
+        "lastName":  {
             "type": "string"
         },
         "email": {
+            "type": "string"
+        },
+        "phoneNumber":{
+            "type": "string"
+        },
+        "taxpayerId": {
+            "type": "string"
+        },
+        "birthdate": {
             "type": "string"
         },
         "address":{
@@ -53,32 +50,17 @@ const createClientSchema =
                 "state":{
                     "type": "string"
                 },
-                "postal_code":{
+                "postalCode":{
                     "type": "string"
                 },
-                "country_code":{
-                    "type": "string"
-                },
-            },
-            "required": ["line1", "line2", "neighborhood", "city", "state", "postal_code", "country_code" ]
-        },
-        "metadata":{
-            "type": "object",
-            "properties": {
-                "twitter.id": {
-                    "type": "string"
-                },
-                "facebook.user_id": {
-                    "type": "string"
-                },
-                "my-own-customer-id": {
+                "countryCode":{
                     "type": "string"
                 },
             },
-            "required": []
-          }
+            "required": ["line1", "line2", "neighborhood", "city", "state", "postalCode", "countryCode" ]
+        },    
     },
-    "required": ["x-access-token", "clientId", "mallId", "first_name","last_name","taxpayer_id", "email", "address"]
+    "required": ["x-access-token", "clientId", "mallId", "firstName", "lastName", "email", "phoneNumber", "taxpayerId", "birthdate", "address"]
 }
 
 export default [

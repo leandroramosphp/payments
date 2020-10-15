@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import routes from '../api';
-import config from '../config';
 import { Request, Response, NextFunction } from 'express';
 
 interface ResponseError extends Error {
@@ -15,7 +14,7 @@ export default async ({ app }: { app: express.Application }) => {
 
     app.use(bodyParser.json());
 
-    app.use(config.api.root + config.api.version + config.api.prefix, routes());
+    app.use(routes());
 
     app.use((req: Request, res: Response, next: NextFunction) => {
         const err = new Error('Not Found');

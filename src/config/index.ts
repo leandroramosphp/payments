@@ -15,9 +15,14 @@ export default {
     },
 
     api: {
-        root: '/mos',
-        version: '/v1',
-        prefix: '/payments-management'
+        payment: {
+            root: '/mos',
+            version: '/v1',
+            prefix: '/payments-management'
+        },
+        thirdParty: {
+            root: '/api/app'
+        }
     },
 
     database: {
@@ -31,9 +36,13 @@ export default {
     PaymentsApi: {
         username:  process.env.USERNAME_ZOOP,
         password: '',
-        hostClient: 'https://api.zoop.ws/v1/marketplaces/',    
+        host: 'https://api.zoop.ws/v1/marketplaces/',    
         endpoints: {
-            createClient: process.env.MARKET_PLACE_ID + '/buyers'
+            createClient: process.env.MARKET_PLACE_ID + '/buyers',
+            createStore: process.env.MARKET_PLACE_ID + '/buyers',
+            createBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts',
+            createCard: process.env.MARKET_PLACE_ID + '/cards',
+            deleteCard: process.env.MARKET_PLACE_ID + '/cards/{card_id}'
         }        
     }
 };

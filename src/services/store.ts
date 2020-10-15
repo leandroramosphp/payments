@@ -1,25 +1,25 @@
 import { Service, Inject } from 'typedi';
-import { IClientDTOInput, ClientInteface } from '../interfaces/IClient';
+import { IStoreDTOInput, StoreInteface } from '../interfaces/IStore';
 import axios from 'axios';
 import config from '../config';
-import clientModel from '../business/client';
+import storeModel from '../business/store';
 
 @Service()
-export default class ClientService extends ClientInteface {
-    private _clientController: clientModel;
+export default class storeService extends StoreInteface {
+    private _storeController: storeModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
         super();
-        this._clientController = new clientModel();        
+        this._storeController = new storeModel();        
     }
 
-    public createClient = async (input: IClientDTOInput): Promise<any>  => {
+    public createStore = async (input: IStoreDTOInput): Promise<any>  => {
         try {            
-            this.logger.silly('Calling createClientSchema');     
+            this.logger.silly('Calling createStoreSchema');     
             
-            var client =  (await axios.post(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.createClient,
+            var store =  (await axios.post(
+                config.PaymentsApi.host + config.PaymentsApi.endpoints.createStore,
                 input,
                 {
                     headers: {
@@ -31,8 +31,8 @@ export default class ClientService extends ClientInteface {
                     },
                 }
             )).data                            
-
-            var output = await this._clientController.registerClient(client, input)
+            
+            var output = await this._storeController.registerStore(store, input)
                     
             return Promise.resolve(output);
         }                    
