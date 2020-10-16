@@ -41,14 +41,14 @@ export default class cardService extends CardInteface {
         }
     }
 
-    public deleteCard = async (input: ICardDTOInput): Promise<any>  => {
+    public updateCard = async (input: ICardDTOInput): Promise<any>  => {
         try {            
-            this.logger.silly('Calling deleteCardSchema');     
+            this.logger.silly('Calling updateCardSchema');     
             
             const clients: any = await this._cardController.getCardId(input.clientId);                                    
             
             var card =  (await axios.delete(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.deleteCard
+                config.PaymentsApi.host + config.PaymentsApi.endpoints.updateCard
                     .replace('{card_id}',clients[0].id),
                 {
                     headers: {
@@ -61,8 +61,7 @@ export default class cardService extends CardInteface {
                 }
             )).data
                          
-
-            var output = await this._cardController.deleteCardAssociation(card, input)            
+            var output = await this._cardController.updateCardAssociation(card, input)            
                     
             return Promise.resolve(output);
         }                    

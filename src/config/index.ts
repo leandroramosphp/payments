@@ -39,10 +39,13 @@ export default {
         host: 'https://api.zoop.ws/v1/marketplaces/',    
         endpoints: {
             createClient: process.env.MARKET_PLACE_ID + '/buyers',
-            createStore: process.env.MARKET_PLACE_ID + '/buyers',
+            createStore: process.env.MARKET_PLACE_ID + '/sellers/businesses',
             createBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts',
             createCard: process.env.MARKET_PLACE_ID + '/cards',
-            deleteCard: process.env.MARKET_PLACE_ID + '/cards/{card_id}'
+            updateCard: process.env.MARKET_PLACE_ID + '/cards/{card_id}',
+            bankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts',
+            deleteBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}'
         }        
     }
 };
+

@@ -13,8 +13,8 @@ export default class card implements card {
     }
 
     
-    async deleteCardAssociation(output,  input: ICardDTOInput): Promise<any> {
-        return await this._cardRepository.deleteCardAssociation(output, input);
+    async updateCardAssociation(output,  input: ICardDTOInput): Promise<any> {
+        return await this._cardRepository.updateCardAssociation(output, input);
     }
 
     async getCardId(clientId): Promise<any> {

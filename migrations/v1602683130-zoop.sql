@@ -18,14 +18,6 @@ CREATE TABLE store_payment(
 
 ALTER TABLE store_payment ADD CONSTRAINT store_id_mall_id_fk FOREIGN KEY(store_id, mall_id) REFERENCES store(id, mall_id);
 
-CREATE TABLE store_payments_bank_acount(
-    id	SERIAL PRIMARY KEY,    
-    store_payment_id INTEGER NOT NULL,
-    bank_acoount_id INTEGER NOT NULL
-);
-
-ALTER TABLE store_payments_bank_acount ADD CONSTRAINT store_payment_id_fk FOREIGN KEY(store_payment_id) REFERENCES client_payment(id);
-
 CREATE TABLE client_payment_credit_card(
     id SERIAL PRIMARY KEY,    
     client_payment_id INTEGER NOT NULL,
@@ -35,13 +27,23 @@ CREATE TABLE client_payment_credit_card(
     expiration_month TEXT NOT NULL,
     expiration_year TEXT NOT NULL,
     holder_name TEXT NOT NULL,
-    is_active TEXT NOT NULL,
-    is_valid TEXT NOT NULL,
-    is_verified TEXT NOT NULL
+    enabled BOOLEAN DEFAULT TRUE 
 );
 
 ALTER TABLE client_payment_credit_card ADD CONSTRAINT client_payment_id_fk FOREIGN KEY(client_payment_id) REFERENCES client_payment(id);
 
-INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-13', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
+CREATE TABLE store_payment_bank_account(
+    id SERIAL PRIMARY KEY,    
+    store_payment_id INTEGER NOT NULL,
+    bank_account_id TEXT NOT NULL,
+    bank_name TEXT NOT NULL,
+    routing_number INTEGER NOT NULL,
+    account_number INTEGER NOT NULL, 
+    enabled BOOLEAN DEFAULT TRUE 
+);
+
+ALTER TABLE store_payment_bank_account ADD CONSTRAINT store_payment_id_fk FOREIGN KEY(store_payment_id) REFERENCES store_payment(id);
+
+INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-15', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
 
 commit;

@@ -16,7 +16,7 @@ export class cardRepository {
             cpf:input.cpf
           }, type: QueryTypes.SELECT
         }); 
-                           
+              
         var client =  await sequelize.query(`
           SELECT id 
             FROM 
@@ -25,22 +25,19 @@ export class cardRepository {
           WHERE cp.client_id = ${clientPaymentId[0].id}
           `, {
           type: QueryTypes.SELECT
-        });              
-            
+        });         
+                    
         await sequelize.query(`
-          INSERT INTO "client_payment_credit_card" (client_payment_id, id_payment, first4_digits, last4_digits, expiration_month, expiration_year, holder_name, is_active, is_valid, is_verified)
-          VALUES(${client[0].id}, :idPayment, :first4Digits,:last4Digits, :expirationMonth, :expirationYear,:holderName, :isActive,:isValid,:isVerified)
+          INSERT INTO "client_payment_credit_card" (client_payment_id, id_payment, first4_digits, last4_digits, expiration_month, expiration_year, holder_name)
+          VALUES(${client[0].id}, :idPayment, :first4Digits,:last4Digits, :expirationMonth, :expirationYear,:holderName)
           `, {
           replacements: {    
             idPayment:output.id,                    
             first4Digits:output.first4_digits,
-              last4Digits:output.last4_digits,
+            last4Digits:output.last4_digits,
             expirationMonth:output.expiration_month,
             expirationYear:output.expiration_year,
-            holderName:output.holder_name,
-            isActive: output.is_active,
-            isValid:output.is_valid,
-            isVerified: output.is_verified
+            holderName:output.holder_name            
           }, type: QueryTypes.INSERT
         });              
         
@@ -63,20 +60,21 @@ export class cardRepository {
     });  
   }
 
-  async deleteCardAssociation(output, input: ICardDTOInput): Promise<any> {
+  async updateCardAssociation(output, input: ICardDTOInput): Promise<any> {
     try {
-      return await sequelize.transaction(async function (t) {                  
+      return await sequelize.transaction(async function (t) {                          
         await sequelize.query(`
-          DELETE 
-            FROM 
-          "client_payment_credit_card"
+          UPDATE             
+            "client_payment_credit_card"
+          SET 
+            enabled = false
           WHERE id = :clientId
           `, {
             replacements: {    
               clientId: input.clientId
-            }, type: QueryTypes.DELETE
+            }, type: QueryTypes.UPDATE
           });                            
-
+          
         return Promise.resolve(output)
       })
     } catch (e) {
@@ -92,6 +90,7 @@ export class cardRepository {
             *
           FROM 
             "client_payment_credit_card"
+          WHERE enabled IS TRUE
           `, {
           type: QueryTypes.SELECT
         });                             

@@ -1,6 +1,6 @@
-const createCardSchema =
+const createBankAccountSchema =
 {
-    "title": "createCardSchema",
+    "title": "createBankAccountSchema",
     "type": "object",
     "properties": {
         "x-access-token": {
@@ -16,19 +16,16 @@ const createCardSchema =
             "type": "string",
             "pattern": "^[0-9]+$"
         },     
-        "cpf": {
-            "type": "string",
-            "maxLength": 11,
-            "minLength": 11,
-            "pattern": "^[0-9]+$"
-        } 
+        "storePaymentId": {
+            "type": "integer"
+        },  
     },
-    "required": ["x-access-token", "token", "mallId", "cpf"]
+    "required": ["x-access-token", "token", "mallId", "storePaymentId"]
 }
 
-const updateCardSchema =
+const updateBankAccountSchema =
 {
-    "title": "updateCardSchema",
+    "title": "updateBankAccountSchema",
     "type": "object",
     "properties": {
         "x-access-token": {
@@ -55,9 +52,9 @@ const updateCardSchema =
 }
 
 
-const getAllCardSchema =
+const getAllBankAccountSchema =
 {
-    "title": "getAllCardSchema",
+    "title": "getAllBankAccountSchema",
     "type": "object",
     "properties": {
         "x-access-token": {
@@ -87,15 +84,15 @@ const getAllCardSchema =
 
 export default [
     {
-        name: "createCardSchema",
-        schema: createCardSchema
+        name: "createBankAccountSchema",
+        schema: createBankAccountSchema
     },
     {
-        name: "updateCardSchema",
-        schema: updateCardSchema
+        name: "updateBankAccountSchema",
+        schema: updateBankAccountSchema
     },
     {
-        name: "getAllCardSchema",
-        schema: getAllCardSchema
+        name: "getAllBankAccountSchema",
+        schema: getAllBankAccountSchema
     }
 ]

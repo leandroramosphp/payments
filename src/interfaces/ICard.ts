@@ -1,6 +1,6 @@
 export abstract class CardInteface {
     abstract createCard: (input: ICardDTOInput) => Promise<{ message: string, erros: any[] }>;
-    abstract deleteCard: (input: ICardDTOInput) => Promise<{ message: string, erros: any[] }>;
+    abstract updateCard: (input: ICardDTOInput) => Promise<{ message: string, erros: any[] }>;
 }
 
 export interface ICardDTOInput {  
@@ -13,8 +13,5 @@ export interface ICardDTOInput {
     last4Digits:string
     expirationMonth:string
     expirationYear:string
-    holderName:string
-    isActive: string
-    isValid: string
-    isVerified: string
+    holderName:string  
 }
