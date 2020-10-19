@@ -22,6 +22,10 @@ export default class transaction implements transaction {
 
     async getTransactionId(clientId): Promise<any> {
         return await this._transactionRepository.getTransactionId(clientId);
+    }   
+    
+    async getAllTransaction(input: ITransactionDTOInput): Promise<any> {
+        return await this._transactionRepository.getAllTransaction(input);
     }    
 }
 

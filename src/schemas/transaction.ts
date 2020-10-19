@@ -9,6 +9,14 @@ const createTransactionSchema =
         "amount": {
             "type": "integer"
         },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "portion": {
+            "type": "integer",
+            "pattern": "^[1-9]?$|^12$"
+        },
         "currency": {
             "type": "string"
         },    
@@ -24,8 +32,8 @@ const createTransactionSchema =
         "payment_type": {
             "type": "string",
         },
-        "cardId": {
-            "type": "integer",
+        "clientId": {
+            "type": "string",
         },
         "split_rules": {
             "type": "array",
@@ -38,7 +46,7 @@ const createTransactionSchema =
             "required": ["recipient", "percentage"]
         },
     },
-    "required": ["x-access-token", "mallId", "amount", "currency", "on_behalf_of", "payment_type", "cardId"]
+    "required": ["x-access-token", "mallId", "amount", "currency", "on_behalf_of", "payment_type", "clientId", "description"]
 }
 
 const updateTransactionSchema =
@@ -97,6 +105,23 @@ const updateTransactionApproveSchema =
 }
 
 
+const getAllTransactionSchema =
+{
+    "title": "getAllTransactionSchema",
+    "type": "object",
+    "properties": {
+        "x-access-token": {
+            "type": "string"
+        },         
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },             
+    },
+    "required": ["x-access-token", "mallId"]
+}
+
+
 export default [
     {
         name: "createTransactionSchema",
@@ -114,4 +139,8 @@ export default [
         name: "updateTransactionApproveSchema",
         schema: updateTransactionApproveSchema
     },
+    {
+        name: "getAllTransactionSchema",
+        schema: getAllTransactionSchema
+    }
 ]

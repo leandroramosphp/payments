@@ -7,15 +7,16 @@ export class bankAccountRepository {
     try {      
       return await sequelize.transaction(async function (t) { 
         await sequelize.query(`
-          INSERT INTO "store_payment_bank_account" (store_payment_id, bank_account_id, bank_name, routing_number, account_number)
-          VALUES(:storePaymentId, :bankAccountId, :bankName, :routingNumber, :accountNumber)
+          INSERT INTO "store_payment_bank_account" (store_payment_id, bank_account_id, bank_name, routing_number, account_number, mall_id)
+          VALUES(:storePaymentId, :bankAccountId, :bankName, :routingNumber, :accountNumber, :mallId)
           `, {                     
           replacements: {    
             storePaymentId: input.storePaymentId,
             bankAccountId: output.id,            
             bankName: output.bank_name, 
             routingNumber: output.routing_number,
-            accountNumber: output.account_number,                        
+            accountNumber: output.account_number,
+            mallId: input.mallId                   
           }, type: QueryTypes.INSERT
         });  
         

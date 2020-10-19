@@ -9,6 +9,8 @@ export interface ITransactionDTOInput {
     cardId:string
     cpf:string
     id:string
+    description:string
+    portion:string
     amount:number
     mallId:string
     transactionBrand:string

@@ -28,8 +28,8 @@ export class cardRepository {
         });         
                     
         await sequelize.query(`
-          INSERT INTO "client_payment_credit_card" (client_payment_id, id_payment, first4_digits, last4_digits, expiration_month, expiration_year, holder_name)
-          VALUES(${client[0].id}, :idPayment, :first4Digits,:last4Digits, :expirationMonth, :expirationYear,:holderName)
+          INSERT INTO "client_payment_credit_card" (client_payment_id, id_payment, first4_digits, last4_digits, expiration_month, expiration_year, holder_name, mall_id)
+          VALUES(${client[0].id}, :idPayment, :first4Digits,:last4Digits, :expirationMonth, :expirationYear,:holderName, :mallId)
           `, {
           replacements: {    
             idPayment:output.id,                    
@@ -37,7 +37,8 @@ export class cardRepository {
             last4Digits:output.last4_digits,
             expirationMonth:output.expiration_month,
             expirationYear:output.expiration_year,
-            holderName:output.holder_name            
+            holderName:output.holder_name,
+            mallId: input.mallId       
           }, type: QueryTypes.INSERT
         });              
         

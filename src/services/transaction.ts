@@ -84,4 +84,17 @@ export default class transactionService extends TransactionInteface {
             return Promise.reject(e);
         }
     }
+
+    public getAllTransaction = async (input: ITransactionDTOInput): Promise<any>  => {
+        try {            
+            this.logger.silly('Calling getAllCardSchema');                      
+                        
+            var output = await this._transactionController.getAllTransaction(input)
+                    
+            return Promise.resolve(output);
+        }                    
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
 }

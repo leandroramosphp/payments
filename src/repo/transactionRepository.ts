@@ -6,16 +6,18 @@ export class transactionRepository {
   async registerTransaction(output, input: ITransactionDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {         
-        console.log(output.split_rules[0].percentage,"sutta")   
+        
         await sequelize.query(`
-          INSERT INTO "payment_transaction" (value, store_id ,card_id, portion)
-          VALUES(:value, :storeId , :cardId, :portion)
+          INSERT INTO "payment_transaction" (value, store_id ,client_id, portion, mall_id, description)
+          VALUES(:value, :storeId , :clientId, :portion, :mallId, :description)
           `, {
           replacements: {    
             value: input.amount,
             storeId: output.id,
-            cardId: input.cardId,
-            portion: output.split_rules[0].percentage 
+            clientId: input.clientId,
+            portion: input.portion,
+            mallId: input.mallId,
+            description: input.description
           }, type: QueryTypes.INSERT
         });                        
         return Promise.resolve(output)
@@ -73,6 +75,29 @@ export class transactionRepository {
             }, type: QueryTypes.UPDATE
           });                            
           
+        return Promise.resolve(output)
+      })
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  
+  async getAllTransaction(input: ITransactionDTOInput): Promise<any> {
+    try {
+      return await sequelize.transaction(async function (t) {                  
+        var output = await sequelize.query(`
+        SELECT           
+            c.full_name, pt.portion,
+            pt.value, pt.description,
+            pt.date_time
+          FROM
+            payment_transaction pt
+          JOIN client_mall cm ON (cm.client_id = pt.client_id AND cm.mall_id =pt.mall_id)       
+          JOIN client c ON (c.id = pt.client_id)
+          `, {
+          type: QueryTypes.SELECT
+        });                             
         return Promise.resolve(output)
       })
     } catch (e) {
