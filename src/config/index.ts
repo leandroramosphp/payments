@@ -44,7 +44,9 @@ export default {
             createCard: process.env.MARKET_PLACE_ID + '/cards',
             updateCard: process.env.MARKET_PLACE_ID + '/cards/{card_id}',
             bankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts',
-            deleteBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}'
+            deleteBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}',
+            transaction: process.env.MARKET_PLACE_ID + '/transactions',
+            reverseTransaction: process.env.MARKET_PLACE_ID + '/transactions/{transaction_id}/void'                        
         }        
     }
 };

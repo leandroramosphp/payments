@@ -44,6 +44,26 @@ CREATE TABLE store_payment_bank_account(
 
 ALTER TABLE store_payment_bank_account ADD CONSTRAINT store_payment_id_fk FOREIGN KEY(store_payment_id) REFERENCES store_payment(id);
 
+CREATE TABLE payment_transaction(
+    id SERIAL PRIMARY KEY,    
+    value INTEGER NOT NULL,
+    store_id TEXT NOT NULL,
+    card_id INTEGER NOT NULL,
+    portion real NOT NULL,
+    invoice TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' 
+);
+
+ALTER TABLE payment_transaction ADD CONSTRAINT card_id_fk FOREIGN KEY(card_id) REFERENCES client_payment_credit_card(id);
+
+CREATE TABLE associate_invoice(
+    id SERIAL PRIMARY KEY,    
+    payment_id INTEGER NOT NULL,
+    invoice TEXT NOT NULL    
+);
+
+ALTER TABLE associate_invoice ADD CONSTRAINT payment_id_fk FOREIGN KEY(payment_id) REFERENCES payment_transaction(id);
+
 INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-15', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
 
 commit;
