@@ -5,7 +5,8 @@ DROP TABLE IF EXISTS store_payment_bank_account;
 DROP TABLE IF EXISTS client_payment_credit_card;
 DROP TABLE IF EXISTS store_payment;
 DROP TABLE IF EXISTS client_payment;
-delete from __db_version where version = 196;
+DROP TABLE IF EXISTS account_balance;
+delete from __db_version where version = 199;
 
 CREATE TABLE client_payment (
     id	SERIAL PRIMARY KEY,
@@ -67,6 +68,21 @@ CREATE TABLE payment_transaction(
 );
 
 ALTER TABLE payment_transaction ADD CONSTRAINT client_id_mall_id_fk FOREIGN KEY(client_id, mall_id) REFERENCES client_mall(client_id, mall_id);
+
+CREATE TABLE account_balance(
+    id SERIAL PRIMARY KEY,    
+    bank_name INTEGER NOT NULL,
+    account INTEGER NOT NULL,
+    agency INTEGER NOT NULL,
+    client_id INTEGER NOT NULL,
+    social_reason TEXT NOT NULL,
+    cnpj TEXT NOT NULL,
+    date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+    mall_id INTEGER NOT NULL
+);
+
+ALTER TABLE account_balance ADD CONSTRAINT client_id_mall_id_fk FOREIGN KEY(client_id, mall_id) REFERENCES client_mall(client_id, mall_id);
+
 
 INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-19', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
 

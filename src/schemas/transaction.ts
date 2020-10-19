@@ -5,7 +5,13 @@ const createTransactionSchema =
     "properties": {
         "x-access-token": {
             "type": "string"
-        },      
+        },              
+        "cpf": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 11,
+            "pattern": "^[0-9]+$"
+        },
         "amount": {
             "type": "integer"
         },
@@ -66,7 +72,13 @@ const updateTransactionSchema =
         },
         "amount": {
             "type": "integer",
-        }     
+        },
+        "cpf": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 11,
+            "pattern": "^[0-9]+$"
+        }    
     },
     "required": ["x-access-token", "mallId", "on_behalf_of", "amount"]
 }
@@ -82,6 +94,12 @@ const updateTransactionReverseSchema =
         },      
         "mallId": {
             "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "cpf": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 11,
             "pattern": "^[0-9]+$"
         }      
     },
@@ -99,7 +117,13 @@ const updateTransactionApproveSchema =
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },             
+        },
+        "cpf": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 11,
+            "pattern": "^[0-9]+$"
+        }             
     },
     "required": ["x-access-token", "mallId"]
 }
@@ -116,7 +140,13 @@ const getAllTransactionSchema =
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },             
+        },          
+        "cpf": {
+            "type": "string",
+            "maxLength": 11,
+            "minLength": 11,
+            "pattern": "^[0-9]+$"
+        }             
     },
     "required": ["x-access-token", "mallId"]
 }

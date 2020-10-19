@@ -30,23 +30,11 @@ const updateBankAccountSchema =
     "properties": {
         "x-access-token": {
             "type": "string"
-        },      
-        "token": {
-            "type": "string"
-        },
-        "customer": {
-            "type": "string"
-        },    
+        },        
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },     
-        "cpf": {
-            "type": "string",
-            "maxLength": 11,
-            "minLength": 11,
-            "pattern": "^[0-9]+$"
-        } 
+        }
     },
     "required": ["x-access-token", "mallId"]
 }
@@ -69,13 +57,7 @@ const getAllBankAccountSchema =
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },     
-        "cpf": {
-            "type": "string",
-            "maxLength": 11,
-            "minLength": 11,
-            "pattern": "^[0-9]+$"
-        } 
+        }
     },
     "required": ["x-access-token", "mallId"]
 }

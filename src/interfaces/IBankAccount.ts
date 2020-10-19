@@ -4,16 +4,11 @@ export abstract class bankAccountInteface {
 }
 
 export interface IBankAccountDTOInput {  
-    bankAccount_id:string 
-    storePaymentId: string
-    account_number:string
     clientId:string
-    cpf:string
-    mallId:string
-    holderName:string
-    bankCode:string
-    routingNumber:string
+    storePaymentId: string
+    bankAccountId: string           
+    bankName: string
+    routingNumber: string
     accountNumber:string
-    ein:string  
-    type:string  
+    mallId: string
 }

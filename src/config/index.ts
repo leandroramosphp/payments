@@ -46,7 +46,8 @@ export default {
             bankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts',
             deleteBankAccount: process.env.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}',
             transaction: process.env.MARKET_PLACE_ID + '/transactions',
-            reverseTransaction: process.env.MARKET_PLACE_ID + '/transactions/{transaction_id}/void'                        
+            reverseTransaction: process.env.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
+            accountBallance: process.env.MARKET_PLACE_ID + 'sellers/{seller_id}/balances',
         }        
     }
 };

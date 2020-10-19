@@ -4,19 +4,9 @@ export abstract class TransactionInteface {
 }
 
 export interface ITransactionDTOInput {  
-    transaction_id:string 
     clientId:string
-    cardId:string
-    cpf:string
-    id:string
-    description:string
-    portion:string
-    amount:number
     mallId:string
-    transactionBrand:string
-    first4Digits:string
-    last4Digits:string
-    expirationMonth:string
-    expirationYear:string
-    holderName:string  
+    amount: string
+    portion: string
+    description: string
 }

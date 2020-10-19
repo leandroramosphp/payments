@@ -4,14 +4,7 @@ export abstract class CardInteface {
 }
 
 export interface ICardDTOInput {  
-    card_id:string 
     clientId:string
-    cpf:string
     mallId:string
-    cardBrand:string
-    first4Digits:string
-    last4Digits:string
-    expirationMonth:string
-    expirationYear:string
-    holderName:string  
+    cpf: string
 }

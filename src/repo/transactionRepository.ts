@@ -41,7 +41,7 @@ export class transactionRepository {
   async updateTransactionApprove(input: ITransactionDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {                          
-        var output = await sequelize.query(`
+        await sequelize.query(`
           UPDATE             
             "payment_transaction"
           SET 
@@ -53,7 +53,7 @@ export class transactionRepository {
             }, type: QueryTypes.UPDATE
           });                            
           
-        return Promise.resolve(output)
+        return Promise.resolve()
       })
     } catch (e) {
       return Promise.reject(e);

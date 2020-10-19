@@ -14,7 +14,6 @@ export class clientRepository {
             client_id: +input.clientId,
             mall_id: +input.mallId,
             id_payment: output.id,
-            mallId: input.mallId
           }, type: QueryTypes.INSERT
         });              
 
