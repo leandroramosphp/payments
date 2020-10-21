@@ -8,8 +8,8 @@ export default class accountBallance implements accountBallance {
         this._accountBallanceRepository = new accountBallanceRepository();
     }
 
-    async registerAccountBallance(input: IAccountBallanceDTOInput): Promise<any> {
-        return await this._accountBallanceRepository.registerAccountBallance(input);
+    async registerAccountBallance(output, input: IAccountBallanceDTOInput): Promise<any> {
+        return await this._accountBallanceRepository.registerAccountBallance(output, input);
     }
 
     async getAccountBallance(output,  input: IAccountBallanceDTOInput): Promise<any> {

@@ -6,13 +6,21 @@ export class transactionRepository {
   async registerTransaction(output, input: ITransactionDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {         
+        if(input.valueMoneri){
+          var moneri = `:valueMoneri,`
+          var valueMoneri = `value_moneri,`
+        }else{
+          moneri = ``
+          var valueMoneri = ``
+        }
         
         await sequelize.query(`
-          INSERT INTO "payment_transaction" (value, store_id ,client_id, portion, mall_id, description)
-          VALUES(:value, :storeId , :clientId, :portion, :mallId, :description)
+          INSERT INTO "payment_transaction" (value_card, ${valueMoneri} store_id ,client_id, portion, mall_id, description)
+          VALUES(:valueCard, ${moneri} :storeId , :clientId, :portion, :mallId, :description)
           `, {
-          replacements: {    
-            value: input.amount,
+          replacements: {
+            valueCard: input.amount,
+            valueMoneri: input.valueMoneri,
             storeId: output.id,
             clientId: input.clientId,
             portion: input.portion,
@@ -85,21 +93,23 @@ export class transactionRepository {
   
   async getAllTransaction(input: ITransactionDTOInput): Promise<any> {
     try {
-      return await sequelize.transaction(async function (t) {                  
+      return await sequelize.transaction(async function (t) {         
         var output = await sequelize.query(`
-        SELECT           
-            c.full_name, pt.portion,
-            pt.value, pt.description,
-            pt.date_time
+          SELECT           
+              c.full_name, pt.portion,              
+              (pt.value_card + COALESCE(pt.value_moneri,0)) AS value,  
+              pt.description,
+              pt.date_time
           FROM
             payment_transaction pt
           JOIN client_mall cm ON (cm.client_id = pt.client_id AND cm.mall_id =pt.mall_id)       
           JOIN client c ON (c.id = pt.client_id)
-          `, {
+        `, {
           type: QueryTypes.SELECT
-        });                             
+        });                        
         return Promise.resolve(output)
       })
+      
     } catch (e) {
       return Promise.reject(e);
     }

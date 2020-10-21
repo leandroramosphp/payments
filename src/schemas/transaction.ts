@@ -15,6 +15,9 @@ const createTransactionSchema =
         "amount": {
             "type": "integer"
         },
+        "valueMoneri": {
+            "type": "integer"
+        },
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"

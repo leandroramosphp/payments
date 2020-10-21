@@ -31,8 +31,14 @@ export default class transactionService extends TransactionInteface {
                     },
                 }
             )).data                      
-            
+                
             var output = await this._transactionController.registerTransaction(transaction, input)
+
+            //TODO
+            /*
+                CHAMAR MONERI
+                PEGAR VALOR E PASSAR COMO PARAMETRO PARA INSERIR NO BANCO DE DADOS
+            */
                     
             return Promise.resolve(output);
         }                    

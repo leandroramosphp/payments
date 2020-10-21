@@ -15,11 +15,14 @@ export default class accountBallanceService extends AccountBallanceInteface {
     }
 
     public createAccountBallance = async (input: IAccountBallanceDTOInput): Promise<any>  => {
-        try {            
+        try {
             this.logger.silly('Calling createAccountBallanceSchema');     
-            /* 
+
+            const account: any = await this._accountBallanceController.getBankAccountId(input.clientId);
+
             var accountBallance =  (await axios.post(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.accountBallance,
+                config.PaymentsApi.host + config.PaymentsApi.endpoints.transferAccountBallance
+                .replace('{bank_account_id}', account[0].id),
                 input,                
                 {
                     headers: {
@@ -31,10 +34,8 @@ export default class accountBallanceService extends AccountBallanceInteface {
                     },
                 }
             )).data                            
-            */
-            //var output = await this._accountBallanceController.registerAccountBallance(accountBallance, input)
-
-            var output = await this._accountBallanceController.registerAccountBallance(input)
+            
+            var output = await this._accountBallanceController.registerAccountBallance(accountBallance, input)            
                     
             return Promise.resolve(output);
         }                    

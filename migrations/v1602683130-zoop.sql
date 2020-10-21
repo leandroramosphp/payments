@@ -1,12 +1,12 @@
 begin;
 
-DROP TABLE IF EXISTS payment_transaction;
-DROP TABLE IF EXISTS store_payment_bank_account;
 DROP TABLE IF EXISTS client_payment_credit_card;
-DROP TABLE IF EXISTS store_payment;
+DROP TABLE IF EXISTS store_payment_bank_account;
+DROP TABLE IF EXISTS payment_transaction;
 DROP TABLE IF EXISTS client_payment;
+DROP TABLE IF EXISTS store_payment;
 DROP TABLE IF EXISTS account_balance;
-delete from __db_version where version = 199;
+delete from __db_version where version = 200;
 
 CREATE TABLE client_payment (
     id	SERIAL PRIMARY KEY,
@@ -56,7 +56,8 @@ ALTER TABLE store_payment_bank_account ADD CONSTRAINT store_payment_id_fk FOREIG
 
 CREATE TABLE payment_transaction(
     id SERIAL PRIMARY KEY,    
-    value INTEGER NOT NULL,
+    value_card INTEGER NOT NULL,
+    value_moneri INTEGER,
     store_id TEXT NOT NULL,
     client_id INTEGER NOT NULL,
     mall_id INTEGER NOT NULL, 
@@ -84,6 +85,6 @@ CREATE TABLE account_balance(
 ALTER TABLE account_balance ADD CONSTRAINT client_id_mall_id_fk FOREIGN KEY(client_id, mall_id) REFERENCES client_mall(client_id, mall_id);
 
 
-INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-19', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
+INSERT INTO __db_version(version_date, author, comments) VALUES('2020-10-21', 'Maycon Aguiar Teixeira da Silva', 'Criação da tabela client_payment');
 
 commit;

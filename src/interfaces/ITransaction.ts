@@ -5,6 +5,8 @@ export abstract class TransactionInteface {
 
 export interface ITransactionDTOInput {  
     clientId:string
+    valueCard: string
+    valueMoneri?: string
     mallId:string
     amount: string
     portion: string

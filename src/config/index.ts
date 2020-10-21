@@ -48,6 +48,7 @@ export default {
             transaction: process.env.MARKET_PLACE_ID + '/transactions',
             reverseTransaction: process.env.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
             accountBallance: process.env.MARKET_PLACE_ID + 'sellers/{seller_id}/balances',
+            transferAccountBallance: process.env.MARKET_PLACE_ID + 'bank_accounts/{bank_account_id}/transfers'
         }        
     }
 };

@@ -3,7 +3,7 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
 
 export class accountBallanceRepository {
-  async registerAccountBallance(input: IAccountBallanceDTOInput): Promise<any> {
+  async registerAccountBallance(output, input: IAccountBallanceDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {                 
         await sequelize.query(`
@@ -20,7 +20,7 @@ export class accountBallanceRepository {
             mallId: input.mallId
           }, type: QueryTypes.INSERT
         });                        
-        return Promise.resolve()
+        return Promise.resolve(output)
       })
     } catch (e) {
       return Promise.reject(e);
