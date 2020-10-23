@@ -18,8 +18,12 @@ export default class cardService extends CardInteface {
         try {            
             this.logger.silly('Calling createCardSchema');     
             
-            var card =  (await axios.post(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.createCard,
+            const cardCustomer: any = await this._cardController.getCustomerId();            
+
+            Object.assign(input, {customer: cardCustomer[0].id_payment});
+
+            var card: any =  (await axios.post(
+                config.PaymentsApi.host + config.PaymentsApi.endpoints.createCard,                
                 input,
                 {
                     headers: {
@@ -30,7 +34,7 @@ export default class cardService extends CardInteface {
                         password: config.PaymentsApi.password
                     },
                 }
-            )).data                            
+            )).data                    
 
             var output = await this._cardController.registerCard(card, input)
                     

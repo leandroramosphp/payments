@@ -12,7 +12,10 @@ export default class card implements card {
         return await this._cardRepository.registerCard(output, input);
     }
 
-    
+    async getCustomerId(): Promise<any> {
+        return await this._cardRepository.getCustomerId();
+    }
+
     async updateCardAssociation(output,  input: ICardDTOInput): Promise<any> {
         return await this._cardRepository.updateCardAssociation(output, input);
     }

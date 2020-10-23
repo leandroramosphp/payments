@@ -10,8 +10,8 @@ delete from __db_version where version = 200;
 
 CREATE TABLE client_payment (
     id	SERIAL PRIMARY KEY,
-    client_id INTEGER NOT NULL,
-    mall_id INTEGER NOT NULL,
+    client_id INTEGER NOT NULL UNIQUE,
+    mall_id INTEGER NOT NULL UNIQUE,
     id_payment TEXT NOT NULL
 );
 

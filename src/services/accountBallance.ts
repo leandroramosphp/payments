@@ -65,7 +65,13 @@ export default class accountBallanceService extends AccountBallanceInteface {
             )).data                                    
 
             var output = await this._accountBallanceController.getAccountBallance(accountBallance, input)
-                    
+                
+            //TODO
+            /*
+                saldo de conta pega zoop + moneri   
+
+            */
+
             return Promise.resolve(output);
         }                    
         catch (e) {

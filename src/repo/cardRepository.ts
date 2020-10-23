@@ -3,6 +3,16 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
 
 export class cardRepository {
+  async getCustomerId(): Promise<any> {
+    return await sequelize.query(`
+      SELECT id_payment from
+      client c
+      JOIN client_payment cp ON (cp.client_id = c.id)
+      `, {        
+      type: QueryTypes.SELECT
+    });  
+  }
+
   async registerCard(output, input: ICardDTOInput): Promise<any> {
     try {
       return await sequelize.transaction(async function (t) {         

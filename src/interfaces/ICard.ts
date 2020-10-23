@@ -4,6 +4,8 @@ export abstract class CardInteface {
 }
 
 export interface ICardDTOInput {  
+    cardCustomer:string
+    customer:string
     clientId:string
     mallId:string
     cpf: string
