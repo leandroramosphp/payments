@@ -8,8 +8,9 @@ import config from '../../../config';
 const route = Router();
 
 export default (app: Router) => {
-    app.use(config.api.payment.root + config.api.payment.version +  config.api.payment.prefix + '/create-client', route); 
-    route.post('/',        
+    app.use(config.api.payment.root + config.api.payment.version + config.api.payment.prefix + '/create-client', route);
+    route.post('/',
+        middlewares.internalAuth(),
         middlewares.validateInput('createClientSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
@@ -20,20 +21,18 @@ export default (app: Router) => {
                 "query": req.query,
                 "body": req.body
             });
-            try {                
+            try {
                 const ClientInstance = Container.get(Client);
                 const ClientRequest: IClientDTOInput = {
-                    ...req.query,
-                    ...req.body,
-                    ...req.params,
-                    ...req.headers                
+                    mallId: req.query.mallId,
+                    clientId: req.body.clientId
                 }
                 const response = await ClientInstance.createClient(ClientRequest);
-                res.status(200).json(response);
+                res.status(201).json({message: "Cliente registrado com sucesso."});
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Could not Create Client error: %o', e);
                 return next(e);
             }
-        });    
+        });
 }

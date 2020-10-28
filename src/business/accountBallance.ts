@@ -1,4 +1,4 @@
-import { IAccountBallanceDTOInput } from '../interfaces/IaccountBallance';
+import { IAccountBallanceDTOInput } from '../interfaces/IAccountBallance';
 import { accountBallanceRepository } from "../repo/accountBallanceRepository";
 
 export default class accountBallance implements accountBallance {

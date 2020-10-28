@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import { IAccountBallanceDTOInput } from '../../../interfaces/IAccountBallance';
-import accountBallance from '../../../services/AccountBallance';
+import accountBallance from '../../../services/accountBallance';
 import middlewares from '../../middlewares';
 import config from '../../../config';
 

@@ -8,8 +8,11 @@ export default class client implements client {
         this._clientRepository = new clientRepository();
     }
 
+    async getClient(input: IClientDTOInput): Promise<any> {
+        return await this._clientRepository.getClient(input);
+    }
+
     async registerClient(output, input: IClientDTOInput): Promise<any> {
         return await this._clientRepository.registerClient(output, input);
     }
 }
-

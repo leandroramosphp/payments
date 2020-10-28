@@ -3,6 +3,9 @@ import dependencyInjectorLoader from "./dependencyInjector";
 import sequelizeLoader from "./sequelize";
 import Logger from "./logger";
 import schemas from "../schemas";
+import axios from 'axios';
+import curlirize from 'axios-curlirize';
+curlirize(axios);
 
 export default async ({ expressApp }) => {
   try {

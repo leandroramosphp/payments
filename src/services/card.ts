@@ -1,5 +1,5 @@
 import { Service, Inject } from 'typedi';
-import { ICardDTOInput, CardInteface } from '../interfaces/Icard';
+import { ICardDTOInput, CardInteface } from '../interfaces/ICard';
 import axios from 'axios';
 import config from '../config';
 import cardModel from '../business/card';

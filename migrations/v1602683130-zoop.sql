@@ -6,16 +6,16 @@ DROP TABLE IF EXISTS payment_transaction;
 DROP TABLE IF EXISTS client_payment;
 DROP TABLE IF EXISTS store_payment;
 DROP TABLE IF EXISTS account_balance;
-delete from __db_version where version = 200;
 
 CREATE TABLE client_payment (
     id	SERIAL PRIMARY KEY,
-    client_id INTEGER NOT NULL UNIQUE,
-    mall_id INTEGER NOT NULL UNIQUE,
+    client_id INTEGER NOT NULL,
+    mall_id INTEGER NOT NULL,
     id_payment TEXT NOT NULL
 );
 
 ALTER TABLE client_payment ADD CONSTRAINT client_id_mall_id_fk FOREIGN KEY(client_id, mall_id) REFERENCES client_mall(client_id, mall_id);
+ALTER TABLE client_payment ADD CONSTRAINT client_id_mall_id_key UNIQUE(client_id, mall_id);
 
 CREATE TABLE store_payment(
     id	SERIAL PRIMARY KEY,
