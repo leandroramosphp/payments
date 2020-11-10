@@ -17,11 +17,10 @@ CREATE TABLE IF NOT EXISTS external_store_payment (
 CREATE TABLE IF NOT EXISTS store_payment (
     id SERIAL PRIMARY KEY,
     store_id INTEGER NOT NULL,
-    mall_id INTEGER NOT NULL,
     id_payment INTEGER NOT NULL,
-    CONSTRAINT store_id_mall_id_fk FOREIGN KEY(store_id, mall_id) REFERENCES store(id, mall_id),
+    CONSTRAINT store_id_fk FOREIGN KEY(store_id) REFERENCES store(id),
     CONSTRAINT store_payment_id_payment_fk FOREIGN KEY(id_payment) REFERENCES external_store_payment(id),
-    CONSTRAINT store_payment_store_id_mall_id_key UNIQUE(store_id, mall_id)
+    CONSTRAINT store_payment_store_id_key UNIQUE(store_id)
 );
 
 CREATE TABLE IF NOT EXISTS client_payment_credit_card(
