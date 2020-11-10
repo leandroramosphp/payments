@@ -1,28 +1,26 @@
-import { IBankAccountDTOInput } from '../interfaces/IBankAccount';
+import * as Interfaces from '../interfaces/IBankAccount';
 import { bankAccountRepository } from "../repo/bankAccountRepository";
 
-export default class bankAccount implements bankAccount {
+export default class bankAccount {
     private _bankAccountRepository: bankAccountRepository
 
     constructor() {
         this._bankAccountRepository = new bankAccountRepository();
     }
 
-    async registerBankAccount(output, input: IBankAccountDTOInput): Promise<any> {
-        return await this._bankAccountRepository.registerBankAccount(output, input);
+    async registerBankAccount(bankAccountData: Interfaces.BankAccountDataInput, idPayment: string): Promise<void> {
+        return await this._bankAccountRepository.registerBankAccount(bankAccountData, idPayment);
     }
 
-    
-    async updateBankAccountAssociation(output,  input: IBankAccountDTOInput): Promise<any> {
-        return await this._bankAccountRepository.updateBankAccountAssociation(output, input);
+    async disableBankAccount(id: number): Promise<void> {
+        return await this._bankAccountRepository.disableBankAccount(id);
     }
 
-    async getBankAccountId(clientId): Promise<any> {
-        return await this._bankAccountRepository.getBankAccountId(clientId);
+    async getBankAccountId(input: { id: number, storeId: number, mallId: number }): Promise<{ bank_account_id: string }> {
+        return await this._bankAccountRepository.getBankAccountId(input);
     }
 
-    async getAll(input: IBankAccountDTOInput): Promise<any> {
-        return await this._bankAccountRepository.getAll(input);
+    async getAllBankAccounts(input: Interfaces.GetAllBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> {
+        return await this._bankAccountRepository.getAllBankAccounts(input);
     }
 }
-

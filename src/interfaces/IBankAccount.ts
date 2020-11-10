@@ -1,14 +1,38 @@
-export abstract class bankAccountInteface {
-    abstract createBankAccount: (input: IBankAccountDTOInput) => Promise<{ message: string, erros: any[] }>;
-    abstract updateBankAccount: (input: IBankAccountDTOInput) => Promise<{ message: string, erros: any[] }>;
+export interface GetAllBankAccounts {
+    storeId: number;
+    mallId: number;
 }
 
-export interface IBankAccountDTOInput {  
-    clientId:string
-    storePaymentId: string
-    bankAccountId: string           
-    bankName: string
-    routingNumber: string
-    accountNumber:string
-    mallId: string
+export interface DisableBankAccount {
+    id: number;
+    storeId: number;
+    mallId: number;
+}
+
+export interface CreateBankAccount {
+    mallId: number;
+    storeId: number;
+    bankAccountToken: string;
+}
+
+export interface BankAccountDataInput {
+    id: string;
+    holder_name: string;
+    bank_name: string;
+    bank_code: string;
+    routing_number: string;
+    account_number: string;
+    taxpayer_id: string;
+    type: string;
+}
+
+export interface BankAccountDataOutput {
+    id: number;
+    holderName: string;
+    bankName: string;
+    bankCode: string;
+    routingNumber: string;
+    accountNumber: string;
+    cnpj: string;
+    type: string;
 }

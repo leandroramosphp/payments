@@ -1,83 +1,103 @@
 import { Service, Inject } from 'typedi';
-import { IBankAccountDTOInput, bankAccountInteface } from '../interfaces/IBankAccount';
+import * as Interfaces from '../interfaces/IBankAccount';
 import axios from 'axios';
 import config from '../config';
 import bankAccountModel from '../business/bankAccount';
+import storeModel from '../business/store';
 
 @Service()
-export default class bankAccountService extends bankAccountInteface {
+export default class bankAccountService {
     private _bankAccountController: bankAccountModel;
+    private _storeController: storeModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
-        super();
-        this._bankAccountController = new bankAccountModel();        
+        this._bankAccountController = new bankAccountModel();
+        this._storeController = new storeModel();
     }
 
-    public createBankAccount = async (input: IBankAccountDTOInput): Promise<any>  => {
-        try {            
-            this.logger.silly('Calling createBankAccountSchema');     
-            
-            var bankAccount =  (await axios.post(
+    public createBankAccount = async (input: Interfaces.CreateBankAccount): Promise<void> => {
+        try {
+            this.logger.silly('Calling createBankAccount');
+
+            const storeData = (await this._storeController.getStore({ mallId: input.mallId, storeId: input.storeId }))[0];
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não existente.", status: 400 });
+            }
+
+            const bankAccount: Interfaces.BankAccountDataInput = (await axios.post(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.bankAccount,
-                input,
+                {
+                    token: input.bankAccountToken,
+                    customer: storeData.id_payment
+                },
                 {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    auth : {
+                    auth: {
                         username: config.PaymentsApi.username,
                         password: config.PaymentsApi.password
                     },
                 }
-            )).data                            
-            
-            var output = await this._bankAccountController.registerBankAccount(bankAccount, input)
-                    
-            return Promise.resolve(output);
-        }                    
+            )).data;
+
+            await this._bankAccountController.registerBankAccount(bankAccount, storeData.id_payment);
+
+            return Promise.resolve();
+        }
         catch (e) {
+            if (e?.response?.data?.error?.message === 'Sorry, the token you are trying to use does not exist or has been deleted.') {
+                return Promise.reject({ message: "Token da conta bancária inválido ou expirado.", status: 400 });
+            }
+            if (e?.response?.data?.error?.category === 'mismatch_taxpayer_identification') {
+                return Promise.reject({ message: "cnpj da conta bancária é diferente do cnpj do vendedor.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
 
-    public updateBankAccount = async (input: IBankAccountDTOInput): Promise<any>  => {
-        try {            
-            this.logger.silly('Calling updateBankAccountSchema');     
-            
-            const clients: any = await this._bankAccountController.getBankAccountId(input.clientId);                                    
-            
-            var bankAccount =  (await axios.delete(
+    public disableBankAccount = async (input: Interfaces.DisableBankAccount): Promise<void> => {
+        try {
+            this.logger.silly('Calling disableBankAccount');
+
+            const bankAccount = await this._bankAccountController.getBankAccountId(input);
+
+            await axios.delete(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.deleteBankAccount
-                    .replace('{bank_account_id}', clients[0].id),
+                    .replace('{bank_account_id}', bankAccount.bank_account_id),
                 {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    auth : {
+                    auth: {
                         username: config.PaymentsApi.username,
                         password: config.PaymentsApi.password
                     },
                 }
-            )).data                                    
+            );
 
-            var output = await this._bankAccountController.updateBankAccountAssociation(bankAccount, input)
-                    
-            return Promise.resolve(output);
-        }                    
+            await this._bankAccountController.disableBankAccount(input.id);
+
+            return Promise.resolve();
+        }
         catch (e) {
+            if (e?.response?.data?.error?.message === 'Sorry, the bank_account you are trying to use does not exist or has been deleted.') {
+                return Promise.reject({ message: "Conta bancária já foi excluída na API externa.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
 
-    public getAll = async (input: IBankAccountDTOInput): Promise<any>  => {
-        try {            
-            this.logger.silly('Calling getAllBankAccountSchema');                      
-                        
-            var output = await this._bankAccountController.getAll(input)
-                    
+    public getAllBankAccounts = async (input: Interfaces.GetAllBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> => {
+        try {
+            this.logger.silly('Calling getAllBankAccounts');
+
+            const output = await this._bankAccountController.getAllBankAccounts(input);
+
             return Promise.resolve(output);
-        }                    
+        }
         catch (e) {
             return Promise.reject(e);
         }

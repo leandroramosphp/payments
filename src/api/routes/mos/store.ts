@@ -1,39 +1,65 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import { IStoreDTOInput } from '../../../interfaces/IStore';
-import store from '../../../services/store';
+import * as Interfaces from '../../../interfaces/IStore';
+import storeService from '../../../services/store';
 import middlewares from '../../middlewares';
-import config from '../../../config';
 
-const route = Router();
-
-export default (app: Router) => {
-    app.use(config.api.payment.root + config.api.payment.version +  config.api.payment.prefix + '/create-store', route); 
-    route.post('/',        
+export default (route: Router) => {
+    route.post('/stores/:storeId/register',
+        middlewares.internalAuth(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.params.storeId,
+                mallId: req.query.mallId
+            };
+            next();
+        },
         middlewares.validateInput('createStoreSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
-            logger.debug('Calling POST /mos/v1/payments-management/create-store %o', {
-                "params": req.params,
-                "headers": req.headers,
-                "query": req.query,
-                "body": req.body
-            });
-            try {                
-                const StoreInstance = Container.get(store);
-                const StoreRequest: IStoreDTOInput = {
-                    ...req.query,
-                    ...req.body,
-                    ...req.params,
-                    ...req.headers                
+            logger.debug('Chamando endpoint para cadastro de lojista');
+            try {
+                const storeServiceInstance = Container.get(storeService);
+                const request: Interfaces.CreateStore = {
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId
                 }
-                const response = await StoreInstance.createStore(StoreRequest);
+                await storeServiceInstance.createStore(request);
+                res.status(201).json({ message: "Loja registrada com sucesso." });
+            } catch (e) {
+                // @ts-ignore
+                logger.error('🔥 Falha ao cadastrar lojista: %o', e);
+                return next(e);
+            }
+        });
+
+    route.get('/stores/:storeId/balance',
+        middlewares.mosAuth(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.params.storeId,
+                mallId: req.query.mallId
+            };
+            next();
+        },
+        middlewares.validateInput('getStoreBalanceSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            const logger = Container.get('logger');
+            // @ts-ignore            
+            logger.debug('Chamando endpoint para buscar saldo do lojista');
+            try {
+                const storeServiceInstance = Container.get(storeService);
+                const request: Interfaces.GetStoreBalance = {
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId
+                }
+                const response = await storeServiceInstance.getStoreBalance(request);
                 res.status(200).json(response);
             } catch (e) {
                 // @ts-ignore
-                logger.error('🔥 Could not Create store error: %o', e);
+                logger.error('🔥 Falha ao buscar saldo do lojista: %o', e);
                 return next(e);
             }
-        });    
+        });
 }

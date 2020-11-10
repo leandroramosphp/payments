@@ -1,10 +1,9 @@
-export abstract class StoreInteface {
-    abstract createStore: (input: IStoreDTOInput) => Promise<{ message: string, erros: any[] }>;
+export interface CreateStore {
+    storeId: number;
+    mallId: number;
 }
 
-export interface IStoreDTOInput {   
-    id: string
-    storeId: string
-    mallId: string
-    clientId: string
+export interface GetStoreBalance {
+    storeId: number;
+    mallId: number;
 }

@@ -23,12 +23,12 @@ const configs = {
 var not_configured = [];
 
 Object.keys(configs).map((c) => {
-    if(!configs[c]) {
+    if (!configs[c]) {
         not_configured.push(c);
     }
 });
 
-if(not_configured.length) {
+if (not_configured.length) {
     throw new Error('List of required environment variables not configured: ' + not_configured.toString());
 }
 
@@ -73,9 +73,8 @@ export default {
             deleteBankAccount: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}',
             transaction: configs.MARKET_PLACE_ID + '/transactions',
             reverseTransaction: configs.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
-            accountBallance: configs.MARKET_PLACE_ID + 'sellers/{seller_id}/balances',
-            transferAccountBallance: configs.MARKET_PLACE_ID + 'bank_accounts/{bank_account_id}/transfers'
+            accountBallance: configs.MARKET_PLACE_ID + '/sellers/{seller_id}/balances',
+            transferAccountBallance: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}/transfers'
         }
     }
 };
-

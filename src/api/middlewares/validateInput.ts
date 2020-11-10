@@ -4,8 +4,8 @@ import { Container } from 'typedi';
 
 let ajv = Ajv({ allErrors: true, removeAdditional: 'all' });
 
-function errorResponse(schemaErrors:Ajv.ErrorObject[]) {
-    let errors = schemaErrors.map((error:any) => {
+function errorResponse(schemaErrors: Ajv.ErrorObject[]) {
+    let errors = schemaErrors.map((error: any) => {
         return {
             path: error.dataPath,
             message: error.message,
@@ -18,19 +18,19 @@ function errorResponse(schemaErrors:Ajv.ErrorObject[]) {
     }
 }
 
-let validateInput = (schemaName:string) => {
+let validateInput = (schemaName: string) => {
     const logger = Container.get('logger');
     const InputSchema = Container.get(schemaName);
-    if(!ajv.getSchema(schemaName)) {
+    if (!ajv.getSchema(schemaName)) {
         // @ts-ignore
         ajv.addSchema(InputSchema, schemaName);
     }
 
-    return (req:Request, res:Response, next:NextFunction) => {
-        let valid = ajv.validate(schemaName, {...req.params, ...req.query, ...req.body, ...req.headers});
+    return (req: Request, res: Response, next: NextFunction) => {
+        let valid = ajv.validate(schemaName, res.locals.data);
         if (!valid) {
             // @ts-ignore
-            logger.debug('Error validating ' + '\"' + schemaName + '\"' + ': %o\n%o', ajv.errors, {params: req.params, query: req.query, body: req.body, headers: req.headers});
+            logger.debug('Error validating ' + '\"' + schemaName + '\"' + ': %o\n%o', ajv.errors, { params: req.params, query: req.query, body: req.body, headers: req.headers });
             return res.status(422).send(errorResponse(ajv.errors));
         }
         next();

@@ -6,7 +6,7 @@ how_to_use() {
 	echo "    Instala todas as migracoes necessarias a partir da versao informada para que o banco fique na versao mais atualizada"
 	echo
 	echo "    env: Ambiente de desenvolvimento"
-	echo "        [prod, staging, dev, demo]"
+	echo "        [prod, staging, dev, demo, testing]"
 	echo "    version: Versao atual do banco"
 	echo "        v0"
 }

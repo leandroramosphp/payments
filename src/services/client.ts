@@ -1,22 +1,21 @@
 import { Service, Inject } from 'typedi';
-import { IClientDTOInput, ClientInteface } from '../interfaces/IClient';
+import * as Interfaces from '../interfaces/IClient';
 import axios from 'axios';
 import config from '../config';
 import clientModel from '../business/client';
 
 @Service()
-export default class ClientService extends ClientInteface {
+export default class clientService {
     private _clientController: clientModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
-        super();
         this._clientController = new clientModel();
     }
 
-    public createClient = async (input: IClientDTOInput): Promise<any> => {
+    public createClient = async (input: Interfaces.CreateClient): Promise<void> => {
         try {
-            this.logger.silly('Calling createClientSchema');
+            this.logger.silly('Calling createClient');
 
             const clientData = (await this._clientController.getClient(input))[0];
 
@@ -24,11 +23,11 @@ export default class ClientService extends ClientInteface {
                 return Promise.reject({ message: "Cliente não existente.", status: 400 });
             }
 
-            if(clientData.id_payment) {
+            if (clientData.id_payment) {
                 return Promise.reject({ message: "Cliente já foi registrado.", status: 400 });
             }
 
-            var client = (await axios.post(
+            const client: { id: string } = (await axios.post(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.createClient,
                 {
                     taxpayer_id: clientData.cpf
@@ -44,9 +43,9 @@ export default class ClientService extends ClientInteface {
                 }
             )).data;
 
-            var output = await this._clientController.registerClient(client, input)
+            await this._clientController.registerClient(client.id, input)
 
-            return Promise.resolve(output);
+            return Promise.resolve();
         }
         catch (e) {
             return Promise.reject(e);

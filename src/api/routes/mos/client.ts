@@ -1,37 +1,35 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import { IClientDTOInput } from '../../../interfaces/IClient';
-import Client from '../../../services/client';
+import * as Interfaces from '../../../interfaces/IClient';
+import clientService from '../../../services/client';
 import middlewares from '../../middlewares';
-import config from '../../../config';
 
-const route = Router();
-
-export default (app: Router) => {
-    app.use(config.api.payment.root + config.api.payment.version + config.api.payment.prefix + '/create-client', route);
-    route.post('/',
+export default (route: Router) => {
+    route.post('/clients/:clientId/register',
         middlewares.internalAuth(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                mallId: req.query.mallId,
+                clientId: req.params.clientId
+            };
+            next();
+        },
         middlewares.validateInput('createClientSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
-            // @ts-ignore            
-            logger.debug('Calling POST /mos/v1/payments-management/create-client %o', {
-                "params": req.params,
-                "headers": req.headers,
-                "query": req.query,
-                "body": req.body
-            });
+            // @ts-ignore
+            logger.debug('Chamando endpoint para cadastro de comprador');
             try {
-                const ClientInstance = Container.get(Client);
-                const ClientRequest: IClientDTOInput = {
-                    mallId: req.query.mallId,
-                    clientId: req.body.clientId
+                const clientServiceInstance = Container.get(clientService);
+                const request: Interfaces.CreateClient = {
+                    mallId: +res.locals.data.mallId,
+                    clientId: +res.locals.data.clientId
                 }
-                const response = await ClientInstance.createClient(ClientRequest);
-                res.status(201).json({message: "Cliente registrado com sucesso."});
+                await clientServiceInstance.createClient(request);
+                res.status(201).json({ message: "Cliente registrado com sucesso." });
             } catch (e) {
                 // @ts-ignore
-                logger.error('🔥 Could not Create Client error: %o', e);
+                logger.error('🔥 Falha ao cadastrar comprador: %o', e);
                 return next(e);
             }
         });

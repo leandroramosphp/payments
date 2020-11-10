@@ -1,8 +1,8 @@
 import client from "./client";
 import store from "./store";
-import card from "./card";
+import creditCard from "./creditCard";
 import bankAccount from "./bankAccount";
 import transaction from "./transaction";
-import accountBallance from "./accountBallance";
+import bankTransfer from "./bankTransfer";
 
-export default [client,store, card, bankAccount, transaction, accountBallance];
+export default [client, store, creditCard, bankAccount, transaction, bankTransfer];
