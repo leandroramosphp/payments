@@ -2,6 +2,7 @@ import client from "./client";
 import store from "./store";
 import bankAccount from "./bankAccount";
 import bankTransfer from "./bankTransfer";
+import transaction from "./transaction";
 import config from '../../../config';
 
 export default (app) => {
@@ -10,5 +11,6 @@ export default (app) => {
     store(app);
     bankAccount(app);
     bankTransfer(app);
+    transaction(app);
     return app;
 };
