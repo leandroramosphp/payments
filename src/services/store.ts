@@ -31,7 +31,7 @@ export default class storeService {
 
             if (dupStore) {
                 if (dupStore.mall_id == input.mallId) {
-                    await this._storeController.registerStore(dupStore.id_payment, input);
+                    await this._storeController.registerStore(dupStore.id_payment, input.storeId);
                 } else {
                     return Promise.reject({ message: "cnpj já registrado em outro empreendimento.", status: 400 });
                 }
@@ -52,7 +52,7 @@ export default class storeService {
                     }
                 )).data;
 
-                await this._storeController.registerStore(store.id, input);
+                await this._storeController.registerStore(store.id, input.storeId);
             }
 
             return Promise.resolve();

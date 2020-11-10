@@ -11,7 +11,7 @@ export class storeRepository {
           esp.id_payment
         FROM
           store s
-          LEFT JOIN store_payment sp ON (s.id = sp.store_id AND s.mall_id = sp.mall_id)
+          LEFT JOIN store_payment sp ON (s.id = sp.store_id)
           LEFT JOIN external_store_payment esp ON (sp.id_payment = esp.id)
         WHERE
           s.id = :storeId
@@ -37,7 +37,7 @@ export class storeRepository {
           s.mall_id
         FROM
           store s
-          JOIN store_payment sp ON (s.id = sp.store_id AND s.mall_id = sp.mall_id)
+          JOIN store_payment sp ON (s.id = sp.store_id)
           JOIN external_store_payment esp ON (sp.id_payment = esp.id)
         WHERE
           s.cnpj = :cnpj
@@ -53,7 +53,7 @@ export class storeRepository {
     }
   }
 
-  async registerStore(idPayment: string, input: Interfaces.CreateStore): Promise<void> {
+  async registerStore(idPayment: string, storeId: number): Promise<void> {
     try {
       return await sequelize.transaction(async function (t) {
         const externalStorePayment: { id: number } = (await sequelize.query(`
@@ -68,18 +68,17 @@ export class storeRepository {
         }))[0][0];
         if (!externalStorePayment) {
           await sequelize.query(`
-          INSERT INTO "store_payment" (store_id, mall_id, id_payment)
-          SELECT :storeId, :mallId, id
+          INSERT INTO "store_payment" (store_id, id_payment)
+          SELECT :storeId, id
           FROM external_store_payment
           WHERE id_payment = :idPayment
           `, {
             replacements: {
-              storeId: input.storeId,
-              mallId: input.mallId,
+              storeId: storeId,
               idPayment: idPayment
             }, type: QueryTypes.INSERT, transaction: t
           }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
-            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_mall_id_key"`) {
+            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
               return Promise.reject({ message: "Loja já foi registrada.", status: 400 });
             } else {
               return Promise.reject(e);
@@ -87,16 +86,15 @@ export class storeRepository {
           });
         } else {
           await sequelize.query(`
-            INSERT INTO "store_payment" (store_id, mall_id, id_payment)
-            VALUES(:storeId, :mallId, :idPayment)
+            INSERT INTO "store_payment" (store_id, id_payment)
+            VALUES(:storeId, :idPayment)
             `, {
             replacements: {
-              storeId: input.storeId,
-              mallId: input.mallId,
+              storeId: storeId,
               idPayment: externalStorePayment.id
             }, type: QueryTypes.INSERT, transaction: t
           }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
-            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_mall_id_key"`) {
+            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
               return Promise.reject({ message: "Loja já foi registrada.", status: 400 });
             } else {
               return Promise.reject(e);

@@ -16,7 +16,7 @@ export default class store {
         return await this._storeRepository.checkDupStore(cnpj);
     }
 
-    async registerStore(idPayment: string, input: Interfaces.CreateStore): Promise<void> {
-        return await this._storeRepository.registerStore(idPayment, input);
+    async registerStore(idPayment: string, storeId: number): Promise<void> {
+        return await this._storeRepository.registerStore(idPayment, storeId);
     }
 }
