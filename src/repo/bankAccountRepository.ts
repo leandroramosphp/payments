@@ -30,40 +30,29 @@ export class bankAccountRepository {
     }
   }
 
-  async getBankAccountId(input: { id: number, storeId: number, mallId: number }): Promise<{ bank_account_id: string }> {
+  async getBankAccount(id: number, storeId: number, mallId: number): Promise<{ bank_account_id: string, enabled: boolean }> {
     try {
-      const output: Array<{ bank_account_id: string, enabled: boolean, id: number }> = await sequelize.query(`
-          SELECT
+      const output: Array<{ bank_account_id: string, enabled: boolean }> = await sequelize.query(`
+        SELECT
             spba.bank_account_id,
-            spba.enabled,
-            spba.id
-          FROM 
+            spba.enabled
+        FROM
             external_store_payment esp
             JOIN store_payment sp ON (esp.id = sp.id_payment)
-            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
-          WHERE
-            sp.store_id = :storeId
-            AND sp.mall_id = :mallId
+            JOIN store s ON (sp.store_id = s.id)
+            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id AND spba.id = :id)
+        WHERE
+            s.id = :storeId
+            AND s.mall_id = :mallId
         `, {
         replacements: {
-          id: input.id,
-          storeId: input.storeId,
-          mallId: input.mallId
+          storeId: storeId,
+          id: id,
+          mallId: mallId
         }, type: QueryTypes.SELECT
       });
-      if (!output.length) {
-        return Promise.reject({ message: "Loja não existente.", status: 400 });
-      }
-      const bankAccount: { bank_account_id: string, enabled: boolean, id: number } = output.find((o) => {
-        return (o.id === input.id);
-      });
-      if (!bankAccount) {
-        return Promise.reject({ message: "Conta bancária não existente ou não associada a está loja.", status: 400 });
-      } else if (bankAccount.enabled === false) {
-        return Promise.reject({ message: "Conta bancária já foi desabilitada.", status: 400 });
-      }
 
-      return Promise.resolve({ bank_account_id: bankAccount.bank_account_id });
+      return Promise.resolve(output[0]);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -89,9 +78,9 @@ export class bankAccountRepository {
     }
   }
 
-  async getAllBankAccounts(input: Interfaces.GetAllBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> {
+  async getBankAccounts(storeId: number, mallId: number): Promise<Array<Interfaces.BankAccountDataOutput>> {
     try {
-      var output: Array<Interfaces.BankAccountDataOutput & { enabled: boolean }> = await sequelize.query(`
+      var output: Array<Interfaces.BankAccountDataOutput> = await sequelize.query(`
           SELECT 
             spba.id,
             spba.holder_name AS "holderName",
@@ -100,31 +89,22 @@ export class bankAccountRepository {
             spba.routing_number AS "routingNumber",
             spba.account_number AS "accountNumber",
             spba.cnpj,
-            spba.type,
-            spba.enabled
-          FROM 
+            spba.type
+          FROM
             external_store_payment esp
             JOIN store_payment sp ON (esp.id = sp.id_payment)
-            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
+            JOIN store s ON (sp.store_id = s.id)
+            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id AND spba.enabled = true)
           WHERE
-            sp.store_id = :storeId
-            AND sp.mall_id = :mallId
+            s.id = :storeId
+            AND s.mall_id = :mallId
           `, {
         replacements: {
-          storeId: +input.storeId,
-          mallId: +input.mallId
+          storeId: storeId,
+          mallId: mallId
         }, type: QueryTypes.SELECT
       });
-      if (!output.length) {
-        return Promise.reject({ message: "Loja não existente.", status: 400 });
-      }
-      output = output.filter((o) => {
-        return o.enabled === true;
-      });
-      return Promise.resolve(output.map((o) => {
-        delete o.enabled;
-        return o;
-      }));
+      return Promise.resolve(output);
     } catch (e) {
       return Promise.reject(e);
     }

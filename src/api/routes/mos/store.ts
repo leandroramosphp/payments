@@ -26,7 +26,7 @@ export default (route: Router) => {
                     mallId: +res.locals.data.mallId
                 }
                 await storeServiceInstance.createStore(request);
-                res.status(201).json({ message: "Loja registrada com sucesso." });
+                res.status(201).json({ message: "Loja cadastrada com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao cadastrar lojista: %o', e);

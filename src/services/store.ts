@@ -17,14 +17,14 @@ export default class storeService {
         try {
             this.logger.silly('Calling createStore');
 
-            const storeData = (await this._storeController.getStore(input))[0];
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }))[0];
 
             if (!storeData) {
-                return Promise.reject({ message: "Loja não existente.", status: 400 });
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
             }
 
             if (storeData.id_payment) {
-                return Promise.reject({ message: "Loja já foi registrada.", status: 400 });
+                return Promise.reject({ message: "Loja já foi cadastrada.", status: 400 });
             }
 
             const dupStore = (await this._storeController.checkDupStore(storeData.cnpj))[0];
@@ -33,7 +33,7 @@ export default class storeService {
                 if (dupStore.mall_id == input.mallId) {
                     await this._storeController.registerStore(dupStore.id_payment, input.storeId);
                 } else {
-                    return Promise.reject({ message: "cnpj já registrado em outro empreendimento.", status: 400 });
+                    return Promise.reject({ message: "cnpj já cadastrado em outro empreendimento.", status: 400 });
                 }
             } else {
                 const store: { id: string } = (await axios.post(
@@ -59,7 +59,7 @@ export default class storeService {
         }
         catch (e) {
             if (e?.response?.data?.error?.category === 'duplicate_taxpayer_id') {
-                return Promise.reject({ message: "cnpj já registrado na api externa.", status: 400 });
+                return Promise.reject({ message: "cnpj já cadastrado na api externa.", status: 400 });
             }
             return Promise.reject(e);
         }
@@ -69,14 +69,14 @@ export default class storeService {
         try {
             this.logger.silly('Calling getStoreBalance');
 
-            const storeData = (await this._storeController.getStore(input))[0];
+            const storeData = (await this._storeController.getStore({storeId: input.storeId, mallId: input.mallId}))[0];
 
-            if (!storeData) {
-                return Promise.reject({ message: "Loja não existente.", status: 400 });
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
             }
 
-            const accountBalance: any = (await axios.get(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.accountBallance
+            const accountBalance: { items: { current_balance: number, current_blocked_balance: number, account_balance: number } } = (await axios.get(
+                config.PaymentsApi.host + config.PaymentsApi.endpoints.getAccountBalance
                     .replace('{seller_id}', storeData.id_payment),
                 {
                     auth: {
@@ -86,9 +86,11 @@ export default class storeService {
                 }
             )).data;
 
-            console.log(accountBalance);
+            /* TODO:
+                Adicionar lógica para consultar saldo do lojista na Moneri
+                Somar saldo lojista Zoop + Moneri */
 
-            return Promise.resolve({ balance: null });
+            return Promise.resolve({ balance: accountBalance.items.current_balance });
         }
         catch (e) {
             return Promise.reject(e);

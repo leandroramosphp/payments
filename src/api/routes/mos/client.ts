@@ -26,7 +26,7 @@ export default (route: Router) => {
                     clientId: +res.locals.data.clientId
                 }
                 await clientServiceInstance.createClient(request);
-                res.status(201).json({ message: "Cliente registrado com sucesso." });
+                res.status(201).json({ message: "Cliente cadastrado com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao cadastrar comprador: %o', e);

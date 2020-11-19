@@ -24,7 +24,7 @@ export default (route: Router) => {
                     /* TODO: Adicionar parâmetros para executar serviço */
                 }
                 await creditCardServiceInstance.createCreditCard(request);
-                res.status(201).json({ message: "Cartão de crédito registrado com sucesso." });
+                res.status(201).json({ message: "Cartão de crédito cadastrado com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao cadastrar cartão de crédito: %o', e);

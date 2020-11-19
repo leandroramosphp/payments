@@ -20,10 +20,10 @@ export default class bankAccountService {
         try {
             this.logger.silly('Calling createBankAccount');
 
-            const storeData = (await this._storeController.getStore({ mallId: input.mallId, storeId: input.storeId }))[0];
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }))[0];
 
             if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não existente.", status: 400 });
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
             }
 
             const bankAccount: Interfaces.BankAccountDataInput = (await axios.post(
@@ -52,7 +52,7 @@ export default class bankAccountService {
                 return Promise.reject({ message: "Token da conta bancária inválido ou expirado.", status: 400 });
             }
             if (e?.response?.data?.error?.category === 'mismatch_taxpayer_identification') {
-                return Promise.reject({ message: "cnpj da conta bancária é diferente do cnpj do vendedor.", status: 400 });
+                return Promise.reject({ message: "Cnpj da conta bancária é diferente do cnpj do vendedor.", status: 400 });
             }
             return Promise.reject(e);
         }
@@ -62,7 +62,7 @@ export default class bankAccountService {
         try {
             this.logger.silly('Calling disableBankAccount');
 
-            const bankAccount = await this._bankAccountController.getBankAccountId(input);
+            const bankAccount = await this._bankAccountController.getBankAccount(input.id, input.storeId, input.mallId);
 
             await axios.delete(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.deleteBankAccount
@@ -90,11 +90,11 @@ export default class bankAccountService {
         }
     }
 
-    public getAllBankAccounts = async (input: Interfaces.GetAllBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> => {
+    public getBankAccounts = async (input: Interfaces.GetBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> => {
         try {
-            this.logger.silly('Calling getAllBankAccounts');
+            this.logger.silly('Calling getBankAccounts');
 
-            const output = await this._bankAccountController.getAllBankAccounts(input);
+            const output = await this._bankAccountController.getBankAccounts(input.storeId, input.mallId);
 
             return Promise.resolve(output);
         }

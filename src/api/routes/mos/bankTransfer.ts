@@ -9,9 +9,10 @@ export default (route: Router) => {
         middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.params.storeId,
                 mallId: req.query.mallId,
-                bankAccountId: req.body.bankAccountId
+                storeId: req.params.storeId,
+                bankAccountId: req.body.bankAccountId,
+                value: req.body.value
             };
             next();
         },
@@ -23,15 +24,45 @@ export default (route: Router) => {
             try {
                 const bankTransferServiceInstance = Container.get(bankTransferService);
                 const request: Interfaces.CreateBankTransfer = {
-                    storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
-                    bankAccountId: res.locals.data.bankAccountId
+                    storeId: +res.locals.data.storeId,
+                    bankAccountId: res.locals.data.bankAccountId,
+                    value: res.locals.data.value
                 }
                 await bankTransferServiceInstance.createBankTransfer(request);
                 res.status(201).json({ message: "Transferência bancária realizada com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao criar transferência bancária: %o', e);
+                return next(e);
+            }
+        });
+
+    route.get('/stores/:storeId/bank-transfers',
+        middlewares.mosAuth(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.params.storeId,
+                mallId: req.query.mallId
+            };
+            next();
+        },
+        middlewares.validateInput('getBankTransfersSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            const logger = Container.get('logger');
+            // @ts-ignore
+            logger.debug('Chamando endpoint para buscar transferências bancárias');
+            try {
+                const bankTransferServiceInstance = Container.get(bankTransferService);
+                const request: Interfaces.GetBankTransfers = {
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId
+                }
+                const bankTransfers = await bankTransferServiceInstance.getBankTransfers(request);
+                res.status(200).json(bankTransfers);
+            } catch (e) {
+                // @ts-ignore
+                logger.error('🔥 Falha ao buscar transferências bancárias: %o', e);
                 return next(e);
             }
         });

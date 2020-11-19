@@ -20,11 +20,11 @@ export default class clientService {
             const clientData = (await this._clientController.getClient(input))[0];
 
             if (!clientData) {
-                return Promise.reject({ message: "Cliente não existente.", status: 400 });
+                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
             }
 
             if (clientData.id_payment) {
-                return Promise.reject({ message: "Cliente já foi registrado.", status: 400 });
+                return Promise.reject({ message: "Cliente já foi cadastrado.", status: 400 });
             }
 
             const client: { id: string } = (await axios.post(

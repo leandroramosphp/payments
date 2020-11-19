@@ -6,16 +6,16 @@ const createBankAccountSchema =
         "bankAccountToken": {
             "type": "string"
         },
-        "mallId": {
+        "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         },
-        "storeId": {
+        "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         }
     },
-    "required": ["bankAccountToken", "mallId", "storeId"]
+    "required": ["bankAccountToken", "storeId", "mallId"]
 }
 
 const disableBankAccountSchema =
@@ -23,10 +23,6 @@ const disableBankAccountSchema =
     "title": "disableBankAccountSchema",
     "type": "object",
     "properties": {
-        "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
         "id": {
             "type": "string",
             "pattern": "^[0-9]+$"
@@ -34,21 +30,25 @@ const disableBankAccountSchema =
         "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        }
-    },
-    "required": ["id", "mallId", "storeId"]
-}
-
-const getAllBankAccountsSchema =
-{
-    "title": "getAllBankAccountsSchema",
-    "type": "object",
-    "properties": {
+        },
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
-        },
+        }
+    },
+    "required": ["id", "storeId", "mallId"]
+}
+
+const getBankAccountsSchema =
+{
+    "title": "getBankAccountsSchema",
+    "type": "object",
+    "properties": {
         "storeId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         }
@@ -66,7 +66,7 @@ export default [
         schema: disableBankAccountSchema
     },
     {
-        name: "getAllBankAccountsSchema",
-        schema: getAllBankAccountsSchema
+        name: "getBankAccountsSchema",
+        schema: getBankAccountsSchema
     }
 ]

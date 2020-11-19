@@ -10,8 +10,8 @@ export default (route: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.params.storeId,
-                mallId: req.query.mallId,
-                bankAccountToken: req.body.bankAccountToken
+                bankAccountToken: req.body.bankAccountToken,
+                mallId: req.query.mallId
             };
             next();
         },
@@ -24,11 +24,11 @@ export default (route: Router) => {
                 const bankAccountServiceInstance = Container.get(bankAccountService);
                 const request: Interfaces.CreateBankAccount = {
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
-                    bankAccountToken: res.locals.data.bankAccountToken
+                    bankAccountToken: res.locals.data.bankAccountToken,
+                    mallId: +res.locals.data.mallId
                 };
                 await bankAccountServiceInstance.createBankAccount(request);
-                res.status(201).json({ message: "Conta bancária registrada com sucesso." });
+                res.status(201).json({ message: "Conta bancária cadastrada com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao cadastrar conta bancária: %o', e);
@@ -40,9 +40,9 @@ export default (route: Router) => {
         middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                id: +req.params.id,
-                mallId: +req.query.mallId,
-                storeId: +req.params.storeId
+                id: req.params.id,
+                storeId: req.params.storeId,
+                mallId: req.query.mallId
             };
             next();
         },
@@ -56,7 +56,7 @@ export default (route: Router) => {
                 const request: Interfaces.DisableBankAccount = {
                     id: +res.locals.data.id,
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId
+                    mallId: +req.locals.data.mallId
                 };
                 await bankAccountServiceInstance.disableBankAccount(request);
                 res.status(200).json({ message: "Conta bancária desabilitada com sucesso." });
@@ -72,22 +72,22 @@ export default (route: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.params.storeId,
-                mallId: req.query.mallId,
+                mallId: req.query.mallId
             };
             next();
         },
-        middlewares.validateInput('getAllBankAccountsSchema'),
+        middlewares.validateInput('getBankAccountsSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
             logger.debug('Chamando endpoint para listar todas as contas bancárias do lojista');
             try {
                 const bankAccountServiceInstance = Container.get(bankAccountService);
-                const request: Interfaces.GetAllBankAccounts = {
+                const request: Interfaces.GetBankAccounts = {
                     storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId
                 };
-                const response = await bankAccountServiceInstance.getAllBankAccounts(request);
+                const response = await bankAccountServiceInstance.getBankAccounts(request);
                 res.status(200).json(response);
             } catch (e) {
                 // @ts-ignore

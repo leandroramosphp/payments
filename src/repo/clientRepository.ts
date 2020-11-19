@@ -42,7 +42,7 @@ export class clientRepository {
         }, type: QueryTypes.INSERT
       }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
         if (e.parent.message === `duplicate key value violates unique constraint "client_payment_client_id_mall_id_key"`) {
-          return Promise.reject({ message: "Cliente já foi registrado.", status: 400 });
+          return Promise.reject({ message: "Cliente já foi cadastrado." });
         } else {
           return Promise.reject(e);
         }

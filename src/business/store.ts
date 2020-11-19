@@ -1,4 +1,3 @@
-import * as Interfaces from '../interfaces/IStore';
 import { storeRepository } from "../repo/storeRepository";
 
 export default class store {
@@ -9,14 +8,29 @@ export default class store {
     }
 
     async getStore(input: { storeId: number, mallId: number }): Promise<Array<{ cnpj: string, id_payment: string }>> {
-        return await this._storeRepository.getStore(input);
+        try {
+            return await this._storeRepository.getStore(input);
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     async checkDupStore(cnpj: string): Promise<Array<{ id_payment: string, mall_id: number }>> {
-        return await this._storeRepository.checkDupStore(cnpj);
+        try {
+            return await this._storeRepository.checkDupStore(cnpj);
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     async registerStore(idPayment: string, storeId: number): Promise<void> {
-        return await this._storeRepository.registerStore(idPayment, storeId);
+        try {
+            return await this._storeRepository.registerStore(idPayment, storeId);
+        } catch (e) {
+            if (e?.message === "Loja já foi cadastrada.") {
+                return Promise.reject({ message: e.message, status: 400 });
+            }
+            return Promise.reject(e);
+        }
     }
 }

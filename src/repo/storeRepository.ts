@@ -1,4 +1,3 @@
-import * as Interfaces from '../interfaces/IStore';
 import sequelize from '../loaders/sequelize';
 import { QueryTypes, UniqueConstraintError } from 'sequelize';
 
@@ -79,7 +78,7 @@ export class storeRepository {
             }, type: QueryTypes.INSERT, transaction: t
           }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
             if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
-              return Promise.reject({ message: "Loja já foi registrada.", status: 400 });
+              return Promise.reject({ message: "Loja já foi cadastrada." });
             } else {
               return Promise.reject(e);
             }
@@ -95,7 +94,7 @@ export class storeRepository {
             }, type: QueryTypes.INSERT, transaction: t
           }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
             if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
-              return Promise.reject({ message: "Loja já foi registrada.", status: 400 });
+              return Promise.reject({ message: "Loja já foi cadastrada." });
             } else {
               return Promise.reject(e);
             }
@@ -108,10 +107,4 @@ export class storeRepository {
       return Promise.reject(e);
     }
   }
-
 }
-
-
-
-
-

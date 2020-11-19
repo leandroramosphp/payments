@@ -73,8 +73,8 @@ export default {
             deleteBankAccount: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}',
             transaction: configs.MARKET_PLACE_ID + '/transactions',
             reverseTransaction: configs.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
-            accountBallance: configs.MARKET_PLACE_ID + '/sellers/{seller_id}/balances',
-            transferAccountBallance: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}/transfers'
+            getAccountBalance: configs.MARKET_PLACE_ID + '/sellers/{seller_id}/balances',
+            createBankTransfer: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}/transfers'
         }
     }
 };

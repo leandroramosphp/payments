@@ -24,7 +24,7 @@ export default (route: Router) => {
                     /* TODO: Adicionar parâmetros para executar serviço */
                 }
                 await transactionServiceInstance.createTransaction(request);
-                res.status(201).json({ message: "Transação registrada com sucesso." });
+                res.status(201).json({ message: "Transação cadastrada com sucesso." });
             } catch (e) {
                 // @ts-ignore
                 logger.error('🔥 Falha ao criar transação: %o', e);

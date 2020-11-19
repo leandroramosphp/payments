@@ -1,4 +1,4 @@
-export interface GetAllBankAccounts {
+export interface GetBankAccounts {
     storeId: number;
     mallId: number;
 }
@@ -10,9 +10,9 @@ export interface DisableBankAccount {
 }
 
 export interface CreateBankAccount {
-    mallId: number;
     storeId: number;
     bankAccountToken: string;
+    mallId: number;
 }
 
 export interface BankAccountDataInput {

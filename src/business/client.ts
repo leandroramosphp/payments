@@ -9,10 +9,21 @@ export default class client {
     }
 
     async getClient(input: Interfaces.CreateClient): Promise<Array<{ cpf: string, id_payment: string }>> {
-        return await this._clientRepository.getClient(input);
+        try {
+            return await this._clientRepository.getClient(input);
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     async registerClient(idPayment: string, input: Interfaces.CreateClient): Promise<void> {
-        return await this._clientRepository.registerClient(idPayment, input);
+        try {
+            return await this._clientRepository.registerClient(idPayment, input);
+        } catch (e) {
+            if (e?.message === "Cliente já foi cadastrado.") {
+                return Promise.reject({ message: e.message, status: 400 });
+            }
+            return Promise.reject(e);
+        }
     }
 }
