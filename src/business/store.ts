@@ -7,7 +7,7 @@ export default class store {
         this._storeRepository = new storeRepository();
     }
 
-    async getStore(input: { storeId: number, mallId: number }): Promise<Array<{ cnpj: string, id_payment: string }>> {
+    async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string }> {
         try {
             return await this._storeRepository.getStore(input);
         } catch (e) {
@@ -15,7 +15,7 @@ export default class store {
         }
     }
 
-    async checkDupStore(cnpj: string): Promise<Array<{ id_payment: string, mall_id: number }>> {
+    async checkDupStore(cnpj: string): Promise<{ id_payment: string, mall_id: number }> {
         try {
             return await this._storeRepository.checkDupStore(cnpj);
         } catch (e) {

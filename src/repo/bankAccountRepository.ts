@@ -3,7 +3,7 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
 
 export class bankAccountRepository {
-  async registerBankAccount(bankAccountData: Interfaces.BankAccountDataInput, idPayment: string): Promise<void> {
+  async createBankAccount(bankAccountData: Interfaces.BankAccountDataInput, idPayment: string): Promise<void> {
     try {
       await sequelize.query(`
             INSERT INTO "store_payment_bank_account" (external_store_payment_id, bank_account_id, holder_name, bank_name, bank_code, routing_number, account_number, cnpj, type)

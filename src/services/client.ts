@@ -17,7 +17,7 @@ export default class clientService {
         try {
             this.logger.silly('Calling createClient');
 
-            const clientData = (await this._clientController.getClient(input))[0];
+            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
 
             if (!clientData) {
                 return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });

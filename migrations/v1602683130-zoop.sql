@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS client_payment_credit_card(
     expiration_month TEXT NOT NULL,
     expiration_year TEXT NOT NULL,
     holder_name TEXT NOT NULL,
-    enabled BOOLEAN DEFAULT TRUE,
+    card_brand TEXT NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE NOT NULL,
     CONSTRAINT client_payment_id_fk FOREIGN KEY(client_payment_id) REFERENCES client_payment(id)
 );
 

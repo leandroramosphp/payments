@@ -3,8 +3,19 @@ const createCreditCardSchema =
     "title": "createCreditCardSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "creditCardToken": {
+            "type": "string"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        }
     },
-    "required": []
+    "required": ["clientId", "creditCardToken", "mallId"]
 }
 
 const disableCreditCardSchema =
@@ -12,17 +23,37 @@ const disableCreditCardSchema =
     "title": "disableCreditCardSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        }
     },
-    "required": []
+    "required": ["clientId", "id", "mallId"]
 }
 
-const getAllCreditCardsSchema =
+const getCreditCardsSchema =
 {
-    "title": "getAllCreditCardsSchema",
+    "title": "getCreditCardsSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        }
     },
-    "required": []
+    "required": ["clientId", "mallId"]
 }
 
 export default [
@@ -35,7 +66,7 @@ export default [
         schema: disableCreditCardSchema
     },
     {
-        name: "getAllCreditCardsSchema",
-        schema: getAllCreditCardsSchema
+        name: "getCreditCardsSchema",
+        schema: getCreditCardsSchema
     }
 ]

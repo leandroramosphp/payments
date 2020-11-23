@@ -2,7 +2,7 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes, UniqueConstraintError } from 'sequelize';
 
 export class storeRepository {
-  async getStore(input: { storeId: number, mallId: number }): Promise<Array<{ cnpj: string, id_payment: string }>> {
+  async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string }> {
     try {
       const output: Array<{ cnpj: string, id_payment: string }> = await sequelize.query(`
         SELECT
@@ -22,13 +22,13 @@ export class storeRepository {
         }, type: QueryTypes.SELECT
       });
 
-      return Promise.resolve(output);
+      return Promise.resolve(output[0]);
     } catch (e) {
       return Promise.reject(e);
     }
   }
 
-  async checkDupStore(cnpj: string): Promise<Array<{ id_payment: string, mall_id: number }>> {
+  async checkDupStore(cnpj: string): Promise<{ id_payment: string, mall_id: number }> {
     try {
       const output: Array<{ id_payment: string, mall_id: number }> = await sequelize.query(`
         SELECT
@@ -46,7 +46,7 @@ export class storeRepository {
         }, type: QueryTypes.SELECT
       });
 
-      return Promise.resolve(output);
+      return Promise.resolve(output[0]);
     } catch (e) {
       return Promise.reject(e);
     }

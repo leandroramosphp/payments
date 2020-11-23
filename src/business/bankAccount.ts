@@ -8,9 +8,9 @@ export default class bankAccount {
         this._bankAccountRepository = new bankAccountRepository();
     }
 
-    async registerBankAccount(bankAccountData: Interfaces.BankAccountDataInput, idPayment: string): Promise<void> {
+    async createBankAccount(bankAccountData: Interfaces.BankAccountDataInput, idPayment: string): Promise<void> {
         try {
-            return Promise.resolve(await this._bankAccountRepository.registerBankAccount(bankAccountData, idPayment));
+            return Promise.resolve(await this._bankAccountRepository.createBankAccount(bankAccountData, idPayment));
         } catch (e) {
             return Promise.reject(e);
         }
@@ -43,10 +43,10 @@ export default class bankAccount {
     async getBankAccounts(storeId: number, mallId: number): Promise<Array<Interfaces.BankAccountDataOutput>> {
         try {
             const bankAccounts = await this._bankAccountRepository.getBankAccounts(storeId, mallId);
-            if (!bankAccounts) {
+            if (!bankAccounts.length) {
                 return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
             }
-            return Promise.resolve(bankAccounts);
+            return Promise.resolve(bankAccounts.filter(ba => { return ba.id != null }));
         } catch (e) {
             return Promise.reject(e);
         }

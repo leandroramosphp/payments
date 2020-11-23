@@ -20,7 +20,7 @@ export default class bankAccountService {
         try {
             this.logger.silly('Calling createBankAccount');
 
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }))[0];
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
 
             if (!storeData?.id_payment) {
                 return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
@@ -43,7 +43,7 @@ export default class bankAccountService {
                 }
             )).data;
 
-            await this._bankAccountController.registerBankAccount(bankAccount, storeData.id_payment);
+            await this._bankAccountController.createBankAccount(bankAccount, storeData.id_payment);
 
             return Promise.resolve();
         }

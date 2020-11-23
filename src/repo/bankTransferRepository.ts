@@ -38,7 +38,7 @@ export class bankTransferRepository {
 
   async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ bank_name: string, account_number: string, created_at: string, value: number }>> {
     try {
-      return (await sequelize.query(`
+      return await sequelize.query(`
         SELECT
             bank_name,
             account_number,
@@ -70,8 +70,8 @@ export class bankTransferRepository {
         replacements: {
           storeId: storeId,
           mallId: mallId
-        }, type: QueryTypes.INSERT
-      }))[0];
+        }, type: QueryTypes.SELECT
+      });
     } catch (e) {
       return Promise.reject(e);
     }

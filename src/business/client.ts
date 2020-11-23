@@ -8,7 +8,7 @@ export default class client {
         this._clientRepository = new clientRepository();
     }
 
-    async getClient(input: Interfaces.CreateClient): Promise<Array<{ cpf: string, id_payment: string }>> {
+    async getClient(input: { clientId: number, mallId: number }): Promise<{ cpf: string, id_payment: string, clientPaymentId: number }> {
         try {
             return await this._clientRepository.getClient(input);
         } catch (e) {

@@ -17,7 +17,7 @@ export default class storeService {
         try {
             this.logger.silly('Calling createStore');
 
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }))[0];
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
 
             if (!storeData) {
                 return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
@@ -27,7 +27,7 @@ export default class storeService {
                 return Promise.reject({ message: "Loja já foi cadastrada.", status: 400 });
             }
 
-            const dupStore = (await this._storeController.checkDupStore(storeData.cnpj))[0];
+            const dupStore = (await this._storeController.checkDupStore(storeData.cnpj));
 
             if (dupStore) {
                 if (dupStore.mall_id == input.mallId) {
@@ -69,7 +69,7 @@ export default class storeService {
         try {
             this.logger.silly('Calling getStoreBalance');
 
-            const storeData = (await this._storeController.getStore({storeId: input.storeId, mallId: input.mallId}))[0];
+            const storeData = (await this._storeController.getStore({storeId: input.storeId, mallId: input.mallId}));
 
             if (!storeData?.id_payment) {
                 return Promise.reject({ message: "Loja não cadastrada.", status: 400 });

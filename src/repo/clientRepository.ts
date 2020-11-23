@@ -3,12 +3,13 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes, UniqueConstraintError } from 'sequelize';
 
 export class clientRepository {
-  async getClient(input: Interfaces.CreateClient): Promise<Array<{ cpf: string, id_payment: string }>> {
+  async getClient(input: { clientId: number, mallId: number }): Promise<{ cpf: string, id_payment: string, clientPaymentId: number }> {
     try {
-      const output: Array<{ cpf: string, id_payment: string }> = await sequelize.query(`
+      const output: Array<{ cpf: string, id_payment: string, clientPaymentId: number }> = await sequelize.query(`
           SELECT
             cpf,
-            cp.id_payment
+            cp.id_payment,
+            cp.id AS "clientPaymentId"
           FROM
             client c
             JOIN client_mall cm ON (c.id = cm.client_id)
@@ -23,7 +24,7 @@ export class clientRepository {
         }, type: QueryTypes.SELECT
       });
 
-      return Promise.resolve(output);
+      return Promise.resolve(output[0]);
     } catch (e) {
       return Promise.reject(e);
     }

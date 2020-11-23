@@ -9,7 +9,9 @@ export default (route: Router) => {
         middlewares.thirdPartyAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                mallId: req.query.mallId,
+                clientId: req.params.clientId,
+                creditCardToken: req.body.creditCardToken
             };
             next();
         },
@@ -21,7 +23,9 @@ export default (route: Router) => {
             try {
                 const creditCardServiceInstance = Container.get(creditCardService);
                 const request: Interfaces.CreateCreditCard = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                    mallId: +res.locals.data.mallId,
+                    clientId: +res.locals.data.clientId,
+                    creditCardToken: res.locals.data.creditCardToken
                 }
                 await creditCardServiceInstance.createCreditCard(request);
                 res.status(201).json({ message: "Cartão de crédito cadastrado com sucesso." });
@@ -32,11 +36,13 @@ export default (route: Router) => {
             }
         });
 
-    route.post('/clients/:clientId/credit-cards/:creditCardId/disable',
+    route.post('/clients/:clientId/credit-cards/:id/disable',
         middlewares.thirdPartyAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                mallId: req.query.mallId,
+                clientId: req.params.clientId,
+                id: req.params.id
             };
             next();
         },
@@ -48,7 +54,9 @@ export default (route: Router) => {
             try {
                 const creditCardServiceInstance = Container.get(creditCardService);
                 const request: Interfaces.DisableCreditCard = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                    mallId: +res.locals.data.mallId,
+                    clientId: +res.locals.data.clientId,
+                    id: +res.locals.data.id
                 }
                 await creditCardServiceInstance.disableCreditCard(request);
                 res.status(200).json({ message: "Cartão de crédito desabilitado com sucesso." });
@@ -63,21 +71,23 @@ export default (route: Router) => {
         middlewares.thirdPartyAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                mallId: req.query.mallId,
+                clientId: req.params.clientId
             };
             next();
         },
-        middlewares.validateInput('getAllCreditCardsSchema'),
+        middlewares.validateInput('getCreditCardsSchema'),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
             logger.debug('Chamando endpoint para listar cartões de crédito do cliente');
             try {
                 const creditCardServiceInstance = Container.get(creditCardService);
-                const request: Interfaces.GetAllCreditCards = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                const request: Interfaces.GetCreditCards = {
+                    mallId: +res.locals.data.mallId,
+                    clientId: +res.locals.data.clientId
                 }
-                const response = await creditCardServiceInstance.getAllCreditCards(request);
+                const response = await creditCardServiceInstance.getCreditCards(request);
                 res.status(200).json(response);
             } catch (e) {
                 // @ts-ignore
