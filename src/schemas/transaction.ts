@@ -3,8 +3,29 @@ const createTransactionSchema =
     "title": "createTransactionSchema",
     "type": "object",
     "properties": {
+        "storeId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "value": {
+            "type": "number"
+        },
+        "installments": {
+            "type": "number"
+        },
+        "creditCardId": {
+            "type": "number"
+        }
     },
-    "required": []
+    "required": ["storeId", "mallId", "clientId", "value", "creditCardId"]
 }
 
 const acceptTransactionSchema =

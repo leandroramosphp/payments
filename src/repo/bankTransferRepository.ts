@@ -18,7 +18,7 @@ export class bankTransferRepository {
           await sequelize.query(`
           INSERT INTO store_payment_bank_transfer_item (origin, value, bank_transfer_id, external_id)
           SELECT id, :value, :bankTransferId, :externalId
-          FROM store_payment_bank_transfer_origin
+          FROM payment_origin
           WHERE name = :origin
           `, {
             replacements: {

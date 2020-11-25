@@ -9,7 +9,12 @@ export default (route: Router) => {
         middlewares.thirdPartyAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                storeId: req.params.id,
+                clientId: req.body.clientId,
+                mallId: req.query.mallId,
+                value: req.body.value,
+                installments: req.body.installments,
+                creditCardId: req.body.creditCardId
             };
             next();
         },
@@ -21,7 +26,12 @@ export default (route: Router) => {
             try {
                 const transactionServiceInstance = Container.get(transactionService);
                 const request: Interfaces.CreateTransaction = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                    storeId: +res.locals.data.storeId,
+                    clientId: res.locals.data.clientId,
+                    mallId: +res.locals.data.mallId,
+                    value: res.locals.data.value,
+                    installments: res.locals.data.installments,
+                    creditCardId: res.locals.data.creditCardId
                 }
                 await transactionServiceInstance.createTransaction(request);
                 res.status(201).json({ message: "Transação cadastrada com sucesso." });

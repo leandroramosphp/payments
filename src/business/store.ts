@@ -7,7 +7,7 @@ export default class store {
         this._storeRepository = new storeRepository();
     }
 
-    async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string }> {
+    async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string, name: string, storePaymentId: number }> {
         try {
             return await this._storeRepository.getStore(input);
         } catch (e) {
