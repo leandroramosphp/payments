@@ -80,7 +80,7 @@ export default class transactionService {
                 externalId: transaction.id
             });
 
-            await this._transactionController.createTransaction(clientData.clientPaymentId, storeData.storePaymentId, transactions);
+            await this._transactionController.createTransaction(clientData.clientPaymentId, storeData.storePaymentId, input.installments, transactions);
 
             return Promise.resolve();
         }

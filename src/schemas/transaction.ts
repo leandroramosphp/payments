@@ -12,8 +12,7 @@ const createTransactionSchema =
             "pattern": "^[0-9]+$"
         },
         "clientId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "number"
         },
         "value": {
             "type": "number"

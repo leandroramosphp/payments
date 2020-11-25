@@ -8,9 +8,9 @@ export default class transaction {
         this._transactionRepository = new transactionRepository();
     }
 
-    async createTransaction(clientPaymentId: number, storePaymentId: number, transactions: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
+    async createTransaction(clientPaymentId: number, storePaymentId: number, installments: number, transactions: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
         try {
-            return Promise.resolve(await this._transactionRepository.createTransaction(clientPaymentId, storePaymentId, transactions));
+            return Promise.resolve(await this._transactionRepository.createTransaction(clientPaymentId, storePaymentId, installments, transactions));
         } catch (e) {
             return Promise.reject(e);
         }

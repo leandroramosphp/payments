@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS payment (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
     status TEXT NOT NULL CHECK (status IN ('pending', 'succeeded', 'refunded')) DEFAULT 'pending',
     invoice_number TEXT,
+    installments INTEGER NOT NULL DEFAULT 1,
     CONSTRAINT client_payment_id_fk FOREIGN KEY(client_payment_id) REFERENCES client_payment(id),
     CONSTRAINT store_payment_id_fk FOREIGN KEY(store_payment_id) REFERENCES store_payment(id)
 );

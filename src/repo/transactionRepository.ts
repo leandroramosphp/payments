@@ -2,17 +2,18 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
 
 export class transactionRepository {
-    async createTransaction(clientPaymentId: number, storePaymentId: number, transactions: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
+    async createTransaction(clientPaymentId: number, storePaymentId: number, installments: number, transactions: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
         try {
             return await sequelize.transaction(async function (t) {
                 const transaction: { id: number } = (await sequelize.query(`
-                    INSERT INTO payment (client_payment_id, store_payment_id)
-                    VALUES(:clientPaymentId, :storePaymentId)
+                    INSERT INTO payment (client_payment_id, store_payment_id, installments)
+                    VALUES(:clientPaymentId, :storePaymentId, :installments)
                     RETURNING id
                 `, {
                     replacements: {
                         clientPaymentId: clientPaymentId,
-                        storePaymentId: storePaymentId
+                        storePaymentId: storePaymentId,
+                        installments: installments
                     }, type: QueryTypes.INSERT, transaction: t
                 }))[0][0];
                 for (let i = 0; i < transactions.length; i++) {
