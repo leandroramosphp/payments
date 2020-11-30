@@ -5,11 +5,14 @@ import transactionService from '../../../services/transaction';
 import middlewares from '../../middlewares';
 
 export default (route: Router) => {
-    route.post('/stores/:id/transactions/:id/accept',
-        middlewares.thirdPartyAuth(),
+    route.post('/stores/:storeId/transactions/:id/accept',
+        middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                storeId: req.params.storeId,
+                mallId: req.query.mallId,
+                id: req.params.id,
+                invoiceNumber: req.body.invoiceNumber
             };
             next();
         },
@@ -21,7 +24,10 @@ export default (route: Router) => {
             try {
                 const transactionServiceInstance = Container.get(transactionService);
                 const request: Interfaces.AcceptTransaction = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId,
+                    id: +res.locals.data.id,
+                    invoiceNumber: res.locals.data.invoiceNumber
                 }
                 await transactionServiceInstance.acceptTransaction(request);
                 res.status(200).json({ message: "Transação foi aceita com sucesso." });
@@ -32,11 +38,13 @@ export default (route: Router) => {
             }
         });
 
-    route.post('/stores/:id/transactions/:id/reject',
-        middlewares.thirdPartyAuth(),
+    route.post('/stores/:storeId/transactions/:id/reject',
+        middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                storeId: req.params.storeId,
+                mallId: req.query.mallId,
+                id: req.params.id
             };
             next();
         },
@@ -48,7 +56,9 @@ export default (route: Router) => {
             try {
                 const transactionServiceInstance = Container.get(transactionService);
                 const request: Interfaces.RejectTransaction = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId,
+                    id: +res.locals.data.id,
                 }
                 await transactionServiceInstance.rejectTransaction(request);
                 res.status(200).json({ message: "Transação rejeitada com sucesso." });
@@ -60,10 +70,20 @@ export default (route: Router) => {
         });
 
     route.get('/stores/:id/transactions',
-        middlewares.thirdPartyAuth(),
+        middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                /* TODO: Adicionar parâmetros para validação */
+                storeId: req.params.id,
+                mallId: req.query.mallId,
+                origin: req.query.origin,
+                status: req.query.status,
+                startDate: req.query.startDate,
+                endDate: req.query.endDate,
+                search: req.query.search,
+                limit: req.query.limit,
+                page: req.query.page,
+                column: req.query.column,
+                order: req.query.order
             };
             next();
         },
@@ -74,8 +94,18 @@ export default (route: Router) => {
             logger.debug('Chamando endpoint para buscar todas as transações do lojista');
             try {
                 const transactionServiceInstance = Container.get(transactionService);
-                const request: Interfaces.GetAllTransactions = {
-                    /* TODO: Adicionar parâmetros para executar serviço */
+                const request: Interfaces.GetAllTransactionsInput = {
+                    storeId: +res.locals.data.storeId,
+                    mallId: +res.locals.data.mallId,
+                    origin: res.locals.data.origin,
+                    status: res.locals.data.status,
+                    startDate: res.locals.data.startDate,
+                    endDate: res.locals.data.endDate,
+                    search: res.locals.data.search,
+                    limit: +res.locals.data.limit,
+                    page: +res.locals.data.page,
+                    column: +res.locals.data.column,
+                    order: res.locals.data.order
                 }
                 const response = await transactionServiceInstance.getAllTransactions(request);
                 res.status(200).json(response);

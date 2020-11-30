@@ -55,7 +55,7 @@ export default class bankTransferService {
             transfers.push({
                 value: input.value,
                 externalId: transfer.id,
-                origin: 'ZOOP'
+                origin: 'creditcard'
             });
 
             await this._bankTransferController.createBankTransfer(input.bankAccountId, transfers);
@@ -69,8 +69,10 @@ export default class bankTransferService {
         }
     }
 
-    public getBankTransfers = async (input: Interfaces.GetBankTransfers): Promise<Array<{ bank_name: string, account_number: string, created_at: string, value: number }>> => {
+    public getBankTransfers = async (input: Interfaces.GetBankTransfers): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> => {
         try {
+            this.logger.silly('Calling getBankTransfers');
+
             return await this._bankTransferController.getBankTransfers(input.storeId, input.mallId);
         }
         catch (e) {

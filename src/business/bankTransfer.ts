@@ -15,7 +15,7 @@ export default class bankTransfer {
         }
     }
 
-    async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ bank_name: string, account_number: string, created_at: string, value: number }>> {
+    async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> {
         try {
             var bankTransfers = await this._bankTransferRepository.getBankTransfers(storeId, mallId);
             if (!bankTransfers.length) {

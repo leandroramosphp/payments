@@ -52,37 +52,25 @@ CREATE TABLE IF NOT EXISTS store_payment_bank_account (
     CONSTRAINT store_payment_bank_account_store_payment_id_fk FOREIGN KEY(external_store_payment_id) REFERENCES external_store_payment(id)
 );
 
-CREATE TABLE IF NOT EXISTS payment_origin (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE
-);
-
-INSERT INTO payment_origin (name)
-VALUES
-    ('ZOOP'),
-    ('MONERI')
-ON CONFLICT DO NOTHING;
-
 CREATE TABLE IF NOT EXISTS payment (
     id SERIAL PRIMARY KEY,    
-    store_payment_id INTEGER NOT NULL,
+    external_store_payment_id INTEGER NOT NULL,
     client_payment_id INTEGER NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
     status TEXT NOT NULL CHECK (status IN ('pending', 'succeeded', 'refunded')) DEFAULT 'pending',
     invoice_number TEXT,
     installments INTEGER NOT NULL DEFAULT 1,
     CONSTRAINT client_payment_id_fk FOREIGN KEY(client_payment_id) REFERENCES client_payment(id),
-    CONSTRAINT store_payment_id_fk FOREIGN KEY(store_payment_id) REFERENCES store_payment(id)
+    CONSTRAINT external_store_payment_id_fk FOREIGN KEY(external_store_payment_id) REFERENCES external_store_payment(id)
 );
 
 CREATE TABLE IF NOT EXISTS payment_item (
     id SERIAL PRIMARY KEY,
-    origin INTEGER NOT NULL,
+    origin TEXT NOT NULL CHECK (origin IN ('creditcard', 'cashback')),
     value INTEGER NOT NULL,
     payment_id INTEGER NOT NULL,
     external_id TEXT NOT NULL,
-    CONSTRAINT payment_id_fk FOREIGN KEY(payment_id) REFERENCES payment(id),
-    CONSTRAINT origin_fk FOREIGN KEY(origin) REFERENCES payment_origin(id)
+    CONSTRAINT payment_id_fk FOREIGN KEY(payment_id) REFERENCES payment(id)
 );
 
 CREATE TABLE IF NOT EXISTS store_payment_bank_transfer (
@@ -94,12 +82,11 @@ CREATE TABLE IF NOT EXISTS store_payment_bank_transfer (
 
 CREATE TABLE IF NOT EXISTS store_payment_bank_transfer_item (
     id SERIAL PRIMARY KEY,
-    origin INTEGER NOT NULL,
+    origin TEXT NOT NULL CHECK (origin IN ('creditcard', 'cashback')),
     value INTEGER NOT NULL,
     bank_transfer_id INTEGER NOT NULL,
     external_id TEXT NOT NULL,
-    CONSTRAINT bank_transfer_id_fk FOREIGN KEY(bank_transfer_id) REFERENCES store_payment_bank_transfer(id),
-    CONSTRAINT origin_fk FOREIGN KEY(origin) REFERENCES payment_origin(id)
+    CONSTRAINT bank_transfer_id_fk FOREIGN KEY(bank_transfer_id) REFERENCES store_payment_bank_transfer(id)
 );
 
 INSERT INTO __db_version(version_date, author, comments) VALUES('2020-11-09', 'Carlos Moreira', 'Criação das tabelas para integração com zoop');

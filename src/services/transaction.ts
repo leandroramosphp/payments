@@ -75,12 +75,12 @@ export default class transactionService {
             )).data;
 
             transactions.push({
-                origin: 'ZOOP',
+                origin: 'creditcard',
                 value: input.value,
                 externalId: transaction.id
             });
 
-            await this._transactionController.createTransaction(clientData.clientPaymentId, storeData.storePaymentId, input.installments, transactions);
+            await this._transactionController.createTransaction(clientData.clientPaymentId, storeData.id_payment, input.installments, transactions);
 
             return Promise.resolve();
         }
@@ -89,30 +89,99 @@ export default class transactionService {
         }
     }
 
-    public acceptTransaction = async (input: Interfaces.AcceptTransaction): Promise<any> => {
+    public acceptTransaction = async (input: Interfaces.AcceptTransaction): Promise<void> => {
         try {
             this.logger.silly('Calling acceptTransaction');
-            /* TODO */
+
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+            const isAccepted = await this._transactionController.acceptTransaction(input.id, input.invoiceNumber);
+            if (!isAccepted) {
+                return Promise.reject({ message: "Transação não existente ou já aprovada/rejeitada.", status: 400 });
+            }
+            return Promise.resolve();
         }
         catch (e) {
             return Promise.reject(e);
         }
     }
 
-    public rejectTransaction = async (input: Interfaces.RejectTransaction): Promise<any> => {
+    public rejectTransaction = async (input: Interfaces.RejectTransaction): Promise<void> => {
         try {
             this.logger.silly('Calling rejectTransaction');
-            /* TODO */
+
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+
+            const transactionData = await this._transactionController.getPendingTransaction(input.id);
+
+            if (!transactionData.length) {
+                return Promise.reject({ message: "Transação não existente ou já aprovada/rejeitada.", status: 400 });
+            }
+
+            for (let i = 0; i < transactionData.length; i++) {
+                switch (transactionData[i].origin) {
+                    case 'creditcard':
+                        await axios.post(
+                            config.PaymentsApi.host + config.PaymentsApi.endpoints.reverseTransaction
+                                .replace('{transaction_id}', transactionData[i].externalId),
+                            {
+                                on_behalf_of: storeData.id_payment,
+                                amount: transactionData[i].value
+                            },
+                            {
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                auth: {
+                                    username: config.PaymentsApi.username,
+                                    password: config.PaymentsApi.password
+                                },
+                            }
+                        );
+                        break;
+                    case 'cashback':
+                        /* TODO: Implementar lógica para estorno de cashback */
+                        break;
+                    default:
+                        break;
+                }
+            }
+            const isRejected = Promise.resolve(await this._transactionController.rejectTransaction(input.id));
+
+            if (!isRejected) {
+                return Promise.reject({ message: "Transação não existente ou já aprovada/rejeitada.", status: 400 });
+            }
+            return Promise.resolve();
         }
         catch (e) {
+            if (e?.response?.data?.error?.message === 'Transactions with status canceled and with confirmed flag setted to 1 are not voidable') {
+                return Promise.reject({ message: "Transação já foi estornada na API externa.", status: 400 });
+            }
+            if (e?.response?.data?.error?.type === 'invalid_request_error') {
+                return Promise.reject({ message: "Tentativa de estornar valor maior que o valor original na API externa.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
 
-    public getAllTransactions = async (input: Interfaces.GetAllTransactions): Promise<any> => {
+    public getAllTransactions = async (input: Interfaces.GetAllTransactionsInput): Promise<{ data: Array<Interfaces.GetAllTransactionsOutput>, total: number }> => {
         try {
             this.logger.silly('Calling getAllTransactions');
-            /* TODO */
+
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+
+            return await this._transactionController.getAllTransactions(input);
         }
         catch (e) {
             return Promise.reject(e);

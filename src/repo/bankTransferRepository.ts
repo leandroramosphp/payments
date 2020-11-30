@@ -17,9 +17,7 @@ export class bankTransferRepository {
         for (let i = 0; i < transfers.length; i++) {
           await sequelize.query(`
           INSERT INTO store_payment_bank_transfer_item (origin, value, bank_transfer_id, external_id)
-          SELECT id, :value, :bankTransferId, :externalId
-          FROM payment_origin
-          WHERE name = :origin
+          VALUES(:origin, :value, :bankTransferId, :externalId)
           `, {
             replacements: {
               value: transfers[i].value,
@@ -36,36 +34,30 @@ export class bankTransferRepository {
     }
   }
 
-  async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ bank_name: string, account_number: string, created_at: string, value: number }>> {
+  async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> {
     try {
       return await sequelize.query(`
         SELECT
-            bank_name,
-            account_number,
-            created_at,
-            value
-        FROM (
-            SELECT
-                spba.id,
-                spba.bank_name,
-                spba.account_number,
-                spbt.created_at,
-                SUM(spbti.value) AS value
-            FROM
-                external_store_payment esp
-                JOIN store_payment sp ON (esp.id = sp.id_payment)
-                JOIN store s ON (sp.store_id = s.id)
-                LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
-                LEFT JOIN store_payment_bank_transfer spbt ON (spba.id = spbt.bank_account_id)
-                LEFT JOIN store_payment_bank_transfer_item spbti ON (spbt.id = spbti.bank_transfer_id)
-            WHERE
-                s.id = :storeId
-                AND s.mall_id = :mallId
-            GROUP BY
-                1,
-                2,
-                3,
-                4) AS result
+            spba.id,
+            spba.bank_name,
+            spba.account_number,
+            spbt.created_at,
+            SUM(spbti.value) AS value
+        FROM
+            external_store_payment esp
+            JOIN store_payment sp ON (esp.id = sp.id_payment)
+            JOIN store s ON (sp.store_id = s.id)
+            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
+            LEFT JOIN store_payment_bank_transfer spbt ON (spba.id = spbt.bank_account_id)
+            LEFT JOIN store_payment_bank_transfer_item spbti ON (spbt.id = spbti.bank_transfer_id)
+        WHERE
+            s.id = :storeId
+            AND s.mall_id = :mallId
+        GROUP BY
+            1,
+            2,
+            3,
+            4
           `, {
         replacements: {
           storeId: storeId,
