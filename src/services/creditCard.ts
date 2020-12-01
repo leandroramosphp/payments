@@ -59,7 +59,19 @@ export default class creditCardService {
         try {
             this.logger.silly('Calling disableCreditCard');
 
+            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
+
+            if (!clientData?.id_payment) {
+                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
+            }
+
             const creditCard = await this._creditCardController.getCreditCard(input.id, input.clientId, input.mallId);
+
+            if (!creditCard) {
+                return Promise.reject({ message: "Cartão de crédito não cadastrado.", status: 400 });
+            } else if (creditCard.enabled === false) {
+                return Promise.reject({ message: "Cartão de crédito desabilitado.", status: 400 });
+            }
 
             await axios.delete(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.deleteCreditCard
@@ -90,6 +102,12 @@ export default class creditCardService {
     public getCreditCards = async (input: Interfaces.GetCreditCards): Promise<Array<Interfaces.CreditCardDataOutput>> => {
         try {
             this.logger.silly('Calling getCreditCards');
+
+            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
+
+            if (!clientData?.id_payment) {
+                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
+            }
 
             const output = await this._creditCardController.getCreditCards(input.clientId, input.mallId);
 

@@ -20,9 +20,6 @@ export default class client {
         try {
             return await this._clientRepository.registerClient(idPayment, input);
         } catch (e) {
-            if (e?.message === "Cliente já foi cadastrado.") {
-                return Promise.reject({ message: e.message, status: 400 });
-            }
             return Promise.reject(e);
         }
     }

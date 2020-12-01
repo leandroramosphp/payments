@@ -40,7 +40,13 @@ export default class transactionService {
                 return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
             }
 
-            const creditCardData = (await this._creditCardController.getCreditCard(input.creditCardId, input.clientId, input.mallId));
+            const creditCard = await this._creditCardController.getCreditCard(input.creditCardId, input.clientId, input.mallId);
+
+            if (!creditCard) {
+                return Promise.reject({ message: "Cartão de crédito não cadastrado.", status: 400 });
+            } else if (creditCard.enabled === false) {
+                return Promise.reject({ message: "Cartão de crédito desabilitado.", status: 400 });
+            }
 
             var transactions: Array<{ origin: string, value: number, externalId: string }> = [];
 
@@ -56,7 +62,7 @@ export default class transactionService {
                         usage: "single_use",
                         amount: input.value,
                         card: {
-                            id: creditCardData.id_payment
+                            id: creditCard.id_payment
                         },
                         installment_plan: {
                             number_installments: input.installments || 1

@@ -4,30 +4,37 @@ import axios from 'axios';
 import config from '../config';
 import bankTransferModel from '../business/bankTransfer';
 import bankAccountModel from '../business/bankAccount';
-import storeService from './store';
+import storeModel from '../business/store';
 
 @Service()
 export default class bankTransferService {
     private _bankAccountController: bankAccountModel;
     private _bankTransferController: bankTransferModel;
+    private _storeController: storeModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
         this._bankAccountController = new bankAccountModel();
         this._bankTransferController = new bankTransferModel();
+        this._storeController = new storeModel();
     }
 
     public createBankTransfer = async (input: Interfaces.CreateBankTransfer): Promise<void> => {
         try {
             this.logger.silly('Calling createBankTransfer');
 
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+
             const bankAccount = await this._bankAccountController.getBankAccount(input.bankAccountId, input.storeId, input.mallId);
 
-            const storeServiceInstance = Container.get(storeService);
-            const balance = (await storeServiceInstance.getStoreBalance({ storeId: input.storeId, mallId: input.mallId })).balance;
-
-            if (input.value > balance) {
-                return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
+            if (!bankAccount) {
+                return Promise.reject({ message: "Conta bancária não cadastrada.", status: 400 });
+            } else if (bankAccount.enabled === false) {
+                return Promise.reject({ message: "Conta bancária desabilitada.", status: 400 });
             }
 
             /* TODO:
@@ -63,8 +70,11 @@ export default class bankTransferService {
             return Promise.resolve();
         }
         catch (e) {
-            /* TODO:
-                Adicionar exceção para caso onde valor da transferência é maior que saldo disponível para transferência */
+            /* TODO
+                Corrigir tratamento de erro para saldo insuficiente */
+            if (e?.response?.data?.error?.message === 'Sender is delinquent') {
+                return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
@@ -72,6 +82,12 @@ export default class bankTransferService {
     public getBankTransfers = async (input: Interfaces.GetBankTransfers): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> => {
         try {
             this.logger.silly('Calling getBankTransfers');
+
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
 
             return await this._bankTransferController.getBankTransfers(input.storeId, input.mallId);
         }

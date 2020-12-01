@@ -40,10 +40,11 @@ export class bankAccountRepository {
             external_store_payment esp
             JOIN store_payment sp ON (esp.id = sp.id_payment)
             JOIN store s ON (sp.store_id = s.id)
-            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id AND spba.id = :id)
+            JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
         WHERE
             s.id = :storeId
             AND s.mall_id = :mallId
+            AND spba.id = :id
         `, {
         replacements: {
           storeId: storeId,
@@ -94,10 +95,11 @@ export class bankAccountRepository {
             external_store_payment esp
             JOIN store_payment sp ON (esp.id = sp.id_payment)
             JOIN store s ON (sp.store_id = s.id)
-            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id AND spba.enabled = true)
+            JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
           WHERE
             s.id = :storeId
             AND s.mall_id = :mallId
+            AND spba.enabled = true
           `, {
         replacements: {
           storeId: storeId,

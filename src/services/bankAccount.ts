@@ -62,7 +62,19 @@ export default class bankAccountService {
         try {
             this.logger.silly('Calling disableBankAccount');
 
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
+
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+
             const bankAccount = await this._bankAccountController.getBankAccount(input.id, input.storeId, input.mallId);
+
+            if (!bankAccount) {
+                return Promise.reject({ message: "Conta bancária não cadastrada.", status: 400 });
+            } else if (bankAccount.enabled === false) {
+                return Promise.reject({ message: "Conta bancária desabilitada.", status: 400 });
+            }
 
             await axios.delete(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.deleteBankAccount
@@ -94,9 +106,13 @@ export default class bankAccountService {
         try {
             this.logger.silly('Calling getBankAccounts');
 
-            const output = await this._bankAccountController.getBankAccounts(input.storeId, input.mallId);
+            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
 
-            return Promise.resolve(output);
+            if (!storeData?.id_payment) {
+                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
+            }
+
+            return Promise.resolve(await this._bankAccountController.getBankAccounts(input.storeId, input.mallId));
         }
         catch (e) {
             return Promise.reject(e);

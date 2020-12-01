@@ -17,11 +17,7 @@ export default class bankTransfer {
 
     async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> {
         try {
-            var bankTransfers = await this._bankTransferRepository.getBankTransfers(storeId, mallId);
-            if (!bankTransfers.length) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
-            return Promise.resolve(bankTransfers.filter(bt => { return bt.value != null }));
+            return Promise.resolve(await this._bankTransferRepository.getBankTransfers(storeId, mallId));
         } catch (e) {
             return Promise.reject(e);
         }

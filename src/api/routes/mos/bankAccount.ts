@@ -56,7 +56,7 @@ export default (route: Router) => {
                 const request: Interfaces.DisableBankAccount = {
                     id: +res.locals.data.id,
                     storeId: +res.locals.data.storeId,
-                    mallId: +req.locals.data.mallId
+                    mallId: +res.locals.data.mallId
                 };
                 await bankAccountServiceInstance.disableBankAccount(request);
                 res.status(200).json({ message: "Conta bancária desabilitada com sucesso." });

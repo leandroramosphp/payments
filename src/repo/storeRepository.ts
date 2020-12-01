@@ -78,12 +78,6 @@ export class storeRepository {
               storeId: storeId,
               idPayment: idPayment
             }, type: QueryTypes.INSERT, transaction: t
-          }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
-            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
-              return Promise.reject({ message: "Loja já foi cadastrada." });
-            } else {
-              return Promise.reject(e);
-            }
           });
         } else {
           await sequelize.query(`
@@ -94,12 +88,6 @@ export class storeRepository {
               storeId: storeId,
               idPayment: externalStorePayment.id
             }, type: QueryTypes.INSERT, transaction: t
-          }).catch(UniqueConstraintError, (e: UniqueConstraintError) => {
-            if (e.parent.message === `duplicate key value violates unique constraint "store_payment_store_id_key"`) {
-              return Promise.reject({ message: "Loja já foi cadastrada." });
-            } else {
-              return Promise.reject(e);
-            }
           });
         }
 

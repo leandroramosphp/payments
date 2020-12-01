@@ -26,15 +26,7 @@ export default class bankAccount {
 
     async getBankAccount(id: number, storeId: number, mallId: number): Promise<{ bank_account_id: string, enabled: boolean }> {
         try {
-            const bankAccount = await this._bankAccountRepository.getBankAccount(id, storeId, mallId);
-            if (!bankAccount) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            } else if (!bankAccount.bank_account_id) {
-                return Promise.reject({ message: "Conta bancária não cadastrada.", status: 400 });
-            } else if (bankAccount.enabled === false) {
-                return Promise.reject({ message: "Conta bancária desabilitada.", status: 400 });
-            }
-            return Promise.resolve(bankAccount);
+            return Promise.resolve(await this._bankAccountRepository.getBankAccount(id, storeId, mallId));
         } catch (e) {
             return Promise.reject(e);
         }
@@ -42,11 +34,7 @@ export default class bankAccount {
 
     async getBankAccounts(storeId: number, mallId: number): Promise<Array<Interfaces.BankAccountDataOutput>> {
         try {
-            const bankAccounts = await this._bankAccountRepository.getBankAccounts(storeId, mallId);
-            if (!bankAccounts.length) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
-            return Promise.resolve(bankAccounts.filter(ba => { return ba.id != null }));
+            return Promise.resolve(await this._bankAccountRepository.getBankAccounts(storeId, mallId));
         } catch (e) {
             return Promise.reject(e);
         }

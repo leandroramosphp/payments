@@ -27,9 +27,6 @@ export default class store {
         try {
             return await this._storeRepository.registerStore(idPayment, storeId);
         } catch (e) {
-            if (e?.message === "Loja já foi cadastrada.") {
-                return Promise.reject({ message: e.message, status: 400 });
-            }
             return Promise.reject(e);
         }
     }

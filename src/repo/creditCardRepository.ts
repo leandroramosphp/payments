@@ -36,10 +36,11 @@ export class creditCardRepository {
                 FROM
                     client_payment cp
                     JOIN client_mall cm USING (client_id, mall_id)
-                    LEFT JOIN client_payment_credit_card cpcc ON (cp.id = cpcc.client_payment_id AND cpcc.id = :id)
+                    JOIN client_payment_credit_card cpcc ON (cp.id = cpcc.client_payment_id)
                 WHERE
                     cm.client_id = :clientId
                     AND cm.mall_id = :mallId
+                    AND cpcc.id = :id
               `, {
                 replacements: {
                     clientId: clientId,
@@ -89,10 +90,11 @@ export class creditCardRepository {
                 FROM
                     client_payment cp
                     JOIN client_mall cm USING (client_id, mall_id)
-                    LEFT JOIN client_payment_credit_card cpcc ON (cp.id = cpcc.client_payment_id AND cpcc.enabled = true)
+                    JOIN client_payment_credit_card cpcc ON (cp.id = cpcc.client_payment_id)
                 WHERE
                     cm.client_id = :clientId
                     AND cm.mall_id = :mallId
+                    AND cpcc.enabled = true
               `, {
                 replacements: {
                     clientId: clientId,

@@ -42,14 +42,14 @@ export class bankTransferRepository {
             spba.bank_name,
             spba.account_number,
             spbt.created_at,
-            SUM(spbti.value) AS value
+            SUM(spbti.value)::INTEGER AS value
         FROM
             external_store_payment esp
             JOIN store_payment sp ON (esp.id = sp.id_payment)
             JOIN store s ON (sp.store_id = s.id)
-            LEFT JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
-            LEFT JOIN store_payment_bank_transfer spbt ON (spba.id = spbt.bank_account_id)
-            LEFT JOIN store_payment_bank_transfer_item spbti ON (spbt.id = spbti.bank_transfer_id)
+            JOIN store_payment_bank_account spba ON (esp.id = spba.external_store_payment_id)
+            JOIN store_payment_bank_transfer spbt ON (spba.id = spbt.bank_account_id)
+            JOIN store_payment_bank_transfer_item spbti ON (spbt.id = spbti.bank_transfer_id)
         WHERE
             s.id = :storeId
             AND s.mall_id = :mallId
