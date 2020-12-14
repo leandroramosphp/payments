@@ -34,6 +34,7 @@ export default async ({ app }: { app: express.Application }) => {
 
     app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
         res.status(err.status || 500);
+        console.log(err);
         if (!err.status || err.status === 500) {
             res.json({
                 errors: {

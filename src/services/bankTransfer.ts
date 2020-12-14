@@ -4,30 +4,21 @@ import axios from 'axios';
 import config from '../config';
 import bankTransferModel from '../business/bankTransfer';
 import bankAccountModel from '../business/bankAccount';
-import storeModel from '../business/store';
 
 @Service()
 export default class bankTransferService {
     private _bankAccountController: bankAccountModel;
     private _bankTransferController: bankTransferModel;
-    private _storeController: storeModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
         this._bankAccountController = new bankAccountModel();
         this._bankTransferController = new bankTransferModel();
-        this._storeController = new storeModel();
     }
 
     public createBankTransfer = async (input: Interfaces.CreateBankTransfer): Promise<void> => {
         try {
             this.logger.silly('Calling createBankTransfer');
-
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
-
-            if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
 
             const bankAccount = await this._bankAccountController.getBankAccount(input.bankAccountId, input.storeId, input.mallId);
 
@@ -79,15 +70,9 @@ export default class bankTransferService {
         }
     }
 
-    public getBankTransfers = async (input: Interfaces.GetBankTransfers): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> => {
+    public getBankTransfers = async (input: Interfaces.GetBankTransfers): Promise<Array<{ id: number, bankName: string, accountNumber: string, createdAt: string, value: number }>> => {
         try {
             this.logger.silly('Calling getBankTransfers');
-
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
-
-            if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
 
             return await this._bankTransferController.getBankTransfers(input.storeId, input.mallId);
         }

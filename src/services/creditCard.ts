@@ -3,34 +3,25 @@ import * as Interfaces from '../interfaces/ICreditCard';
 import axios from 'axios';
 import config from '../config';
 import creditCardModel from '../business/creditCard';
-import clientModel from '../business/client';
 
 @Service()
 export default class creditCardService {
     private _creditCardController: creditCardModel;
-    private _clientController: clientModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
         this._creditCardController = new creditCardModel();
-        this._clientController = new clientModel();
     }
 
     public createCreditCard = async (input: Interfaces.CreateCreditCard): Promise<void> => {
         try {
             this.logger.silly('Calling createCreditCard');
 
-            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
-
-            if (!clientData?.id_payment) {
-                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
-            }
-
             const client: Interfaces.CreditCardDataInput = (await axios.post(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.createCreditCard,
                 {
                     token: input.creditCardToken,
-                    customer: clientData.id_payment
+                    customer: input.id_payment
                 },
                 {
                     headers: {
@@ -43,7 +34,7 @@ export default class creditCardService {
                 }
             )).data;
 
-            await this._creditCardController.createCreditCard(client, clientData.clientPaymentId);
+            await this._creditCardController.createCreditCard(client, input.clientPaymentId);
 
             return Promise.resolve();
         }
@@ -58,12 +49,6 @@ export default class creditCardService {
     public disableCreditCard = async (input: Interfaces.DisableCreditCard): Promise<any> => {
         try {
             this.logger.silly('Calling disableCreditCard');
-
-            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
-
-            if (!clientData?.id_payment) {
-                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
-            }
 
             const creditCard = await this._creditCardController.getCreditCard(input.id, input.clientId, input.mallId);
 
@@ -102,12 +87,6 @@ export default class creditCardService {
     public getCreditCards = async (input: Interfaces.GetCreditCards): Promise<Array<Interfaces.CreditCardDataOutput>> => {
         try {
             this.logger.silly('Calling getCreditCards');
-
-            const clientData = (await this._clientController.getClient({ clientId: input.clientId, mallId: input.mallId }));
-
-            if (!clientData?.id_payment) {
-                return Promise.reject({ message: "Cliente não cadastrado.", status: 400 });
-            }
 
             const output = await this._creditCardController.getCreditCards(input.clientId, input.mallId);
 

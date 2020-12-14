@@ -1,6 +1,6 @@
-const createTransactionSchema =
+const createPaymentSchema =
 {
-    "title": "createTransactionSchema",
+    "title": "createPaymentSchema",
     "type": "object",
     "properties": {
         "storeId": {
@@ -27,9 +27,9 @@ const createTransactionSchema =
     "required": ["storeId", "mallId", "clientId", "value", "creditCardId"]
 }
 
-const acceptTransactionSchema =
+const acceptPaymentSchema =
 {
-    "title": "acceptTransactionSchema",
+    "title": "acceptPaymentSchema",
     "type": "object",
     "properties": {
         "storeId": {
@@ -52,9 +52,9 @@ const acceptTransactionSchema =
     "required": ["storeId", "mallId", "id", "invoiceNumber"]
 }
 
-const rejectTransactionSchema =
+const rejectPaymentSchema =
 {
-    "title": "rejectTransactionSchema",
+    "title": "rejectPaymentSchema",
     "type": "object",
     "properties": {
         "storeId": {
@@ -73,9 +73,9 @@ const rejectTransactionSchema =
     "required": ["storeId", "mallId", "id"]
 }
 
-const getAllTransactionsSchema =
+const getAllPaymentsSchema =
 {
-    "title": "getAllTransactionsSchema",
+    "title": "getAllPaymentsSchema",
     "type": "object",
     "properties": {
         "storeId": {
@@ -137,19 +137,19 @@ const getAllTransactionsSchema =
 
 export default [
     {
-        name: "createTransactionSchema",
-        schema: createTransactionSchema
+        name: "createPaymentSchema",
+        schema: createPaymentSchema
     },
     {
-        name: "acceptTransactionSchema",
-        schema: acceptTransactionSchema
+        name: "acceptPaymentSchema",
+        schema: acceptPaymentSchema
     },
     {
-        name: "rejectTransactionSchema",
-        schema: rejectTransactionSchema
+        name: "rejectPaymentSchema",
+        schema: rejectPaymentSchema
     },
     {
-        name: "getAllTransactionsSchema",
-        schema: getAllTransactionsSchema
+        name: "getAllPaymentsSchema",
+        schema: getAllPaymentsSchema
     }
 ]

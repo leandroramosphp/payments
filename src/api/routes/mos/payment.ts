@@ -1,11 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../../interfaces/ITransaction';
-import transactionService from '../../../services/transaction';
+import * as Interfaces from '../../../interfaces/IPayment';
+import paymentService from '../../../services/payment';
 import middlewares from '../../middlewares';
 
 export default (route: Router) => {
-    route.post('/stores/:storeId/transactions/:id/accept',
+    route.post('/stores/:storeId/payments/:id/accept',
         middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
@@ -16,29 +16,30 @@ export default (route: Router) => {
             };
             next();
         },
-        middlewares.validateInput('acceptTransactionSchema'),
+        middlewares.validateInput('acceptPaymentSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
-            logger.debug('Chamando endpoint para aprovar transação');
+            logger.debug('Chamando endpoint para aprovar pagamento');
             try {
-                const transactionServiceInstance = Container.get(transactionService);
-                const request: Interfaces.AcceptTransaction = {
+                const paymentServiceInstance = Container.get(paymentService);
+                const request: Interfaces.AcceptPayment = {
                     storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
                     invoiceNumber: res.locals.data.invoiceNumber
                 }
-                await transactionServiceInstance.acceptTransaction(request);
-                res.status(200).json({ message: "Transação foi aceita com sucesso." });
+                await paymentServiceInstance.acceptPayment(request);
+                res.status(200).json({ message: "Pagamento foi aceito com sucesso." });
             } catch (e) {
                 // @ts-ignore
-                logger.error('🔥 Falha ao aprovar transação: %o', e);
+                logger.error('🔥 Falha ao aprovar pagamento: %o', e);
                 return next(e);
             }
         });
 
-    route.post('/stores/:storeId/transactions/:id/reject',
+    route.post('/stores/:storeId/payments/:id/reject',
         middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
@@ -48,28 +49,30 @@ export default (route: Router) => {
             };
             next();
         },
-        middlewares.validateInput('rejectTransactionSchema'),
+        middlewares.validateInput('rejectPaymentSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
-            logger.debug('Chamando endpoint para rejeitar transação');
+            logger.debug('Chamando endpoint para rejeitar pagamento');
             try {
-                const transactionServiceInstance = Container.get(transactionService);
-                const request: Interfaces.RejectTransaction = {
+                const paymentServiceInstance = Container.get(paymentService);
+                const request: Interfaces.RejectPayment = {
                     storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
+                    id_payment: res.locals.store.id_payment
                 }
-                await transactionServiceInstance.rejectTransaction(request);
-                res.status(200).json({ message: "Transação rejeitada com sucesso." });
+                await paymentServiceInstance.rejectPayment(request);
+                res.status(200).json({ message: "Pagamento rejeitado com sucesso." });
             } catch (e) {
                 // @ts-ignore
-                logger.error('🔥 Falha ao rejeitar transação: %o', e);
+                logger.error('🔥 Falha ao rejeitar pagamento: %o', e);
                 return next(e);
             }
         });
 
-    route.get('/stores/:id/transactions',
+    route.get('/stores/:id/payments',
         middlewares.mosAuth(),
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
@@ -87,14 +90,15 @@ export default (route: Router) => {
             };
             next();
         },
-        middlewares.validateInput('getAllTransactionsSchema'),
+        middlewares.validateInput('getAllPaymentsSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
-            logger.debug('Chamando endpoint para buscar todas as transações do lojista');
+            logger.debug('Chamando endpoint para buscar todas os pagamentos do lojista');
             try {
-                const transactionServiceInstance = Container.get(transactionService);
-                const request: Interfaces.GetAllTransactionsInput = {
+                const paymentServiceInstance = Container.get(paymentService);
+                const request: Interfaces.GetAllPaymentsInput = {
                     storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     origin: res.locals.data.origin,
@@ -107,11 +111,11 @@ export default (route: Router) => {
                     column: +res.locals.data.column,
                     order: res.locals.data.order
                 }
-                const response = await transactionServiceInstance.getAllTransactions(request);
+                const response = await paymentServiceInstance.getAllPayments(request);
                 res.status(200).json(response);
             } catch (e) {
                 // @ts-ignore
-                logger.error('🔥 Falha ao buscar transações do lojista: %o', e);
+                logger.error('🔥 Falha ao buscar pagamentos do lojista: %o', e);
                 return next(e);
             }
         });

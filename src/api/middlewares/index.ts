@@ -1,11 +1,13 @@
 import validateInput from './validateInput';
-import internalAuth from './internalAuth';
 import thirdPartyAuth from './thirdPartyAuth';
 import mosAuth from './mosAuth';
+import storeIntegration from './storeIntegration';
+import clientIntegration from './clientIntegration';
 
 export default {
   validateInput,
-  internalAuth,
   thirdPartyAuth,
-  mosAuth
+  mosAuth,
+  storeIntegration,
+  clientIntegration
 };

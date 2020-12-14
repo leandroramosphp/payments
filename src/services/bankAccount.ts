@@ -3,34 +3,25 @@ import * as Interfaces from '../interfaces/IBankAccount';
 import axios from 'axios';
 import config from '../config';
 import bankAccountModel from '../business/bankAccount';
-import storeModel from '../business/store';
 
 @Service()
 export default class bankAccountService {
     private _bankAccountController: bankAccountModel;
-    private _storeController: storeModel;
     constructor(
         @Inject('logger') private logger: any
     ) {
         this._bankAccountController = new bankAccountModel();
-        this._storeController = new storeModel();
     }
 
     public createBankAccount = async (input: Interfaces.CreateBankAccount): Promise<void> => {
         try {
             this.logger.silly('Calling createBankAccount');
 
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
-
-            if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
-
             const bankAccount: Interfaces.BankAccountDataInput = (await axios.post(
                 config.PaymentsApi.host + config.PaymentsApi.endpoints.bankAccount,
                 {
                     token: input.bankAccountToken,
-                    customer: storeData.id_payment
+                    customer: input.id_payment
                 },
                 {
                     headers: {
@@ -43,7 +34,7 @@ export default class bankAccountService {
                 }
             )).data;
 
-            await this._bankAccountController.createBankAccount(bankAccount, storeData.id_payment);
+            await this._bankAccountController.createBankAccount(bankAccount, input.id_payment);
 
             return Promise.resolve();
         }
@@ -61,12 +52,6 @@ export default class bankAccountService {
     public disableBankAccount = async (input: Interfaces.DisableBankAccount): Promise<void> => {
         try {
             this.logger.silly('Calling disableBankAccount');
-
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
-
-            if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
 
             const bankAccount = await this._bankAccountController.getBankAccount(input.id, input.storeId, input.mallId);
 
@@ -105,12 +90,6 @@ export default class bankAccountService {
     public getBankAccounts = async (input: Interfaces.GetBankAccounts): Promise<Array<Interfaces.BankAccountDataOutput>> => {
         try {
             this.logger.silly('Calling getBankAccounts');
-
-            const storeData = (await this._storeController.getStore({ storeId: input.storeId, mallId: input.mallId }));
-
-            if (!storeData?.id_payment) {
-                return Promise.reject({ message: "Loja não cadastrada.", status: 400 });
-            }
 
             return Promise.resolve(await this._bankAccountController.getBankAccounts(input.storeId, input.mallId));
         }

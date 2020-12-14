@@ -16,6 +16,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('createBankAccountSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -25,7 +26,8 @@ export default (route: Router) => {
                 const request: Interfaces.CreateBankAccount = {
                     storeId: +res.locals.data.storeId,
                     bankAccountToken: res.locals.data.bankAccountToken,
-                    mallId: +res.locals.data.mallId
+                    mallId: +res.locals.data.mallId,
+                    id_payment: res.locals.store.id_payment
                 };
                 await bankAccountServiceInstance.createBankAccount(request);
                 res.status(201).json({ message: "Conta bancária cadastrada com sucesso." });
@@ -47,6 +49,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('disableBankAccountSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -77,6 +80,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('getBankAccountsSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            

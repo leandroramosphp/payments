@@ -1,12 +1,13 @@
-import * as Interfaces from '../interfaces/ITransaction';
+import * as Interfaces from '../interfaces/IPayment';
 import sequelize from '../loaders/sequelize';
 import { QueryTypes } from 'sequelize';
+import moment from 'moment';
 
-export class transactionRepository {
-    async createTransaction(clientPaymentId: number, storePaymentId: string, installments: number, transactions: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
+export class paymentRepository {
+    async createPayment(clientPaymentId: number, storePaymentId: string, installments: number, payments: Array<{ origin: string, value: number, externalId: string }>): Promise<void> {
         try {
             return await sequelize.transaction(async function (t) {
-                const transaction: { id: number } = (await sequelize.query(`
+                const payment: { id: number } = (await sequelize.query(`
                     INSERT INTO payment (client_payment_id, external_store_payment_id, installments)
                     SELECT :clientPaymentId, id, :installments
                     FROM external_store_payment esp
@@ -19,16 +20,16 @@ export class transactionRepository {
                         installments: installments
                     }, type: QueryTypes.INSERT, transaction: t
                 }))[0][0];
-                for (let i = 0; i < transactions.length; i++) {
+                for (let i = 0; i < payments.length; i++) {
                     await sequelize.query(`
                         INSERT INTO payment_item (origin, value, payment_id, external_id)
                         VALUES (:origin, :value, :paymentId, :externalId)
                     `, {
                         replacements: {
-                            value: transactions[i].value,
-                            paymentId: transaction.id,
-                            externalId: transactions[i].externalId,
-                            origin: transactions[i].origin
+                            value: payments[i].value,
+                            paymentId: payment.id,
+                            externalId: payments[i].externalId,
+                            origin: payments[i].origin
                         }, type: QueryTypes.INSERT, transaction: t
                     });
                 }
@@ -39,7 +40,7 @@ export class transactionRepository {
         }
     }
 
-    async acceptTransaction(id: number, invoiceNumber: string): Promise<number> {
+    async acceptPayment(id: number, invoiceNumber: string): Promise<number> {
         try {
             const isAccepted: number = (await sequelize.query(`
                     UPDATE payment
@@ -57,7 +58,7 @@ export class transactionRepository {
         }
     }
 
-    async rejectTransaction(id: number): Promise<number> {
+    async rejectPayment(id: number): Promise<number> {
         try {
             const isAccepted: number = (await sequelize.query(`
                     UPDATE payment
@@ -74,7 +75,7 @@ export class transactionRepository {
         }
     }
 
-    async getPendingTransaction(id: number): Promise<Array<{ externalId: string, origin: string, value: number }>> {
+    async getPendingPayment(id: number): Promise<Array<{ externalId: string, origin: string, value: number }>> {
         try {
             return await sequelize.transaction(async function (t) {
                 return await sequelize.query(`
@@ -97,7 +98,7 @@ export class transactionRepository {
         }
     }
 
-    async getAllTransactions(input: Interfaces.GetAllTransactionsInput): Promise<{ data: Array<Interfaces.GetAllTransactionsOutput>, total: number }> {
+    async getAllPayments(input: Interfaces.GetAllPaymentsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsOutput>, total: number }> {
         try {
             let limit = ``;
             let page = ``;
@@ -131,13 +132,13 @@ export class transactionRepository {
 
             if (input.startDate) {
                 startDate = `
-                    AND p.created_at::DATE >= :startDate
+                    AND p.created_at >= :startDate
                 `;
             }
 
             if (input.endDate) {
                 endDate = `
-                    AND p.created_at::DATE <= :endDate
+                    AND p.created_at <= :endDate
                 `;
             }
 
@@ -153,15 +154,15 @@ export class transactionRepository {
                 `;
             }
 
-            const transactions: Array<Interfaces.GetAllTransactionsOutput & { total: string }> = await sequelize.query(`
+            const payments: Array<Interfaces.GetAllPaymentsOutput & { total: string }> = await sequelize.query(`
                 WITH result AS (
                     SELECT
                         p.id,
-                        p.created_at AS "createdAt",
+                        TO_CHAR(p.created_at, :format) AS "createdAt",
                         c.full_name AS "clientName",
                         p.installments,
                         p.status,
-                        SUM(pi.value) AS value
+                        SUM(pi.value)::INTEGER AS value
                     FROM
                         external_store_payment esp
                         JOIN store_payment sp ON (esp.id = sp.id_payment)
@@ -201,15 +202,16 @@ export class transactionRepository {
                     limit: input.limit,
                     page: input.page,
                     search: '%' + input.search + '%',
-                    startDate: input.startDate,
-                    endDate: input.endDate,
+                    startDate: moment(input.startDate).utc().startOf('day').format(),
+                    endDate: moment(input.endDate).utc().endOf('day').format(),
                     origin: input.origin,
-                    status: input.status
+                    status: input.status,
+                    format: 'YYYY-MM-DD"T"HH24:MI:SS"Z"'
                 }, type: QueryTypes.SELECT
             });
             return Promise.resolve({
-                data: transactions.map(({ total, ...item }) => item),
-                total: (transactions.length) ? +transactions[0].total : 0
+                data: payments.map(({ total, ...item }) => item),
+                total: (payments.length) ? +payments[0].total : 0
             });
         } catch (e) {
             return Promise.reject(e);

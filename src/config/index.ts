@@ -10,7 +10,6 @@ if (!envFound) {
 const configs = {
     PORT: parseInt(process.env.PORT, 10) || 3000,
     LOG_LEVEL: process.env.LOG_LEVEL || 'silly',
-    INTERNAL_API_KEY: process.env.INTERNAL_API_KEY,
     DB_NAME: process.env.DB_NAME || 'elephant',
     DB_USERNAME: process.env.DB_USERNAME || 'postgres',
     DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
@@ -43,12 +42,11 @@ export default {
         payment: {
             root: '/mos',
             version: '/v1',
-            prefix: '/payments-management'
+            prefix: '/payment-management'
         },
         thirdParty: {
             root: '/api/app'
-        },
-        internalApiKey: configs.INTERNAL_API_KEY
+        }
     },
 
     database: {
@@ -71,8 +69,8 @@ export default {
             deleteCreditCard: configs.MARKET_PLACE_ID + '/cards/{card_id}',
             bankAccount: configs.MARKET_PLACE_ID + '/bank_accounts',
             deleteBankAccount: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}',
-            createTransaction: configs.MARKET_PLACE_ID + '/transactions',
-            reverseTransaction: configs.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
+            createPayment: configs.MARKET_PLACE_ID + '/transactions',
+            reversePayment: configs.MARKET_PLACE_ID + '/transactions/{transaction_id}/void',
             getAccountBalance: configs.MARKET_PLACE_ID + '/sellers/{seller_id}/balances',
             createBankTransfer: configs.MARKET_PLACE_ID + '/bank_accounts/{bank_account_id}/transfers'
         }

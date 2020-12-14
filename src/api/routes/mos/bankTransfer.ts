@@ -17,6 +17,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('createBankTransferSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -48,6 +49,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('getBankTransfersSchema'),
+        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore

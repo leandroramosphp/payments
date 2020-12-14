@@ -16,6 +16,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('createCreditCardSchema'),
+        middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -25,7 +26,9 @@ export default (route: Router) => {
                 const request: Interfaces.CreateCreditCard = {
                     mallId: +res.locals.data.mallId,
                     clientId: +res.locals.data.clientId,
-                    creditCardToken: res.locals.data.creditCardToken
+                    creditCardToken: res.locals.data.creditCardToken,
+                    id_payment: res.locals.client.id_payment,
+                    clientPaymentId: +res.locals.client.clientPaymentId
                 }
                 await creditCardServiceInstance.createCreditCard(request);
                 res.status(201).json({ message: "Cartão de crédito cadastrado com sucesso." });
@@ -47,6 +50,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('disableCreditCardSchema'),
+        middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            
@@ -77,6 +81,7 @@ export default (route: Router) => {
             next();
         },
         middlewares.validateInput('getCreditCardsSchema'),
+        middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             const logger = Container.get('logger');
             // @ts-ignore            

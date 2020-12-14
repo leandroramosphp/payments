@@ -13,6 +13,7 @@ export interface CreateBankAccount {
     storeId: number;
     bankAccountToken: string;
     mallId: number;
+    id_payment: string;
 }
 
 export interface BankAccountDataInput {

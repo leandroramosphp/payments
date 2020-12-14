@@ -89,6 +89,9 @@ CREATE TABLE IF NOT EXISTS store_payment_bank_transfer_item (
     CONSTRAINT bank_transfer_id_fk FOREIGN KEY(bank_transfer_id) REFERENCES store_payment_bank_transfer(id)
 );
 
+ALTER TABLE store ADD COLUMN cashback_enabled BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE store ADD COLUMN payment_enabled BOOLEAN NOT NULL DEFAULT false;
+
 INSERT INTO __db_version(version_date, author, comments) VALUES('2020-11-09', 'Carlos Moreira', 'Criação das tabelas para integração com zoop');
 
 commit;

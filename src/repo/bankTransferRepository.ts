@@ -34,14 +34,14 @@ export class bankTransferRepository {
     }
   }
 
-  async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ id: number, bank_name: string, account_number: string, created_at: string, value: number }>> {
+  async getBankTransfers(storeId: number, mallId: number): Promise<Array<{ id: number, bankName: string, accountNumber: string, createdAt: string, value: number }>> {
     try {
       return await sequelize.query(`
         SELECT
-            spba.id,
-            spba.bank_name,
-            spba.account_number,
-            spbt.created_at,
+            spbt.id,
+            spba.bank_name AS "bankName",
+            spba.account_number AS "accountNumber",
+            TO_CHAR(spbt.created_at, :format) AS "createdAt",
             SUM(spbti.value)::INTEGER AS value
         FROM
             external_store_payment esp
@@ -61,7 +61,8 @@ export class bankTransferRepository {
           `, {
         replacements: {
           storeId: storeId,
-          mallId: mallId
+          mallId: mallId,
+          format: 'YYYY-MM-DD"T"HH24:MI:SS"Z"'
         }, type: QueryTypes.SELECT
       });
     } catch (e) {

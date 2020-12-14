@@ -2,13 +2,14 @@ import sequelize from '../loaders/sequelize';
 import { QueryTypes, UniqueConstraintError } from 'sequelize';
 
 export class storeRepository {
-  async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string, name: string, storePaymentId: number }> {
+  async getStore(input: { storeId: number, mallId: number }): Promise<{ cnpj: string, id_payment: string, name: string, payment_enabled: boolean, storePaymentId: number }> {
     try {
-      const output: Array<{ cnpj: string, id_payment: string, name: string, storePaymentId: number }> = await sequelize.query(`
+      const output: Array<{ cnpj: string, id_payment: string, name: string, payment_enabled: boolean, storePaymentId: number }> = await sequelize.query(`
         SELECT
           cnpj,
           esp.id_payment,
           s.name,
+          s.payment_enabled,
           sp.id AS "storePaymentId"
         FROM
           store s

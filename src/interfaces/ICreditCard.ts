@@ -2,6 +2,8 @@ export interface CreateCreditCard {
     mallId: number;
     clientId: number;
     creditCardToken: string;
+    id_payment: string;
+    clientPaymentId: number;
 }
 
 export interface CreditCardDataInput {
