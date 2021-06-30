@@ -45,7 +45,9 @@ export default {
             prefix: '/payment-management'
         },
         thirdParty: {
-            root: '/api/app'
+            root: '/api/app',
+            version: '/v1',
+            prefix: '/payment-management'
         }
     },
 
