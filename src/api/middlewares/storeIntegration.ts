@@ -1,57 +1,116 @@
 import { Request, Response, NextFunction } from 'express';
-import { storeRepository } from "../../repo/storeRepository";
+import prisma from '../../loaders/prisma';
 import axios from 'axios';
 import config from '../../config';
 
 let storeIntegration = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const _storeRepository = new storeRepository();
-            const storeData = await _storeRepository.getStore({ storeId: +res.locals.data.storeId, mallId: +res.locals.data.mallId });
+            const initialData = await prisma.$transaction([
+                prisma.paymentsystem.findFirst({
+                    where: {
+                        id_mall: +res.locals.data.mallId,
+                        flg_active: true
+                    },
+                    select: {
+                        id_paymentsystem: true,
+                        cod_marketplace: true
+                    }
+                }),
+                prisma.store.findUnique({
+                    where: {
+                        store_id_mall_id_key: {
+                            id: +res.locals.data.storeId,
+                            mall_id: +res.locals.data.mallId
+                        }
+                    },
+                    select: {
+                        cnpj: true
+                    }
+                })
+            ])
 
-            if (!storeData) {
-                return res.status(400).json({ message: "Loja não cadastrada." });
+            const paymentSystem = initialData[0]; /* Dados do sistema de pagamento do shopping */
+
+            if (!paymentSystem) {
+                return res.status(400).json({ message: 'Shopping não está configurado para integrar com sistema de pagamentos.' });
             }
 
-            if (!storeData.payment_enabled) {
-                return res.status(400).json({ message: "Loja não habilitada para participar do módulo de pagamentos." });
+            const store = initialData[1]; /* Dados da loja */
+
+            if (!store) {
+                return res.status(400).json({ message: 'Loja não registrada.' });
             }
 
-            if (storeData.id_payment) {
-                /* Loja já cadastrada */
-                res.locals.store = storeData;
+            const paymentSystemStore = await prisma.paymentsystem_store.findUnique({
+                where: {
+                    id_store_id_paymentsystem: {
+                        id_store: +res.locals.data.storeId,
+                        id_paymentsystem: paymentSystem.id_paymentsystem
+                    }
+                },
+                select: {
+                    cod_external: true,
+                    id_paymentsystem: true
+                }
+            })
+
+            if (paymentSystemStore) {
+                /* Loja já registrada no sistema de pagamentos */
+                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: paymentSystemStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
                 return next();
             }
 
-            const dupStore = (await _storeRepository.checkDupStore(storeData.cnpj));
-
-            if (dupStore) {
-                if (dupStore.mall_id == +res.locals.data.mallId) {
-                    await _storeRepository.registerStore(dupStore.id_payment, +res.locals.data.storeId);
-                    res.locals.store = { ...storeData, id_payment: dupStore.id_payment };
-                } else {
-                    return res.status(400).json({ message: "cnpj já cadastrado em outro empreendimento." });
+            const dupStore = await prisma.paymentsystem_store.findFirst({
+                where: {
+                    store: {
+                        mall_id: +res.locals.data.mallId,
+                        cnpj: store.cnpj
+                    }
+                },
+                select: {
+                    cod_external: true
                 }
-            } else {
-                const store: { id: string } = (await axios.post(
-                    config.PaymentsApi.host + config.PaymentsApi.endpoints.createStore,
+            })
+
+            if (dupStore) { /* Já existe outra loja cadastrada com esse cnpj no sistema de pagamentos deste shopping, nova loja vai compartilhar o mesmo código externo */
+                await prisma.paymentsystem_store.create({
+                    data: {
+                        cod_external: dupStore.cod_external,
+                        id_paymentsystem: paymentSystem.id_paymentsystem,
+                        id_store: +res.locals.data.storeId
+                    }
+                })
+
+                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
+            } else { /* cnpj não cadastrado no sistema de pagamentos, novo cadastro será realizado */
+                const registeredStore: { id: string } = (await axios.post(
+                    config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
                     {
-                        ein: storeData.cnpj
+                        ein: store.cnpj
                     },
                     {
                         headers: {
                             "Content-Type": "application/json"
                         },
                         auth: {
-                            username: config.PaymentsApi.username,
-                            password: config.PaymentsApi.password
+                            username: config.paymentApi.username,
+                            password: config.paymentApi.password
                         },
                     }
                 )).data;
 
-                await _storeRepository.registerStore(store.id, +res.locals.data.storeId);
-                res.locals.store = { ...storeData, id_payment: store.id };
+                await prisma.paymentsystem_store.create({
+                    data: {
+                        cod_external: registeredStore.id,
+                        id_paymentsystem: paymentSystem.id_paymentsystem,
+                        id_store: +res.locals.data.storeId
+                    }
+                })
+
+                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: paymentSystem.cod_marketplace };
             }
+
             return next();
         }
         catch (e) {

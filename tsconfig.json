@@ -1,20 +1,18 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "module": "commonjs",
-        "outDir": "./dist",
-    },
-    "include": [
-        "./src/**/*",
-        "./src/config/*.json",
-        "./src/config/*.svg"
-      ],
-      "exclude": [
-        "node_modules",
-        "tests"
-      ]
+  "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "./build"
+  },
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

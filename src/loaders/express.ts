@@ -1,56 +1,55 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import express, { Router, Application } from 'express';
 import cors from 'cors';
 import routes from '../api';
-import { Request, Response, NextFunction } from 'express';
+import config from '../config';
+import logger from '../loaders/logger';
 
-interface ResponseError extends Error {
-    status?: number;
-    code?: number;
-}
-
-export default async ({ app }: { app: express.Application }) => {
+export default async ({ app }: { app: Application }) => {
     app.use(cors());
 
-    app.use(bodyParser.json());
+    app.use(express.json());
 
-    app.use(routes());
+    const router = Router();
 
-    app.use((req: Request, res: Response, next: NextFunction) => {
+    app.use(config.api.root + config.api.version + config.api.prefix, routes(router));
+
+    app.use((req, res, next) => {
         const err = new Error('Not Found');
         err['status'] = 404;
         next(err);
     });
 
-    app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
+    app.use((err, req, res, next) => {
         if (err.name === 'UnauthorizedError') {
+            logger.error(err.message)
             return res
                 .status(err.status)
-                .send({ message: err.message })
+                .send({ message: "Erro no back-end, por favor reporte o problema para o desenvolvedor responsável." })
                 .end();
         }
         return next(err);
     });
 
-    app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
-        res.status(err.status || 500);
-        console.log(err);
-        if (!err.status || err.status === 500) {
-            res.json({
+    app.use((err, req, res, next) => {
+        if (err.status === undefined || err.status === 500) {
+            return res.status(500).json({
                 errors: {
-                    message: "Internal server error."
+                    message: "Erro no back-end, por favor reporte o problema para o desenvolvedor responsável."
                 }
-            });
-        } else {
-            if(err.code && err.status && err.message) {
-                return res.status(err.status).json({message: err.message, status: err.status, code: err.code});
-            }
-            res.json({
-                error: {
-                    message: err.message,
-                    code: err.code
-                }
-            });
+            })
         }
+        if (err.data && err.status) {
+            return res.status(err.status).json(err.data);
+        }
+
+        if ((err.code || err.status) && err.message) {
+            return res.status(err.status).json({ message: err.message, status: err.status, code: err.code });
+        }
+
+        return res.status(500).json({
+            errors: {
+                message: "Erro no back-end, por favor reporte o problema para o desenvolvedor responsável."
+            }
+        })
     });
 };

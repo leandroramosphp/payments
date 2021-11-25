@@ -2,22 +2,21 @@ import { Service, Inject } from 'typedi';
 import * as Interfaces from '../interfaces/IStore';
 import axios from 'axios';
 import config from '../config';
+import logger from '../loaders/logger';
 
 @Service()
 export default class storeService {
-    @Inject('logger') private logger: any
-
     public getStoreBalance = async (input: Interfaces.GetStoreBalance): Promise<{ balance: number }> => {
         try {
-            this.logger.silly('Calling getStoreBalance');
+            logger.silly('Calling getStoreBalance');
 
             const accountBalance: { items: { current_balance: string, current_blocked_balance: string, account_balance: string } } = (await axios.get(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.getAccountBalance
-                    .replace('{seller_id}', input.id_payment),
+                config.paymentApi.host + config.paymentApi.endpoints.getAccountBalance.replace('$MARKETPLACEID', input.cod_marketplace)
+                    .replace('{seller_id}', input.cod_external),
                 {
                     auth: {
-                        username: config.PaymentsApi.username,
-                        password: config.PaymentsApi.password
+                        username: config.paymentApi.username,
+                        password: config.paymentApi.password
                     }
                 }
             )).data;

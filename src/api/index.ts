@@ -1,10 +1,15 @@
 import { Router } from "express";
-import mos from "./routes/mos";
-import thirdParty from "./routes/thirdParty";
+import storeRoutes from "./routes/store";
+import bankAccountRoutes from "./routes/bankAccount";
+import bankTransferRoutes from "./routes/bankTransfer";
+import paymentRoutes from "./routes/payment";
+import creditCardRoutes from "./routes/creditCard";
 
-export default () => {
-  const app = Router();
-  mos(app);
-  thirdParty(app);
+export default (app: Router) => {
+  storeRoutes(app);
+  bankAccountRoutes(app);
+  bankTransferRoutes(app);
+  paymentRoutes(app);
+  creditCardRoutes(app);
   return app;
-};
+}

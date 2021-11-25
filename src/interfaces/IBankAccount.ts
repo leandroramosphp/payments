@@ -1,19 +1,25 @@
 export interface GetBankAccounts {
     storeId: number;
     mallId: number;
+    id_paymentsystem: number;
 }
 
 export interface DisableBankAccount {
     id: number;
     storeId: number;
     mallId: number;
+    cod_external: string;
+    cod_marketplace: string;
+    id_paymentsystem: number;
 }
 
 export interface CreateBankAccount {
     storeId: number;
     bankAccountToken: string;
     mallId: number;
-    id_payment: string;
+    cod_external: string;
+    cod_marketplace: string;
+    id_paymentsystem: number;
 }
 
 export interface BankAccountDataInput {

@@ -1,42 +1,89 @@
 import { Request, Response, NextFunction } from 'express';
-import { clientRepository } from "../../repo/clientRepository";
+import prisma from '../../loaders/prisma';
 import axios from 'axios';
 import config from '../../config';
 
 let clientIntegration = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const _clientRepository = new clientRepository();
-            const clientData = (await _clientRepository.getClient({ clientId: +res.locals.data.clientId, mallId: +res.locals.data.mallId }));
+            const initialData = await prisma.$transaction([
+                prisma.paymentsystem.findFirst({
+                    where: {
+                        id_mall: +res.locals.data.mallId,
+                        flg_active: true
+                    },
+                    select: {
+                        id_paymentsystem: true,
+                        cod_marketplace: true
+                    }
+                }),
+                prisma.client.findFirst({
+                    where: {
+                        id: +res.locals.data.clientId,
+                        id_mall: +res.locals.data.mallId
+                    },
+                    select: {
+                        cpf: true
+                    }
+                })
+            ])
 
-            if (!clientData) {
-                return res.status(400).json({ message: "Cliente não cadastrado." });
+            const paymentSystem = initialData[0]; /* Dados do sistema de pagamento do shopping */
+
+            if (!paymentSystem) {
+                return res.status(400).json({ message: 'Shopping não está configurado para integrar com sistema de pagamentos.' });
             }
 
-            if (clientData.id_payment) {
-                /* Cliente já cadastrado */
-                res.locals.client = clientData;
+            const client = initialData[1]; /* Dados do cliente */
+
+            if (!client) {
+                return res.status(400).json({ message: 'Cliente não registrado.' });
+            }
+
+            const paymentSystemClient = await prisma.paymentsystem_client.findUnique({
+                where: {
+                    id_client_id_paymentsystem: {
+                        id_client: +res.locals.data.clientId,
+                        id_paymentsystem: paymentSystem.id_paymentsystem
+                    }
+                },
+                select: {
+                    cod_external: true,
+                    id_paymentsystem: true
+                }
+            })
+
+            if (paymentSystemClient) {
+                /* Cliente já registrado no sistema de pagamentos */
+                res.locals.client = { id_paymentsystem: paymentSystemClient.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
                 return next();
             }
 
-            const client: { id: string } = (await axios.post(
-                config.PaymentsApi.host + config.PaymentsApi.endpoints.createClient,
+            const registeredClient: { id: string } = (await axios.post(
+                config.paymentApi.host + config.paymentApi.endpoints.createClient.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
                 {
-                    taxpayer_id: clientData.cpf
+                    taxpayer_id: client.cpf
                 },
                 {
                     headers: {
                         "Content-Type": "application/json"
                     },
                     auth: {
-                        username: config.PaymentsApi.username,
-                        password: config.PaymentsApi.password
+                        username: config.paymentApi.username,
+                        password: config.paymentApi.password
                     },
                 }
             )).data;
 
-            await _clientRepository.registerClient(client.id, {clientId: +res.locals.data.clientId, mallId: +res.locals.data.mallId});
-            res.locals.client = { ...clientData, id_payment: client.id };
+            await prisma.paymentsystem_client.create({
+                data: {
+                    id_client: +res.locals.data.clientId,
+                    id_paymentsystem: paymentSystemClient.id_paymentsystem,
+                    cod_external: registeredClient.id
+                }
+            })
+
+            res.locals.client = { id_paymentsystem: paymentSystemClient.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.cod_marketplace };
 
             return next();
         }
