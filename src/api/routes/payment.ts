@@ -26,7 +26,7 @@ export default (app: Router) => {
             try {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.AcceptPayment = {
-                    storeId: +res.locals.data.storeId,
+                    storeId: res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
                     invoiceNumber: res.locals.data.invoiceNumber,
@@ -57,7 +57,7 @@ export default (app: Router) => {
             try {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.RejectPayment = {
-                    storeId: +res.locals.data.storeId,
+                    storeId: res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
                     id_paymentsystem: +res.locals.store.id_paymentsystem,
