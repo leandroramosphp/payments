@@ -32,8 +32,7 @@ const acceptPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "number"
         },
         "mallId": {
             "type": "string",
@@ -57,8 +56,7 @@ const rejectPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "number"
         },
         "mallId": {
             "type": "string",
