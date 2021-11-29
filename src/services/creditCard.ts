@@ -115,7 +115,8 @@ export default class creditCardService {
             const output = (await prisma.creditcard.findMany({
                 where: {
                     id_client: input.clientId,
-                    id_paymentsystem: input.id_paymentsystem
+                    id_paymentsystem: input.id_paymentsystem,
+                    flg_active: true
                 },
                 select: {
                     id_creditcard: true,

@@ -222,15 +222,18 @@ export default class paymentService {
             logger.silly('Calling getAllPayments');
 
             const sortBy: string = {
-                "id": "p.id_payment",
-                "createdAt": "p.created_at",
-                "clientName": "c.full_name",
-                "installments": "p.installments",
-                "invoiceNumber": "p.invoicenumber",
-                "status": "p.status",
+                "id": "id",
+                "createdAt": "createdAt",
+                "clientName": "clientName",
+                "storeName": "storeName",
+                "installments": "installments",
+                "invoiceNumber": "invoiceNumber",
+                "status": "status",
                 "value": "value"
             }[input.sortBy];
 
+            let store = ``;
+            let client = ``;
             let limit = ``;
             let page = ``;
             let search = ``;
@@ -238,7 +241,7 @@ export default class paymentService {
             let endDateTime = ``;
             let origin = ``;
             let status = ``;
-            let orderBy = `ORDER BY p.created_at DESC`;
+            let orderBy = `ORDER BY "createdAt" DESC`;
 
             if (input.sortBy != null && input.order != null) {
                 orderBy = `ORDER BY ${sortBy[input.sortBy]} ${input.order}`
@@ -257,6 +260,7 @@ export default class paymentService {
                     AND (
                         UNACCENT(c.full_name) ILIKE UNACCENT(${'%' + input.search + '%'})
                         OR UNACCENT(p.invoicenumber) ILIKE UNACCENT(${'%' + input.search + '%'})
+                        OR UNACCENT(s.name) ILIKE UNACCENT(${'%' + input.search + '%'})
                     )`
             }
 
@@ -284,11 +288,24 @@ export default class paymentService {
                 `;
             }
 
+            if (input.storeId) {
+                store = `
+                    AND p.id_store = ${input.storeId}
+                `;
+            }
+
+            if (input.clientId) {
+                client = `
+                    AND p.id_client = ${input.clientId}
+                `;
+            }
+
             const query: {
                 total: number,
                 id: number,
                 createdAt: string,
                 clientName: string,
+                storeName: string,
                 installments: number,
                 invoiceNumber: string,
                 status: string,
@@ -299,6 +316,7 @@ export default class paymentService {
                         p.id_payment AS id,
                         p.created_at AS "createdAt",
                         c.full_name AS "clientName",
+                        s.name AS "storeName",
                         p.installments,
                         p.invoicenumber AS "invoiceNumber",
                         p.status,
@@ -308,9 +326,12 @@ export default class paymentService {
                         JOIN paymentitem pi USING (id_payment)
                         JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
                         JOIN client c ON (c.id = psc.id_client)
+                        JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
+                        JOIN store s ON (s.id = pss.id_store)
                     WHERE
-                        p.id_store = ${input.storeId}
-                        AND p.id_paymentsystem = ${input.id_paymentsystem}
+                        p.id_paymentsystem = ${input.id_paymentsystem}
+                        ${store}
+                        ${client}
                         ${startDateTime}
                         ${endDateTime}
                         ${origin}

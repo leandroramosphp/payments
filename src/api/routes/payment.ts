@@ -75,7 +75,8 @@ export default (app: Router) => {
     route.get('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.params.id,
+                clientId: req.query.clientId,
+                storeId: req.query.storeId,
                 mallId: req.query.mallId,
                 origin: req.query.origin,
                 status: req.query.status,
@@ -93,11 +94,13 @@ export default (app: Router) => {
         middlewares.authRequest(),
         middlewares.validateInput('getAllPaymentsSchema'),
         middlewares.storeIntegration(),
+        middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar todas os pagamentos do lojista');
             try {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.GetAllPaymentsInput = {
+                    clientId: +res.locals.data.clientId,
                     storeId: +res.locals.data.storeId,
                     mallId: +res.locals.data.mallId,
                     origin: res.locals.data.origin,
@@ -110,7 +113,7 @@ export default (app: Router) => {
                     page: +res.locals.data.page,
                     sortBy: +res.locals.data.sortBy,
                     order: res.locals.data.order,
-                    id_paymentsystem: +res.locals.store.id_paymentsystem
+                    id_paymentsystem: (res.locals.store) ? +res.locals.store.id_paymentsystem : +res.locals.client.id_paymentsystem
                 }
                 const response = await paymentServiceInstance.getAllPayments(request);
                 res.status(200).json(response);
@@ -123,7 +126,7 @@ export default (app: Router) => {
     route.post('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.body.id,
+                storeId: req.body.storeId,
                 clientId: req.body.clientId,
                 mallId: req.query.mallId,
                 value: req.body.value,

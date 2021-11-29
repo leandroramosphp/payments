@@ -2,6 +2,7 @@ import expressLoader from "./express";
 import dependencyInjectorLoader from "./dependencyInjector";
 import Logger from "./logger";
 import schemas from "../schemas";
+import 'reflect-metadata';
 
 export default async ({ expressApp }) => {
   const schemaList = [];

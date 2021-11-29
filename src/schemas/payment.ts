@@ -4,8 +4,7 @@ const createPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "number"
         },
         "mallId": {
             "type": "string",
@@ -78,6 +77,10 @@ const getAllPaymentsSchema =
     "title": "getAllPaymentsSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
         "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
@@ -133,7 +136,11 @@ const getAllPaymentsSchema =
             "enum": ["asc", "desc"]
         }
     },
-    "required": ["storeId", "mallId"]
+    "required": ["mallId"],
+    "anyOf": [
+        { "required": ["clientId"] },
+        { "required": ["storeId"] }
+    ]
 }
 
 export default [

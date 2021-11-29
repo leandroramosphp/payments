@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../../loaders/prisma';
 import axios from 'axios';
+import logger from '../../loaders/logger';
 import config from '../../config';
 
 let storeIntegration = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
+            if (!res.locals.data.storeId) {
+                return next();
+            }
             const initialData = await prisma.$transaction([
                 prisma.paymentsystem.findFirst({
                     where: {
@@ -25,7 +29,8 @@ let storeIntegration = () => {
                         }
                     },
                     select: {
-                        cnpj: true
+                        cnpj: true,
+                        name: true
                     }
                 })
             ])
@@ -38,8 +43,8 @@ let storeIntegration = () => {
 
             const store = initialData[1]; /* Dados da loja */
 
-            if (!store) {
-                return res.status(400).json({ message: 'Loja não registrada.' });
+            if (!store || !store.cnpj || !store.name) {
+                return res.status(400).json({ message: 'Loja não registrada ou sem CNPJ/nome cadastrado.' });
             }
 
             const paymentSystemStore = await prisma.paymentsystem_store.findUnique({
@@ -50,14 +55,13 @@ let storeIntegration = () => {
                     }
                 },
                 select: {
-                    cod_external: true,
-                    id_paymentsystem: true
+                    cod_external: true
                 }
             })
 
             if (paymentSystemStore) {
                 /* Loja já registrada no sistema de pagamentos */
-                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: paymentSystemStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
+                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: paymentSystemStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
                 return next();
             }
 
@@ -82,7 +86,7 @@ let storeIntegration = () => {
                     }
                 })
 
-                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
+                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
             } else { /* cnpj não cadastrado no sistema de pagamentos, novo cadastro será realizado */
                 const registeredStore: { id: string } = (await axios.post(
                     config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
@@ -108,7 +112,7 @@ let storeIntegration = () => {
                     }
                 })
 
-                res.locals.store = { id_paymentsystem: paymentSystemStore.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: paymentSystem.cod_marketplace };
+                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
             }
 
             return next();
@@ -117,6 +121,7 @@ let storeIntegration = () => {
             if (e?.response?.data?.error?.category === 'duplicate_taxpayer_id') {
                 return res.status(400).json({ message: "cnpj já cadastrado na api externa." });
             }
+            logger.error(e);
             return next(e);
         }
     }

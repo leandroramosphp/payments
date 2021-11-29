@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../../loaders/prisma';
 import axios from 'axios';
+import logger from '../../loaders/logger';
 import config from '../../config';
 
 let clientIntegration = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
+            if (!res.locals.data.clientId) {
+                return next();
+            }
             const initialData = await prisma.$transaction([
                 prisma.paymentsystem.findFirst({
                     where: {
@@ -48,14 +52,13 @@ let clientIntegration = () => {
                     }
                 },
                 select: {
-                    cod_external: true,
-                    id_paymentsystem: true
+                    cod_external: true
                 }
             })
 
             if (paymentSystemClient) {
                 /* Cliente já registrado no sistema de pagamentos */
-                res.locals.client = { id_paymentsystem: paymentSystemClient.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
+                res.locals.client = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
                 return next();
             }
 
@@ -78,16 +81,17 @@ let clientIntegration = () => {
             await prisma.paymentsystem_client.create({
                 data: {
                     id_client: +res.locals.data.clientId,
-                    id_paymentsystem: paymentSystemClient.id_paymentsystem,
+                    id_paymentsystem: paymentSystem.id_paymentsystem,
                     cod_external: registeredClient.id
                 }
             })
 
-            res.locals.client = { id_paymentsystem: paymentSystemClient.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.cod_marketplace };
+            res.locals.client = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.cod_marketplace };
 
             return next();
         }
         catch (e) {
+            logger.error(e);
             return next(e);
         }
     }

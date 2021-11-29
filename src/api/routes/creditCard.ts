@@ -17,7 +17,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('createCreditCardSchema'),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +48,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('disableCreditCardSchema'),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -77,7 +77,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('getCreditCardsSchema'),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {

@@ -29,6 +29,7 @@ export interface RejectPayment {
 }
 
 export interface GetAllPaymentsInput {
+    clientId: number;
     storeId: number;
     mallId: number;
     origin: string;
@@ -48,6 +49,7 @@ export interface GetAllPaymentsOutput {
     id: number;
     createdAt: string;
     clientName: string;
+    storeName: string;
     installments: number;
     value: number;
     status: string;
