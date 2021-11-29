@@ -4,8 +4,7 @@ const createPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "number"
         },
         "mallId": {
             "type": "string",
@@ -24,7 +23,7 @@ const createPaymentSchema =
             "type": "number"
         }
     },
-    "required": ["storeId", "mallId", "clientId", "value", "creditCardId"]
+    "required": ["storeId", "mallId", "clientId", "value", "creditCardId", "installments"]
 }
 
 const acceptPaymentSchema =
@@ -78,6 +77,10 @@ const getAllPaymentsSchema =
     "title": "getAllPaymentsSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
         "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
@@ -101,38 +104,43 @@ const getAllPaymentsSchema =
                 "refunded"
             ]
         },
-        "startDate": {
+        "startDateTime": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
         },
-        "endDate": {
+        "endDateTime": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
         },
         "search": {
             "type": "string"
         },
-        "limit": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
         "page": {
             "type": "string",
-            "pattern": "^[0-9]+$"
+            "pattern": "^[0-9]+$",
         },
-        "column": {
+        "limitByPage": {
             "type": "string",
-            "pattern": "^[0-9]+$"
+            "pattern": "^[0-9]+$",
+        },
+        "limit": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "sortBy": {
+            "type": "string",
+            "enum": ["id", "invoiceNumber", "createdAt", "clientName", "installments", "value"]
         },
         "order": {
             "type": "string",
-            "enum": [
-                "asc",
-                "desc"
-            ]
+            "enum": ["asc", "desc"]
         }
     },
-    "required": ["storeId", "mallId"]
+    "required": ["mallId"],
+    "anyOf": [
+        { "required": ["clientId"] },
+        { "required": ["storeId"] }
+    ]
 }
 
 export default [

@@ -5,9 +5,10 @@ export interface CreatePayment {
     value: number;
     installments: number;
     creditCardId: number;
-    id_payment: string;
     storeName: string;
-    clientPaymentId: number;
+    id_paymentsystem: number;
+    cod_external: string;
+    cod_marketplace: string;
 }
 
 export interface AcceptPayment {
@@ -15,33 +16,40 @@ export interface AcceptPayment {
     mallId: number;
     id: number;
     invoiceNumber: string;
+    id_paymentsystem: number;
 }
 
 export interface RejectPayment {
     storeId: number;
     mallId: number;
     id: number;
-    id_payment: string;
+    id_paymentsystem: number;
+    cod_external: string;
+    cod_marketplace: string;
 }
 
 export interface GetAllPaymentsInput {
+    clientId: number;
     storeId: number;
     mallId: number;
     origin: string;
     status: string;
-    endDate: string;
-    startDate: string;
+    endDateTime: string;
+    startDateTime: string;
     search: string;
     limit: number;
+    limitByPage: number;
     page: number;
-    column: number;
+    sortBy: number;
     order: string;
+    id_paymentsystem: number;
 }
 
 export interface GetAllPaymentsOutput {
     id: number;
     createdAt: string;
     clientName: string;
+    storeName: string;
     installments: number;
     value: number;
     status: string;
