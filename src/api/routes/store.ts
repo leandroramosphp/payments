@@ -16,7 +16,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('getStoreBalanceSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {

@@ -17,7 +17,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('createBankAccountSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -49,7 +49,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('disableBankAccountSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -80,7 +80,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('getBankAccountsSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
