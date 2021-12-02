@@ -4,11 +4,8 @@ import axios from 'axios';
 import config from '../config';
 import logger from '../loaders/logger';
 import prisma from '../loaders/prisma';
-import { authenticator } from 'otplib';
-import { toDataURL, toString } from 'qrcode';
-import QRCode from 'qrcode-svg';
+import { toString } from 'qrcode';
 import crypto from 'crypto'
-import { json } from 'express';
 
 @Service()
 export default class storeService {
