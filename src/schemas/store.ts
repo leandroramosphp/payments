@@ -25,8 +25,7 @@ const generateQrcodeSchema =
             "pattern": "^[0-9]+$"
         },
         "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "integer"
         }
     },
     "required": ["storeId", "mallId"]
