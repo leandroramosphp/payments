@@ -17,6 +17,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('createBankAccountSchema'),
         middlewares.storeIntegration(),
@@ -49,6 +50,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('disableBankAccountSchema'),
         middlewares.storeIntegration(),
@@ -80,6 +82,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('getBankAccountsSchema'),
         middlewares.storeIntegration(),

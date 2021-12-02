@@ -4,7 +4,7 @@ const createPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "number"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -32,7 +32,7 @@ const acceptPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "number"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -56,7 +56,7 @@ const rejectPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "number"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -80,7 +80,7 @@ const getAllPaymentsSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {

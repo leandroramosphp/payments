@@ -7,7 +7,7 @@ const createBankAccountSchema =
             "type": "string"
         },
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {
@@ -28,7 +28,7 @@ const disableBankAccountSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {
@@ -45,7 +45,7 @@ const getBankAccountsSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {

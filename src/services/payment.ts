@@ -7,6 +7,7 @@ import prisma from '../loaders/prisma';
 
 @Service()
 export default class paymentService {
+    
     public createPayment = async (input: Interfaces.CreatePayment): Promise<void> => {
         try {
             logger.silly('Calling createPayment');

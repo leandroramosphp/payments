@@ -3,6 +3,12 @@ import * as Interfaces from '../interfaces/IStore';
 import axios from 'axios';
 import config from '../config';
 import logger from '../loaders/logger';
+import prisma from '../loaders/prisma';
+import { authenticator } from 'otplib';
+import { toDataURL, toString } from 'qrcode';
+import QRCode from 'qrcode-svg';
+import crypto from 'crypto'
+import { json } from 'express';
 
 @Service()
 export default class storeService {
@@ -29,6 +35,63 @@ export default class storeService {
         }
         catch (e) {
             return Promise.reject(e);
+        }
+    }
+
+    public generateQrcode = async (input): Promise<void> => {
+        try {
+            console.log("storeId", input);
+            
+            const algorithm = config.encryption.algorithm
+            const key = config.encryption.key
+            const iv = config.encryption.iv
+
+            const store = await prisma.store.findFirst({
+                select: {
+                    id: true,
+                    name: true,
+                    mall_id: true
+                },
+                where: {
+                    id: input.storeId,
+                    mall_id: input.mallId,
+                }
+            });
+
+            if (!store) {
+                throw ({
+                    status: 400,
+                    message: 'A loja informada não foi encontrada.'
+                })
+            }
+
+            const cipher = crypto.createCipheriv(algorithm, key, iv)
+            let crypted = cipher.update(store.id.toString(), 'utf-8', 'hex')
+            crypted += cipher.final('hex')
+            
+            const qrCodeOptions = {
+                errorCorrectionLevel: 'H',
+                type: 'svg',
+                margin: 3,
+                color: {
+                    dark: "#000",
+                    light: "#FFF"
+                }
+            }
+        
+            const storeObj = JSON.stringify({
+                id: crypted,
+                name: store.name
+            })
+            const qrcode = await toString(storeObj, qrCodeOptions)
+
+            return Promise.resolve(qrcode);
+        }
+        catch (e) {
+            if (e.response)
+                return Promise.reject({ status: e.response.status, data: e.response.data });
+            else
+                return Promise.reject(e);
         }
     }
 }

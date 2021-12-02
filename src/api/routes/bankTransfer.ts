@@ -18,6 +18,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('createBankTransferSchema'),
         middlewares.storeIntegration(),
@@ -57,6 +58,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('getBankTransfersSchema'),
         middlewares.storeIntegration(),

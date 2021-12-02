@@ -18,6 +18,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('acceptPaymentSchema'),
         middlewares.storeIntegration(),
@@ -49,6 +50,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('rejectPaymentSchema'),
         middlewares.storeIntegration(),
@@ -91,6 +93,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('getAllPaymentsSchema'),
         middlewares.storeIntegration(),
@@ -135,6 +138,7 @@ export default (app: Router) => {
             };
             next();
         },
+        middlewares.decoder,
         middlewares.authRequest(),
         middlewares.validateInput('createPaymentSchema'),
         middlewares.storeIntegration(),
