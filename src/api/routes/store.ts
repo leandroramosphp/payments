@@ -16,7 +16,7 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('getStoreBalanceSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +40,7 @@ export default (app: Router) => {
     route.post('/qrcode',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.query.storeId,
+                storeId: req.body.storeId,
                 mallId: req.query.mallId
             };
             next();

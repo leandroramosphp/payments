@@ -20,6 +20,7 @@ export default (app: Router) => {
         },
         middlewares.decoder,
         middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('createBankTransferSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -59,7 +60,7 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(),
+        middlewares.authRequest(false),
         middlewares.validateInput('getBankTransfersSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
