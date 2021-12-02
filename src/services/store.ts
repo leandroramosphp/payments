@@ -40,8 +40,6 @@ export default class storeService {
 
     public generateQrcode = async (input): Promise<void> => {
         try {
-            console.log("storeId", input);
-            
             const algorithm = config.encryption.algorithm
             const key = config.encryption.key
             const iv = config.encryption.iv

@@ -4,8 +4,6 @@ import crypto from 'crypto'
 import config from '../../config';
 async function decoder(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log('entrou aqui');
-    
     if (typeof (req.body.storeId) === 'string') {
       const algorithm = config.encryption.algorithm
       const key = config.encryption.key
