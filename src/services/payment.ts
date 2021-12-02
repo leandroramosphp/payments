@@ -222,8 +222,6 @@ export default class paymentService {
     public getAllPayments = async (input: Interfaces.GetAllPaymentsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsOutput>, total: number }> => {
         try {
             logger.silly('Calling getAllPayments');
-
-            console.log(input);
             
             const sortBy: string = {
                 "id": "id",
