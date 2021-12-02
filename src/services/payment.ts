@@ -1,6 +1,7 @@
 import { Service, Inject } from 'typedi';
-import * as Interfaces from '../interfaces/IPayment';
 import axios from 'axios';
+
+import * as Interfaces from '../interfaces/IPayment';
 import config from '../config';
 import logger from '../loaders/logger';
 import prisma from '../loaders/prisma';
@@ -221,7 +222,7 @@ export default class paymentService {
     public getAllPayments = async (input: Interfaces.GetAllPaymentsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsOutput>, total: number }> => {
         try {
             logger.silly('Calling getAllPayments');
-
+            
             const sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
@@ -267,25 +268,25 @@ export default class paymentService {
 
             if (input.startDateTime) {
                 startDateTime = `
-                    AND p.created_at >= ${input.startDateTime}
+                    AND p.created_at >= '${input.startDateTime}'
                 `;
             }
 
             if (input.endDateTime) {
                 endDateTime = `
-                    AND p.created_at <= ${input.endDateTime}
+                    AND p.created_at <= '${input.endDateTime}'
                 `;
             }
 
             if (input.origin) {
                 origin = `
-                    AND pi.origin = ${input.origin}
+                    AND po.nme_origin = '${input.origin}'
                 `;
             }
 
             if (input.status) {
                 status = `
-                    AND p.status = ${input.status}
+                    AND p.status = '${input.status}'
                 `;
             }
 
@@ -319,12 +320,15 @@ export default class paymentService {
                         c.full_name AS "clientName",
                         s.name AS "storeName",
                         p.installments,
+                        pi.id_paymentorigin AS "paymentorigin",
+                        po.nme_origin AS "origin",
                         p.invoicenumber AS "invoiceNumber",
                         p.status,
                         SUM(pi.val_value) AS value
                     FROM
                         payment p
                         JOIN paymentitem pi USING (id_payment)
+                        JOIN paymentorigin po USING (id_paymentorigin)
                         JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
                         JOIN client c ON (c.id = psc.id_client)
                         JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
@@ -339,7 +343,7 @@ export default class paymentService {
                         ${status}
                         ${search}
                     GROUP BY
-                        1, 2, 3, 4, 5
+                        1, 2, 3, 4, 5, 6, 7
                 )
                 SELECT
                     *

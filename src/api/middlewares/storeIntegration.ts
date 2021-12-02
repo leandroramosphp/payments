@@ -91,7 +91,8 @@ let storeIntegration = () => {
                 const registeredStore: { id: string } = (await axios.post(
                     config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
                     {
-                        ein: store.cnpj
+                        ein: store.cnpj,
+                        business_name: store.name
                     },
                     {
                         headers: {

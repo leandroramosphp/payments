@@ -80,7 +80,7 @@ const getAllPaymentsSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
             "pattern": "^[0-9]+$"
         },
         "mallId": {
