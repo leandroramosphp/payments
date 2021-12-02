@@ -15,7 +15,7 @@ async function decoder(req: Request, res: Response, next: NextFunction) {
       
       if (!+deciphered) {
         throw ({
-          status: 500,
+          status: 400,
           message: "Identificador da loja inválido. Escaneie o QR Code novamente."
         })
       }
