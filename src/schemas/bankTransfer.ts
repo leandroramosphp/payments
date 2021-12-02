@@ -4,7 +4,7 @@ const createBankTransferSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "bankAccountId": {
@@ -27,7 +27,7 @@ const getBankTransfersSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {

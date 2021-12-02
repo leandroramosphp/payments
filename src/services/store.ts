@@ -3,6 +3,12 @@ import * as Interfaces from '../interfaces/IStore';
 import axios from 'axios';
 import config from '../config';
 import logger from '../loaders/logger';
+import prisma from '../loaders/prisma';
+import { authenticator } from 'otplib';
+import { toDataURL, toString } from 'qrcode';
+import QRCode from 'qrcode-svg';
+import crypto from 'crypto'
+import { json } from 'express';
 
 @Service()
 export default class storeService {
@@ -29,6 +35,42 @@ export default class storeService {
         }
         catch (e) {
             return Promise.reject(e);
+        }
+    }
+
+    public generateQrcode = async (input: Interfaces.CreateQRCode): Promise<void> => {
+        try {
+            const algorithm = config.encryption.algorithm
+            const key = config.encryption.key
+            const iv = config.encryption.iv
+
+            const cipher = crypto.createCipheriv(algorithm, key, iv)
+            let crypted = cipher.update(input.storeId.toString(), 'utf-8', 'hex')
+            crypted += cipher.final('hex')
+            
+            const qrCodeOptions = {
+                errorCorrectionLevel: 'H',
+                type: 'svg',
+                margin: 3,
+                color: {
+                    dark: "#000",
+                    light: "#FFF"
+                }
+            }
+        
+            const storeObj = JSON.stringify({
+                id: crypted,
+                name: input.name
+            })
+            const qrcode = await toString(storeObj, qrCodeOptions)
+
+            return Promise.resolve(qrcode);
+        }
+        catch (e) {
+            if (e.response)
+                return Promise.reject({ status: e.response.status, data: e.response.data });
+            else
+                return Promise.reject(e);
         }
     }
 }

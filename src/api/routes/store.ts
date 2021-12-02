@@ -36,6 +36,32 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-
+    
+    route.post('/qrcode',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.body.storeId,
+                mallId: req.query.mallId
+            };
+            next();
+        },
+        middlewares.authRequest(false),
+        middlewares.validateInput('generateQrcodeSchema'),
+        middlewares.storeIntegration(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            logger.debug('Chamando endpoint para gerar qrcode de uma loja');
+            try {
+                const storeServiceInstance = Container.get(storeService);
+                const request = {
+                    storeId: res.locals.data.storeId,
+                    name: res.locals.store.name
+                }
+                const response = await storeServiceInstance.generateQrcode(request);
+                res.status(200).send(response);
+            } catch (e) {
+                logger.error('🔥 Falha ao gerar QR-code: %o', e);
+                return next(e);
+            }
+        });
     app.use('/stores', route);
 }

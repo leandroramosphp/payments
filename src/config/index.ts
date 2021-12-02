@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import crypto from 'crypto'
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -42,5 +43,13 @@ export default {
             getAccountBalance: '$MARKETPLACEID' + '/sellers/{seller_id}/balances',
             createBankTransfer: '$MARKETPLACEID' + '/bank_accounts/{bank_account_id}/transfers'
         }
+    },
+
+    encryption: {
+        key: process.env.KEY,
+        algorithm: 'aes-256-ctr',
+        iv: process.env.IV,
     }
+
+
 };
