@@ -21,11 +21,11 @@ const generateQrcodeSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "integer",
         },
         "mallId": {
-            "type": "integer"
+            "type": "string",
+            "pattern": "^[0-9]+$"
         }
     },
     "required": ["storeId", "mallId"]

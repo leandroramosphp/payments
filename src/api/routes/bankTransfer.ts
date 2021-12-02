@@ -19,7 +19,6 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(),
         middlewares.authRequest(false),
         middlewares.validateInput('createBankTransferSchema'),
         middlewares.storeIntegration(),

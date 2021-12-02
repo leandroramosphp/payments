@@ -38,33 +38,14 @@ export default class storeService {
         }
     }
 
-    public generateQrcode = async (input): Promise<void> => {
+    public generateQrcode = async (input: Interfaces.CreateQRCode): Promise<void> => {
         try {
             const algorithm = config.encryption.algorithm
             const key = config.encryption.key
             const iv = config.encryption.iv
 
-            const store = await prisma.store.findFirst({
-                select: {
-                    id: true,
-                    name: true,
-                    mall_id: true
-                },
-                where: {
-                    id: input.storeId,
-                    mall_id: input.mallId,
-                }
-            });
-
-            if (!store) {
-                throw ({
-                    status: 400,
-                    message: 'A loja informada não foi encontrada.'
-                })
-            }
-
             const cipher = crypto.createCipheriv(algorithm, key, iv)
-            let crypted = cipher.update(store.id.toString(), 'utf-8', 'hex')
+            let crypted = cipher.update(input.storeId.toString(), 'utf-8', 'hex')
             crypted += cipher.final('hex')
             
             const qrCodeOptions = {
@@ -79,7 +60,7 @@ export default class storeService {
         
             const storeObj = JSON.stringify({
                 id: crypted,
-                name: store.name
+                name: input.name
             })
             const qrcode = await toString(storeObj, qrCodeOptions)
 

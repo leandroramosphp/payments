@@ -41,7 +41,6 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.body.storeId,
-                mallId: req.query.mallId
             };
             next();
         },
@@ -54,7 +53,7 @@ export default (app: Router) => {
                 const storeServiceInstance = Container.get(storeService);
                 const request = {
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
+                    name: res.locals.store.name
                 }
                 const response = await storeServiceInstance.generateQrcode(request);
                 res.status(200).send(response);
