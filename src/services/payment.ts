@@ -223,7 +223,7 @@ export default class paymentService {
         try {
             logger.silly('Calling getAllPayments');
             
-            const sortBy: string = {
+            let sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
                 "clientName": "clientName",
@@ -233,6 +233,8 @@ export default class paymentService {
                 "status": "status",
                 "value": "value"
             }[input.sortBy];
+
+            sortBy = !input.sortBy ? "createdAt" : sortBy[input.sortBy]
 
             let store = ``;
             let client = ``;
@@ -244,8 +246,8 @@ export default class paymentService {
             let status = ``;
             let orderBy = `ORDER BY "createdAt" DESC`;
 
-            if (input.sortBy != null && input.order != null) {
-                orderBy = `ORDER BY ${sortBy[input.sortBy]} ${input.order}`
+            if (input.sortBy && input.order !== null) {
+                orderBy = `ORDER BY ${sortBy} ${input.order}`
             }
 
             if (input.limit) {
@@ -259,9 +261,9 @@ export default class paymentService {
             if (input.search) {
                 search = `
                     AND (
-                        UNACCENT(c.full_name) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(s.name) ILIKE UNACCENT(${'%' + input.search + '%'})
+                        UNACCENT(c.full_name) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(s.name) ILIKE UNACCENT('%${input.search}%')
                     )`
             }
 
@@ -313,7 +315,6 @@ export default class paymentService {
                         c.full_name AS "clientName",
                         s.name AS "storeName",
                         p.installments,
-                        pi.id_paymentorigin AS "paymentorigin",
                         p.invoicenumber AS "invoiceNumber",
                         p.status,
                         SUM(pi.val_value) AS value
@@ -360,17 +361,17 @@ export default class paymentService {
         try {
             logger.silly('Calling getAllPaymentsItems');
             
-            const sortBy: string = {
+            let sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
                 "clientName": "clientName",
                 "storeName": "storeName",
-                "installments": "installments",
                 "invoiceNumber": "invoiceNumber",
-                "status": "status",
                 "value": "value",
                 "origin": "origin"
             }[input.sortBy];
+
+            sortBy = !input.sortBy ? "createdAt" : sortBy[input.sortBy]
 
             let store = ``;
             let client = ``;
@@ -383,8 +384,8 @@ export default class paymentService {
             let status = ``;
             let orderBy = `ORDER BY "createdAt" DESC`;
 
-            if (input.sortBy != null && input.order != null) {
-                orderBy = `ORDER BY ${sortBy[input.sortBy]} ${input.order}`
+            if (input.sortBy && input.order !== null) {
+                orderBy = `ORDER BY ${sortBy} ${input.order}`
             }
 
             if (input.limit) {
@@ -398,9 +399,9 @@ export default class paymentService {
             if (input.search) {
                 search = `
                     AND (
-                        UNACCENT(c.full_name) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(s.name) ILIKE UNACCENT(${'%' + input.search + '%'})
+                        UNACCENT(c.full_name) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(s.name) ILIKE UNACCENT('%${input.search}%')
                     )`
             }
 

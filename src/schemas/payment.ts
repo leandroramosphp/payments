@@ -120,7 +120,16 @@ const getAllPaymentsSchema =
         },
         "sortBy": {
             "type": "string",
-            "enum": ["id", "invoiceNumber", "createdAt", "clientName", "installments", "value"]
+            "enum": [
+                "id",
+                "invoiceNumber",
+                "createdAt",
+                "storeName",
+                "clientName",
+                "installments",
+                "value",
+                "status"
+            ]
         },
         "order": {
             "type": "string",
@@ -191,7 +200,15 @@ const getAllPaymentItemsSchema =
         },
         "sortBy": {
             "type": "string",
-            "enum": ["id", "invoiceNumber", "createdAt", "clientName", "installments", "value"]
+            "enum": [
+                "id",
+                "invoiceNumber",
+                "createdAt",
+                "clientName",
+                "value",
+                "origin",
+                "storeName"
+            ]
         },
         "order": {
             "type": "string",
