@@ -45,7 +45,7 @@ const getBankAccountsSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
             "pattern": "^[0-9]+$"
         },
         "mallId": {
