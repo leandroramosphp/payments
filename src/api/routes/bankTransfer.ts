@@ -45,7 +45,7 @@ export default (app: Router) => {
     route.get('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.params.storeId,
+                storeId: req.query.storeId,
                 mallId: req.query.mallId,
                 startDateTime: req.query.startDateTime,
                 endDateTime: req.query.endDateTime,
