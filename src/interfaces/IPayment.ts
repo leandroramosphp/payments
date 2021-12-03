@@ -1,5 +1,3 @@
-import { inlineRef } from "ajv/dist/compile/resolve";
-
 export interface CreatePayment {
     storeId: number;
     mallId: number;
