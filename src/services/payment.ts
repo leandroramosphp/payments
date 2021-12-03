@@ -453,23 +453,20 @@ export default class paymentService {
             }[] = await prisma.$queryRaw(`
                 WITH result AS (
                     SELECT
-                        p.id_payment AS id,
+                        pi.id_payment AS id,
                         p.created_at AS "createdAt",
                         c.full_name AS "clientName",
                         s.name AS "storeName",
-                        p.installments,
                         pi.id_paymentorigin AS "paymentorigin",
                         po.nme_origin AS "origin",
-                        p.invoicenumber AS "invoiceNumber",
-                        p.status,
-                        SUM(pi.val_value) AS value
+                        pi.val_value AS value
                     FROM
-                        payment p
-                        JOIN paymentitem pi USING (id_payment)
+                        paymentitem pi
                         JOIN paymentorigin po USING (id_paymentorigin)
+                        JOIN payment p USING (id_payment)
                         JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
-                        JOIN client c ON (c.id = psc.id_client)
                         JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
+                        JOIN client c ON (c.id = psc.id_client)
                         JOIN store s ON (s.id = pss.id_store)
                     WHERE
                         p.id_paymentsystem = ${input.id_paymentsystem}

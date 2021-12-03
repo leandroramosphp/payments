@@ -32,8 +32,12 @@ export default class bankTransferService {
             /* TODO:
                 Adicionar condicionais para saldos provenientes de múltiplas origens (Zoop e Moneri) */
 
+            console.log(input);
+            console.log('-------------------------------------', config.paymentApi.host + config.paymentApi.endpoints.createBankTransfer);
+            
             var bankTransfers: Array<{ originId: number, value: number, externalId: string }> = [];
 
+            
             const registeredBankTransfer: { id: string } = (await axios.post(
                 config.paymentApi.host + config.paymentApi.endpoints.createBankTransfer.replace('$MARKETPLACEID', input.cod_marketplace)
                     .replace('{bank_account_id}', bankAccount.cod_external),
