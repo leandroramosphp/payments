@@ -31,7 +31,7 @@ export default class bankTransferService {
 
             /* TODO:
                 Adicionar condicionais para saldos provenientes de múltiplas origens (Zoop e Moneri) */
-
+            
             var bankTransfers: Array<{ originId: number, value: number, externalId: string }> = [];
 
             const registeredBankTransfer: { id: string } = (await axios.post(

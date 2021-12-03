@@ -223,7 +223,7 @@ export default class paymentService {
         try {
             logger.silly('Calling getAllPayments');
             
-            const sortBy: string = {
+            let sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
                 "clientName": "clientName",
@@ -234,6 +234,8 @@ export default class paymentService {
                 "value": "value"
             }[input.sortBy];
 
+            sortBy = !input.sortBy ? "createdAt" : sortBy[input.sortBy]
+
             let store = ``;
             let client = ``;
             let limit = ``;
@@ -241,12 +243,11 @@ export default class paymentService {
             let search = ``;
             let startDateTime = ``;
             let endDateTime = ``;
-            let origin = ``;
             let status = ``;
             let orderBy = `ORDER BY "createdAt" DESC`;
 
-            if (input.sortBy != null && input.order != null) {
-                orderBy = `ORDER BY ${sortBy[input.sortBy]} ${input.order}`
+            if (input.sortBy && input.order !== null) {
+                orderBy = `ORDER BY ${sortBy} ${input.order}`
             }
 
             if (input.limit) {
@@ -260,9 +261,147 @@ export default class paymentService {
             if (input.search) {
                 search = `
                     AND (
-                        UNACCENT(c.full_name) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(s.name) ILIKE UNACCENT(${'%' + input.search + '%'})
+                        UNACCENT(c.full_name) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(s.name) ILIKE UNACCENT('%${input.search}%')
+                    )`
+            }
+
+            if (input.startDateTime) {
+                startDateTime = `
+                    AND p.created_at >= '${input.startDateTime}'
+                `;
+            }
+
+            if (input.endDateTime) {
+                endDateTime = `
+                    AND p.created_at <= '${input.endDateTime}'
+                `;
+            }
+
+            if (input.status) {
+                status = `
+                    AND p.status = '${input.status}'
+                `;
+            }
+
+            if (input.storeId) {
+                store = `
+                    AND p.id_store = ${input.storeId}
+                `;
+            }
+
+            if (input.clientId) {
+                client = `
+                    AND p.id_client = ${input.clientId}
+                `;
+            }
+
+            const query: {
+                total: number,
+                id: number,
+                createdAt: string,
+                clientName: string,
+                storeName: string,
+                installments: number,
+                invoiceNumber: string,
+                status: string,
+                value: number
+            }[] = await prisma.$queryRaw(`
+                WITH result AS (
+                    SELECT
+                        p.id_payment AS id,
+                        p.created_at AS "createdAt",
+                        c.full_name AS "clientName",
+                        s.name AS "storeName",
+                        p.installments,
+                        p.invoicenumber AS "invoiceNumber",
+                        p.status,
+                        SUM(pi.val_value) AS value
+                    FROM
+                        payment p
+                        JOIN paymentitem pi USING (id_payment)
+                        JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
+                        JOIN client c ON (c.id = psc.id_client)
+                        JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
+                        JOIN store s ON (s.id = pss.id_store)
+                    WHERE
+                        p.id_paymentsystem = ${input.id_paymentsystem}
+                        ${store}
+                        ${client}
+                        ${startDateTime}
+                        ${endDateTime}
+                        ${status}
+                        ${search}
+                    GROUP BY
+                        1, 2, 3, 4, 5
+                )
+                SELECT
+                    *
+                FROM (
+                    TABLE result
+                    ${orderBy}
+                    ${limit}
+                    ${page}
+                ) result_paginated
+                JOIN (SELECT COUNT(*) AS total FROM result) AS total ON true
+            `);
+
+            return Promise.resolve({
+                data: query.map(({ total, ...item }) => item),
+                total: (query.length) ? +query[0].total : 0
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public getAllPaymentsItems = async(input: Interfaces.GetAllPaymentItemsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsItemsOutput>, total: number }> => {
+        try {
+            logger.silly('Calling getAllPaymentsItems');
+            
+            let sortBy: string = {
+                "id": "id",
+                "createdAt": "createdAt",
+                "clientName": "clientName",
+                "storeName": "storeName",
+                "invoiceNumber": "invoiceNumber",
+                "value": "value",
+                "origin": "origin"
+            }[input.sortBy];
+
+            sortBy = !input.sortBy ? "createdAt" : sortBy[input.sortBy]
+
+            let store = ``;
+            let client = ``;
+            let limit = ``;
+            let page = ``;
+            let search = ``;
+            let startDateTime = ``;
+            let endDateTime = ``;
+            let origin = ``;
+            let status = ``;
+            let orderBy = `ORDER BY "createdAt" DESC`;
+
+            if (input.sortBy && input.order !== null) {
+                orderBy = `ORDER BY ${sortBy} ${input.order}`
+            }
+
+            if (input.limit) {
+                limit = `LIMIT ${input.limit || input.limitByPage}`;
+            }
+
+            if (input.page && input.limit) {
+                page = `OFFSET (${(input.page > 0) ? input.page - 1 : 0} * ${input.limit || input.limitByPage})`;
+            }
+
+            if (input.search) {
+                search = `
+                    AND (
+                        UNACCENT(c.full_name) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(s.name) ILIKE UNACCENT('%${input.search}%')
                     )`
             }
 
@@ -315,23 +454,20 @@ export default class paymentService {
             }[] = await prisma.$queryRaw(`
                 WITH result AS (
                     SELECT
-                        p.id_payment AS id,
+                        pi.id_paymentitem AS id,
                         p.created_at AS "createdAt",
                         c.full_name AS "clientName",
-                        s.name AS "storeName",
-                        p.installments,
-                        pi.id_paymentorigin AS "paymentorigin",
-                        po.nme_origin AS "origin",
                         p.invoicenumber AS "invoiceNumber",
-                        p.status,
-                        SUM(pi.val_value) AS value
+                        s.name AS "storeName",
+                        po.nme_origin AS "origin",
+                        pi.val_value AS value
                     FROM
-                        payment p
-                        JOIN paymentitem pi USING (id_payment)
+                        paymentitem pi
                         JOIN paymentorigin po USING (id_paymentorigin)
+                        JOIN payment p USING (id_payment)
                         JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
-                        JOIN client c ON (c.id = psc.id_client)
                         JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
+                        JOIN client c ON (c.id = psc.id_client)
                         JOIN store s ON (s.id = pss.id_store)
                     WHERE
                         p.id_paymentsystem = ${input.id_paymentsystem}
