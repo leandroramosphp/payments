@@ -1,3 +1,5 @@
+import { inlineRef } from "ajv/dist/compile/resolve";
+
 export interface CreatePayment {
     storeId: number;
     mallId: number;
@@ -32,6 +34,22 @@ export interface GetAllPaymentsInput {
     clientId: number;
     storeId: number;
     mallId: number;
+    status: string;
+    endDateTime: string;
+    startDateTime: string;
+    search: string;
+    limit: number;
+    limitByPage: number;
+    page: number;
+    sortBy: number;
+    order: string;
+    id_paymentsystem: number;
+}
+
+export interface GetAllPaymentItemsInput {
+    clientId: number;
+    storeId: number;
+    mallId: number;
     origin: string;
     status: string;
     endDateTime: string;
@@ -46,6 +64,16 @@ export interface GetAllPaymentsInput {
 }
 
 export interface GetAllPaymentsOutput {
+    id: number;
+    createdAt: string;
+    clientName: string;
+    storeName: string;
+    installments: number;
+    value: number;
+    status: string;
+}
+
+export interface GetAllPaymentsItemsOutput {
     id: number;
     createdAt: string;
     clientName: string;
