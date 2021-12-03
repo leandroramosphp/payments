@@ -358,7 +358,7 @@ export default class paymentService {
 
     public getAllPaymentsItems = async(input: Interfaces.GetAllPaymentItemsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsItemsOutput>, total: number }> => {
         try {
-            logger.silly('Calling getAllPayments');
+            logger.silly('Calling getAllPaymentsItems');
             
             const sortBy: string = {
                 "id": "id",

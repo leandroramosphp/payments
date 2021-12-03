@@ -149,7 +149,7 @@ export default (app: Router) => {
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
-            logger.debug('Chamando endpoint para buscar todas os pagamentos do lojista');
+            logger.debug('Chamando endpoint para buscar conciliações de todos os pagamentos do lojista');
             try {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.GetAllPaymentItemsInput = {
