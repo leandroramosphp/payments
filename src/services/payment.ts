@@ -456,6 +456,7 @@ export default class paymentService {
                         pi.id_payment AS id,
                         p.created_at AS "createdAt",
                         c.full_name AS "clientName",
+                        p.invoicenumber AS "invoiceNumber",
                         s.name AS "storeName",
                         pi.id_paymentorigin AS "paymentorigin",
                         po.nme_origin AS "origin",
