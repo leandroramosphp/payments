@@ -247,7 +247,7 @@ export default class paymentService {
             let status = ``;
             let orderBy = ``;
 
-            orderBy = `ORDER BY ${sortBy[input.sortBy] || "createdAt"} ${input.order || 'DESC'}`
+            orderBy = `ORDER BY ${sortBy[input.sortBy] || '"createdAt"'} ${input.order || 'DESC'}`
 
             if (input.limit) {
                 limit = `LIMIT ${input.limit || input.limitByPage}`;
