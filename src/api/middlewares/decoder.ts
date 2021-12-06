@@ -9,19 +9,26 @@ async function decoder(req: Request, res: Response, next: NextFunction) {
       const key = config.encryption.key
       const iv = config.encryption.iv
 
-      const decipher = crypto.createDecipheriv(algorithm, key, iv)
-      let deciphered = decipher.update(req.body.storeId, 'hex', 'utf-8')
-      deciphered += decipher.final('utf-8')
-      
-      if (!+deciphered) {
+      if (!crypto.createDecipheriv(algorithm, key, iv)) {
         throw ({
           status: 400,
           message: "Identificador da loja inválido. Escaneie o QR Code novamente."
         })
       }
 
-      req.body.storeId = +deciphered
+      const decipher = crypto.createDecipheriv(algorithm, key, iv)
+      let deciphered: any = decipher.update(req.body.storeId, 'hex', 'utf-8')
+      deciphered += decipher.final('utf-8')
 
+      if (isNaN(deciphered)) {
+        throw ({
+          status: 400,
+          message: "Identificador da loja inválido. Escaneie o QR Code novamente."
+        })
+      }
+      
+      res.locals.data.storeId = +deciphered
+    
       next();
     } else {
       next();

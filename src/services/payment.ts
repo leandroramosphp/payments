@@ -101,6 +101,9 @@ export default class paymentService {
             return Promise.resolve();
         }
         catch (e) {
+            if (e?.response?.data?.error?.category === 'invalid_card_number') {
+                return Promise.reject({ message: "O número do cartão não é um número de cartão de crédito válido.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
@@ -234,8 +237,6 @@ export default class paymentService {
                 "value": "value"
             }[input.sortBy];
 
-            sortBy = !input.sortBy ? "createdAt" : sortBy[input.sortBy]
-
             let store = ``;
             let client = ``;
             let limit = ``;
@@ -244,11 +245,9 @@ export default class paymentService {
             let startDateTime = ``;
             let endDateTime = ``;
             let status = ``;
-            let orderBy = `ORDER BY "createdAt" DESC`;
+            let orderBy = ``;
 
-            if (input.sortBy && input.order !== null) {
-                orderBy = `ORDER BY ${sortBy} ${input.order}`
-            }
+            orderBy = `ORDER BY ${sortBy[input.sortBy] || '"createdAt"'} ${input.order || 'DESC'}`
 
             if (input.limit) {
                 limit = `LIMIT ${input.limit || input.limitByPage}`;

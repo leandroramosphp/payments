@@ -8,7 +8,6 @@ const createBankAccountSchema =
         },
         "storeId": {
             "type": ["integer", "string"],
-            "pattern": "^[0-9]+$"
         },
         "mallId": {
             "type": "string",

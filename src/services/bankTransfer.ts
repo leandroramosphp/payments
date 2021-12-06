@@ -89,6 +89,9 @@ export default class bankTransferService {
             if (e?.response?.data?.error?.message === 'Sender is delinquent') {
                 return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
             }
+            if (e?.response?.data?.error?.message === 'Insufficient escrow funds') {
+                return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
@@ -98,10 +101,10 @@ export default class bankTransferService {
             logger.silly('Calling getBankTransfers');
 
             const sortBy: string = {
-                "id": "bt.id_banktransfer",
-                "bankName": "ba.bankname",
-                "accountNumber": "ba.accountnumber",
-                "createdAt": "bt.created_at",
+                "id": "id",
+                "bankName": "bankName",
+                "accountNumber": "accountNumber",
+                "createdAt": "createdAt",
                 "value": "value"
             }[input.sortBy];
 
@@ -110,11 +113,9 @@ export default class bankTransferService {
             let search = ``;
             let startDateTime = ``;
             let endDateTime = ``;
-            let orderBy = `ORDER BY bt.created_at DESC`;
+            let orderBy = ``;
 
-            if (input.sortBy != null && input.order != null) {
-                orderBy = `ORDER BY ${sortBy[input.sortBy]} ${input.order}`
-            }
+            orderBy = `ORDER BY ${sortBy || '"createdAt"'} ${input.order || "DESC"}`
 
             if (input.limit) {
                 limit = `LIMIT ${input.limit || input.limitByPage}`;
@@ -127,20 +128,20 @@ export default class bankTransferService {
             if (input.search) {
                 search = `
                     AND (
-                        UNACCENT(ba.bankname) ILIKE UNACCENT(${'%' + input.search + '%'})
-                        OR UNACCENT(ba.accountnumber) ILIKE UNACCENT(${'%' + input.search + '%'})
+                        UNACCENT(ba.bankname) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(ba.accountnumber) ILIKE UNACCENT('%${input.search}%')
                     )`
             }
 
             if (input.startDateTime) {
                 startDateTime = `
-                    AND bt.created_at >= ${input.startDateTime}
+                    AND bt.created_at >= '${input.startDateTime}'
                 `;
             }
 
             if (input.endDateTime) {
                 endDateTime = `
-                    AND bt.created_at <= ${input.endDateTime}
+                    AND bt.created_at <= '${input.endDateTime}'
                 `;
             }
 
