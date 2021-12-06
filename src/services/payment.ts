@@ -101,8 +101,14 @@ export default class paymentService {
             return Promise.resolve();
         }
         catch (e) {
+            if (e?.response?.data?.error?.category === 'expired_card_error') {
+                return Promise.reject({ message: "O cartão de crédito expirou.", status: 400 });
+            }
             if (e?.response?.data?.error?.category === 'invalid_card_number') {
                 return Promise.reject({ message: "O número do cartão não é um número de cartão de crédito válido.", status: 400 });
+            }
+            if (e?.response?.data?.error?.category === 'service_request_timeout') {
+                return Promise.reject({ message: "Serviço temporariamente indisponível, tente novamente mais tarde.", status: 400 });
             }
             return Promise.reject(e);
         }
