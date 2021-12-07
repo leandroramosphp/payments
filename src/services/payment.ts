@@ -231,8 +231,7 @@ export default class paymentService {
     public getAllPayments = async (input: Interfaces.GetAllPaymentsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsOutput>, total: number }> => {
         try {
             logger.silly('Calling getAllPayments');
-            
-            let sortBy: string = {
+            const sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
                 "clientName": "clientName",
@@ -253,7 +252,7 @@ export default class paymentService {
             let status = ``;
             let orderBy = ``;
 
-            orderBy = `ORDER BY ${sortBy[input.sortBy] || '"createdAt"'} ${input.order || 'DESC'}`
+            orderBy = `ORDER BY ${sortBy || '"createdAt"'} ${input.order || 'DESC'}`
 
             if (input.limit) {
                 limit = `LIMIT ${input.limit || input.limitByPage}`;
