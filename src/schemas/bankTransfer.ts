@@ -4,7 +4,7 @@ const createBankTransferSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "bankAccountId": {
@@ -33,6 +33,37 @@ const getBankTransfersSchema =
         "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
+        },
+        "startDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "endDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "search": {
+            "type": "string"
+        },
+        "page": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limitByPage": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limit": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "sortBy": {
+            "type": "string",
+            "enum": ["id", "bankName", "accountNumber", "createdAt", "value"]
+        },
+        "order": {
+            "type": "string",
+            "enum": ["asc", "desc"]
         }
     },
     "required": ["storeId", "mallId"]

@@ -1,9 +1,9 @@
 export interface CreateCreditCard {
-    mallId: number;
     clientId: number;
     creditCardToken: string;
-    id_payment: string;
-    clientPaymentId: number;
+    cod_external: string;
+    id_paymentsystem: number;
+    cod_marketplace: string;
 }
 
 export interface CreditCardDataInput {
@@ -17,7 +17,7 @@ export interface CreditCardDataInput {
 }
 
 export interface CreditCardDataOutput {
-    id: string;
+    id: number;
     cardBrand: string;
     first4Digits: string;
     last4Digits: string;
@@ -27,12 +27,13 @@ export interface CreditCardDataOutput {
 }
 
 export interface DisableCreditCard {
-    mallId: number;
     clientId: number;
     id: number;
+    id_paymentsystem: number;
+    cod_marketplace: string;
 }
 
 export interface GetCreditCards {
-    mallId: number;
     clientId: number;
+    id_paymentsystem: number;
 }

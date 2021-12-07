@@ -4,8 +4,7 @@ const createPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -24,7 +23,7 @@ const createPaymentSchema =
             "type": "number"
         }
     },
-    "required": ["storeId", "mallId", "clientId", "value", "creditCardId"]
+    "required": ["storeId", "mallId", "clientId", "value", "creditCardId", "installments"]
 }
 
 const acceptPaymentSchema =
@@ -33,8 +32,7 @@ const acceptPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -58,8 +56,7 @@ const rejectPaymentSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -78,6 +75,83 @@ const getAllPaymentsSchema =
     "title": "getAllPaymentsSchema",
     "type": "object",
     "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "storeId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "succeeded",
+                "refunded"
+            ]
+        },
+        "startDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "endDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "search": {
+            "type": "string"
+        },
+        "page": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limitByPage": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limit": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "sortBy": {
+            "type": "string",
+            "enum": [
+                "id",
+                "invoiceNumber",
+                "createdAt",
+                "storeName",
+                "clientName",
+                "installments",
+                "value",
+                "status"
+            ]
+        },
+        "order": {
+            "type": "string",
+            "enum": ["asc", "desc"]
+        }
+    },
+    "required": ["mallId"],
+    "anyOf": [
+        { "required": ["clientId"] },
+        { "required": ["storeId"] }
+    ]
+}
+
+const getAllPaymentItemsSchema =
+{
+    "title": "getAllPaymentItemsSchema",
+    "type": "object",
+    "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
         "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
@@ -101,38 +175,51 @@ const getAllPaymentsSchema =
                 "refunded"
             ]
         },
-        "startDate": {
+        "startDateTime": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
         },
-        "endDate": {
+        "endDateTime": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
         },
         "search": {
             "type": "string"
         },
-        "limit": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
         "page": {
             "type": "string",
-            "pattern": "^[0-9]+$"
+            "pattern": "^[0-9]+$",
         },
-        "column": {
+        "limitByPage": {
             "type": "string",
-            "pattern": "^[0-9]+$"
+            "pattern": "^[0-9]+$",
+        },
+        "limit": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "sortBy": {
+            "type": "string",
+            "enum": [
+                "id",
+                "invoiceNumber",
+                "createdAt",
+                "clientName",
+                "value",
+                "origin",
+                "storeName"
+            ]
         },
         "order": {
             "type": "string",
-            "enum": [
-                "asc",
-                "desc"
-            ]
+            "enum": ["asc", "desc"]
         }
     },
-    "required": ["storeId", "mallId"]
+    "required": ["mallId"],
+    "anyOf": [
+        { "required": ["clientId"] },
+        { "required": ["storeId"] }
+    ]
 }
 
 export default [
@@ -151,5 +238,9 @@ export default [
     {
         name: "getAllPaymentsSchema",
         schema: getAllPaymentsSchema
+    },
+    {
+        name: "getAllPaymentItemsSchema",
+        schema: getAllPaymentItemsSchema
     }
 ]

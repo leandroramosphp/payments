@@ -4,8 +4,7 @@ const createCreditCardSchema =
     "type": "object",
     "properties": {
         "clientId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "integer",
         },
         "creditCardToken": {
             "type": "string"
@@ -24,8 +23,7 @@ const disableCreditCardSchema =
     "type": "object",
     "properties": {
         "clientId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": "integer",
         },
         "id": {
             "type": "string",

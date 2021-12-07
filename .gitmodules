@@ -1,0 +1,3 @@
+[submodule "mos-database"]
+	path = mos-database
+	url = git@git.wiseit.com.br:spotmetrics/mos-database.git

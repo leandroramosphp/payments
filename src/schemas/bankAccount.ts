@@ -7,8 +7,7 @@ const createBankAccountSchema =
             "type": "string"
         },
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
+            "type": ["integer", "string"],
         },
         "mallId": {
             "type": "string",
@@ -28,7 +27,7 @@ const disableBankAccountSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": "string",
+            "type": ["integer", "string"],
             "pattern": "^[0-9]+$"
         },
         "mallId": {
