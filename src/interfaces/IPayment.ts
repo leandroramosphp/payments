@@ -1,6 +1,6 @@
 export interface CreatePayment {
     storeId: number;
-    mallId: number;
+    mallId?: number;
     clientId: number;
     value: number;
     installments: number;
@@ -13,7 +13,6 @@ export interface CreatePayment {
 
 export interface AcceptPayment {
     storeId: number;
-    mallId: number;
     id: number;
     invoiceNumber: string;
     id_paymentsystem: number;
@@ -21,7 +20,6 @@ export interface AcceptPayment {
 
 export interface RejectPayment {
     storeId: number;
-    mallId: number;
     id: number;
     id_paymentsystem: number;
     cod_external: string;
@@ -31,7 +29,6 @@ export interface RejectPayment {
 export interface GetAllPaymentsInput {
     clientId: number;
     storeId: number;
-    mallId: number;
     status: string;
     endDateTime: string;
     startDateTime: string;
@@ -47,7 +44,6 @@ export interface GetAllPaymentsInput {
 export interface GetAllPaymentItemsInput {
     clientId: number;
     storeId: number;
-    mallId: number;
     origin: string;
     status: string;
     endDateTime: string;

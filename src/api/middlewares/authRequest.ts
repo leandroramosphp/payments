@@ -2,14 +2,14 @@ import axios from 'axios';
 import config from '../../config';
 
 async function internalRequest(req: any, res: any, next: any, isAuthorizationEnabled: boolean) {
-    let authHost = config.authApi.host;
+    let authHost = config.authApi.host + config.authApi.mosMallPrefix;
     let authEndpoint = config.authApi.authInternalEndpoint
 
     let mallId = parseInt(req.query.mallId)
     if (!Number.isInteger(mallId))
         return res.status(400).json({ message: 'Mall ID required.' });
 
-    let urlSplitted = req.baseUrl.split(`${config.api.root + config.api.version}`);
+        let urlSplitted = req.baseUrl.split(`${config.apiMos.root + config.apiMos.version}`);
     let baseEndpoint = urlSplitted[urlSplitted.length - 1];
 
     try {

@@ -1,10 +1,10 @@
 import { Service, Inject } from 'typedi';
 import axios from 'axios';
 
-import * as Interfaces from '../interfaces/IPayment';
-import config from '../config';
-import logger from '../loaders/logger';
-import prisma from '../loaders/prisma';
+import * as Interfaces from '../../interfaces/IPayment';
+import config from '../../config';
+import logger from '../../loaders/logger';
+import prisma from '../../loaders/prisma';
 
 @Service()
 export default class paymentService {
@@ -126,7 +126,7 @@ export default class paymentService {
                 where: {
                     id_payment: input.id,
                     status: 'pending',
-                    id_store: input.storeId,
+                    id_store: +input.storeId,
                     id_paymentsystem: input.id_paymentsystem
                 }
             })
@@ -152,7 +152,7 @@ export default class paymentService {
                     payment: {
                         id_paymentsystem: input.id_paymentsystem,
                         status: 'pending',
-                        id_store: input.storeId
+                        id_store: +input.storeId
                     }
                 },
                 select: {
@@ -206,7 +206,7 @@ export default class paymentService {
                 where: {
                     id_payment: input.id,
                     status: 'pending',
-                    id_store: input.storeId,
+                    id_store: +input.storeId,
                     id_paymentsystem: input.id_paymentsystem
                 }
             })

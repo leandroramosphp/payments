@@ -1,9 +1,11 @@
 import { Service, Inject } from 'typedi';
-import * as Interfaces from '../interfaces/ICreditCard';
 import axios from 'axios';
-import config from '../config';
-import logger from '../loaders/logger';
-import prisma from '../loaders/prisma';
+
+import config from '../../config';
+import logger from '../../loaders/logger';
+import prisma from '../../loaders/prisma';
+
+import * as Interfaces from '../../interfaces/ICreditCard';
 
 @Service()
 export default class creditCardService {

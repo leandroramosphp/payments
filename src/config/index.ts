@@ -15,14 +15,22 @@ export default {
         level: process.env.LOG_LEVEL,
     },
 
-    api: {
-        root: '/mos',
-        version: '/v1',
-        prefix: '/payment-management'
+    apiMos: {
+        root: "/mos",
+        version: "/v1",
+        prefix: "/payment-management"
     },
-
+    
+    apiMosStore: {
+        root: "/mos-store",
+        version: "/v1",
+        prefix: "/payment-management",
+    },
+      
     authApi: {
-        host: process.env.AUTH_API_HOST + '/mos/v1/auth-api',
+        host: process.env.AUTH_API_HOST,
+        mosMallPrefix: '/mos/v1/auth-api',
+        mosStorePrefix: '/mos-store/v1/auth-api',
         authInternalEndpoint: '/authorization',
     },
 
