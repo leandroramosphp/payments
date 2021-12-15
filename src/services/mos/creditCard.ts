@@ -4,6 +4,8 @@ import axios from 'axios';
 import config from '../../config';
 import logger from '../../loaders/logger';
 import prisma from '../../loaders/prisma';
+import rsa from 'node-rsa';
+import fs from 'fs'
 
 import * as Interfaces from '../../interfaces/ICreditCard';
 
@@ -54,8 +56,8 @@ export default class creditCardService {
             return Promise.reject(e);
         }
     }
-
     public disableCreditCard = async (input: Interfaces.DisableCreditCard): Promise<any> => {
+
         try {
             logger.silly('Calling disableCreditCard');
 
@@ -143,6 +145,28 @@ export default class creditCardService {
         }
         catch (e) {
             return Promise.reject(e);
+        }
+    }
+
+    private generateToken = async (input): Promise<void> => {
+        try {
+            const publicKey = new rsa();
+            const privateKey = new rsa();
+
+            const saltFirt = "sdfghjklçlkjh76y543ewsdxcx"
+            const saltSecond = "sdfgsdsfrgthjyukilhjklçlk" 
+
+            const publ = fs.readFileSync("./Keys/public.pem", "utf-8");
+            const priv = fs.readFileSync("./Keys/private.pem", "utf-8");
+
+            publicKey.importKey(publ);
+            privateKey.importKey(priv);
+
+            const encrypted = privateKey.encryptPrivate(saltFirt + input + saltSecond, "base64")
+            
+
+        } catch (e) {
+
         }
     }
 }
