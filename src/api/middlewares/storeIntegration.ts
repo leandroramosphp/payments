@@ -10,23 +10,27 @@ let storeIntegration = () => {
             if (!res.locals.data.storeId) {
                 return next();
             }
+
             const initialData = await prisma.$transaction([
-                prisma.paymentsystem.findFirst({
+                prisma.paymentsystem_store.findFirst({
                     where: {
-                        id_mall: +res.locals.data.mallId,
-                        flg_active: true
+                        id_store: +res.locals.data.storeId,
+                        paymentsystem: {
+                            flg_active: true
+                        }
                     },
                     select: {
-                        id_paymentsystem: true,
-                        cod_marketplace: true
+                        paymentsystem: {
+                            select: {
+                                id_paymentsystem: true,
+                                cod_marketplace: true
+                            }
+                        }
                     }
                 }),
                 prisma.store.findUnique({
                     where: {
-                        store_id_mall_id_key: {
-                            id: +res.locals.data.storeId,
-                            mall_id: +res.locals.data.mallId
-                        }
+                        id: +res.locals.data.storeId,
                     },
                     select: {
                         cnpj: true,
@@ -51,7 +55,7 @@ let storeIntegration = () => {
                 where: {
                     id_store_id_paymentsystem: {
                         id_store: +res.locals.data.storeId,
-                        id_paymentsystem: paymentSystem.id_paymentsystem
+                        id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem
                     }
                 },
                 select: {
@@ -61,14 +65,14 @@ let storeIntegration = () => {
 
             if (paymentSystemStore) {
                 /* Loja já registrada no sistema de pagamentos */
-                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: paymentSystemStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
+                res.locals.store = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: paymentSystemStore.cod_external, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace, name: store.name };
                 return next();
             }
 
             const dupStore = await prisma.paymentsystem_store.findFirst({
                 where: {
                     store: {
-                        mall_id: +res.locals.data.mallId,
+                        id: +res.locals.data.storeId,
                         cnpj: store.cnpj
                     }
                 },
@@ -81,15 +85,15 @@ let storeIntegration = () => {
                 await prisma.paymentsystem_store.create({
                     data: {
                         cod_external: dupStore.cod_external,
-                        id_paymentsystem: paymentSystem.id_paymentsystem,
+                        id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem,
                         id_store: +res.locals.data.storeId
                     }
                 })
 
-                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
+                res.locals.store = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace, name: store.name };
             } else { /* cnpj não cadastrado no sistema de pagamentos, novo cadastro será realizado */
                 const registeredStore: { id: string } = (await axios.post(
-                    config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
+                    config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', paymentSystem.paymentsystem.cod_marketplace),
                     {
                         ein: store.cnpj,
                         business_name: store.name
@@ -108,12 +112,12 @@ let storeIntegration = () => {
                 await prisma.paymentsystem_store.create({
                     data: {
                         cod_external: registeredStore.id,
-                        id_paymentsystem: paymentSystem.id_paymentsystem,
+                        id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem,
                         id_store: +res.locals.data.storeId
                     }
                 })
 
-                res.locals.store = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: paymentSystem.cod_marketplace, name: store.name };
+                res.locals.store = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace, name: store.name };
             }
 
             return next();

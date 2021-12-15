@@ -1,8 +1,10 @@
 import express, { Router, Application } from 'express';
 import cors from 'cors';
-import routes from '../api';
-import config from '../config';
+
 import logger from '../loaders/logger';
+
+import routesMos from '../api/routes/mos';
+import routesMosStore from '../api/routes/mosStore';
 
 export default async ({ app }: { app: Application }) => {
     app.use(cors());
@@ -11,7 +13,9 @@ export default async ({ app }: { app: Application }) => {
 
     const router = Router();
 
-    app.use(config.api.root + config.api.version + config.api.prefix, routes(router));
+    app.use('/', routesMos(router));
+    app.use('/', routesMosStore(router));
+    // app.use(config.api.root + config.api.version + config.api.prefix, routes(router));
 
     app.use((req, res, next) => {
         const err = new Error('Not Found');

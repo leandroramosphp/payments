@@ -1,11 +1,12 @@
 import { Service, Inject } from 'typedi';
-import * as Interfaces from '../interfaces/IStore';
-import axios from 'axios';
-import config from '../config';
-import logger from '../loaders/logger';
-import prisma from '../loaders/prisma';
 import { toString } from 'qrcode';
 import crypto from 'crypto'
+import axios from 'axios';
+
+import config from '../../config';
+import logger from '../../loaders/logger';
+
+import * as Interfaces from '../../interfaces/IStore';
 
 @Service()
 export default class storeService {
