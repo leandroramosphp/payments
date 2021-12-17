@@ -15,6 +15,8 @@ export default {
         level: process.env.LOG_LEVEL,
     },
 
+    privateKey: process.env.PRIVATE_KEY,
+
     apiMos: {
         root: "/mos",
         version: "/v1",
@@ -49,7 +51,8 @@ export default {
             createPayment: '$MARKETPLACEID' + '/transactions',
             reversePayment: '$MARKETPLACEID' + '/transactions/{transaction_id}/void',
             getAccountBalance: '$MARKETPLACEID' + '/sellers/{seller_id}/balances',
-            createBankTransfer: '$MARKETPLACEID' + '/bank_accounts/{bank_account_id}/transfers'
+            createBankTransfer: '$MARKETPLACEID' + '/bank_accounts/{bank_account_id}/transfers',
+            generateToken: '$MARKETPLACEID' + '/cards/tokens'
         }
     },
 
@@ -58,6 +61,4 @@ export default {
         algorithm: 'aes-256-ctr',
         iv: process.env.IV,
     }
-
-
 };

@@ -6,7 +6,7 @@ const createCreditCardSchema =
         "clientId": {
             "type": "integer",
         },
-        "creditCardToken": {
+        "encryptedCreditCard": {
             "type": "string"
         },
         "mallId": {
@@ -14,7 +14,7 @@ const createCreditCardSchema =
             "pattern": "^[0-9]+$"
         }
     },
-    "required": ["clientId", "creditCardToken", "mallId"]
+    "required": ["clientId", "encryptedCreditCard", "mallId"]
 }
 
 const disableCreditCardSchema =

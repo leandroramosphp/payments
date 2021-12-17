@@ -1,9 +1,9 @@
 export interface CreateCreditCard {
     clientId: number;
-    creditCardToken: string;
     cod_external: string;
     id_paymentsystem: number;
     cod_marketplace: string;
+    encryptedCreditCard: string;
 }
 
 export interface CreditCardDataInput {
@@ -36,4 +36,21 @@ export interface DisableCreditCard {
 export interface GetCreditCards {
     clientId: number;
     id_paymentsystem: number;
+}
+
+export interface ICard {
+    holder_name: any;
+    expiration_month: any;
+    expiration_year: any;
+    card_number: any;
+    security_code: any;
+}
+
+export interface IRequestGenerateToken {
+    cod_marketplace: any;
+    encryptedCard: any;
+}
+
+export interface IResponseGenerateToken {
+    id: string;
 }

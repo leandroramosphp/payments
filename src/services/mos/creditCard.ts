@@ -5,20 +5,57 @@ import config from '../../config';
 import logger from '../../loaders/logger';
 import prisma from '../../loaders/prisma';
 import rsa from 'node-rsa';
-import fs from 'fs'
 
 import * as Interfaces from '../../interfaces/ICreditCard';
 
 @Service()
 export default class creditCardService {
+    private generateToken = async (encryptedCreditCard: string, cod_marketplace: string): Promise<Interfaces.IResponseGenerateToken> => {
+        try {
+            const privateKey = new rsa(config.privateKey); 
+            const decrypt = privateKey.decrypt(encryptedCreditCard, "utf8");
+            const cardObj:any = JSON.parse(decrypt);
+
+            const token = (await axios.post(
+                config.paymentApi.host + config.paymentApi.endpoints.generateToken.replace('$MARKETPLACEID', cod_marketplace),
+                {
+                    holder_name: cardObj.holder_name,
+                    expiration_month: cardObj.expiration_month,
+                    expiration_year: cardObj.expiration_year,
+                    card_number: cardObj.card_number,
+                    security_code: cardObj.security_code
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    auth: {
+                        username: config.paymentApi.username,
+                        password: config.paymentApi.password
+                    },
+                }
+            )).data;
+
+            return {
+                id: token.id
+            }
+        } catch (e) {
+            if (e.response)
+            return Promise.reject({ status: e.response.status, data: e.response.data });
+          else
+            return Promise.reject(e);
+        }
+    }
+
     public createCreditCard = async (input: Interfaces.CreateCreditCard): Promise<void> => {
         try {
             logger.silly('Calling createCreditCard');
 
+            const token = await this.generateToken(input.encryptedCreditCard, input.cod_marketplace)
             const creditCardData: Interfaces.CreditCardDataInput = (await axios.post(
                 config.paymentApi.host + config.paymentApi.endpoints.createCreditCard.replace('$MARKETPLACEID', input.cod_marketplace),
                 {
-                    token: input.creditCardToken,
+                    token: token.id,
                     customer: input.cod_external
                 },
                 {
@@ -56,6 +93,7 @@ export default class creditCardService {
             return Promise.reject(e);
         }
     }
+
     public disableCreditCard = async (input: Interfaces.DisableCreditCard): Promise<any> => {
 
         try {
@@ -145,28 +183,6 @@ export default class creditCardService {
         }
         catch (e) {
             return Promise.reject(e);
-        }
-    }
-
-    private generateToken = async (input): Promise<void> => {
-        try {
-            const publicKey = new rsa();
-            const privateKey = new rsa();
-
-            const saltFirt = "sdfghjklçlkjh76y543ewsdxcx"
-            const saltSecond = "sdfgsdsfrgthjyukilhjklçlk" 
-
-            const publ = fs.readFileSync("./Keys/public.pem", "utf-8");
-            const priv = fs.readFileSync("./Keys/private.pem", "utf-8");
-
-            publicKey.importKey(publ);
-            privateKey.importKey(priv);
-
-            const encrypted = privateKey.encryptPrivate(saltFirt + input + saltSecond, "base64")
-            
-
-        } catch (e) {
-
         }
     }
 }
