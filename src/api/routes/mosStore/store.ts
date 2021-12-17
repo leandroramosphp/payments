@@ -41,7 +41,31 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-    
+
+    route.get('/marketplace',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.query.storeId,
+            };
+            next();
+        },
+        middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_BALANCE")
+        },
+        middlewares.validateInput('getStoreBalanceMosStoreSchema'),
+        middlewares.storeIntegration(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            logger.debug('Chamando endpoint para buscar cod. marketplace da loja');
+            try {
+                const response = { marketplaceId: res.locals.store.cod_marketplace }
+                res.status(200).json(response);
+            } catch (e) {
+                logger.error('🔥 Falha ao buscar  cod. marketplace da loja: %o', e);
+                return next(e);
+            }
+        });
+
     route.post('/qrcode',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
