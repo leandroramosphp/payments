@@ -68,9 +68,7 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        async (req: Request, res: Response, next: NextFunction) => {
-            await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
-        },
+        middlewares.authRequest(false),
         middlewares.validateInput('getAllPaymentsMosSchema'),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),

@@ -89,7 +89,6 @@ const getAllPaymentsMosSchema =
             "enum": ["asc", "desc"]
         } 
     },
-    "required": ["mallId"],
     "anyOf": [
         { "required": ["clientId"] },
         { "required": ["storeId"] }
