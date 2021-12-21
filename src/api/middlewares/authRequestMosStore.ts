@@ -35,10 +35,13 @@ export default async function Authorize(req: Request, res: Response, next: NextF
 
         let response = await axios.post(config.authApi.host + config.authApi.mosStorePrefix + config.authApi.authInternalEndpoint, authObjectRequest)
 
-        
         req.headers['employee-id'] = response.headers['employee-id'];
         return next();
     } catch (err) {
-        return res.status(err.status || 500).json({ message: err.message })
+        return res.status(err.response.status || err.status || 500)
+            .json({
+                message: err.response.data.message || err.message,
+                errors: err.response.data.errors
+            })
     }
 }
