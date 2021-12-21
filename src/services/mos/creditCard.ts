@@ -40,9 +40,15 @@ export default class creditCardService {
                 id: token.id
             }
         } catch (e) {
-            if (e.response)
-            return Promise.reject({ status: e.response.status, data: e.response.data });
-          else
+            if(e?.message.includes('decoding error')) {
+                return Promise.reject({ message: "Falha ao decodificar dados do cartão, verifique se dados foram encriptados utilizando a chave pública fornecida pelo administrador com criptografia RSA OAEP e codificados em base64", status: 400 });
+            }
+            if (e instanceof SyntaxError) {
+                return Promise.reject({ message: "Objeto JSON contendo dados do cartão de crédito inválido", status: 400 });
+            }
+            if (e?.response?.data?.error?.type === 'invalid_request_error') {
+                return Promise.reject({ message: "Dados do cartão de crédito inválidos.", status: 400 });
+            }
             return Promise.reject(e);
         }
     }
