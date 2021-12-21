@@ -26,6 +26,7 @@ CMD [ "sh","-c", \
         [ -z $(printenv USERNAME_ZOOP) ] || \
         [ -z $(printenv AUTH_API_HOST) ] || \
         [ -z $(printenv LOG_LEVEL) ] || \
+        [ -z $(printenv PRIVATE_KEY) ] || \
         [ -z $(printenv KEY) ] || \
         [ -z $(printenv IV) ] || \
         [ -z $(printenv PORT) ]; \

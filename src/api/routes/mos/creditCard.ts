@@ -14,7 +14,7 @@ export default (app: Router) => {
             res.locals.data = {
                 mallId: req.query.mallId,
                 clientId: req.body.clientId,
-                creditCardToken: req.body.creditCardToken
+                encryptedCreditCard: req.body.encryptedCreditCard
             };
             next();
         },
@@ -26,8 +26,8 @@ export default (app: Router) => {
             try {
                 const creditCardServiceInstance = Container.get(creditCardService);
                 const request: Interfaces.CreateCreditCard = {
+                    encryptedCreditCard: res.locals.data.encryptedCreditCard,
                     clientId: +res.locals.data.clientId,
-                    creditCardToken: res.locals.data.creditCardToken,
                     cod_external: res.locals.client.cod_external,
                     id_paymentsystem: +res.locals.client.id_paymentsystem,
                     cod_marketplace: res.locals.client.cod_marketplace
@@ -69,36 +69,6 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-
-    // route.post('/generate-token',
-    //     async (req: Request, res: Response, next: NextFunction) => {
-    //         res.locals.data = {
-    //             mallId: req.query.mallId,
-    //             clientId: req.body.clientId,
-    //             id: req.params.id
-    //         };
-    //         next();
-    //     },
-    //     middlewares.authRequest(false),
-    //     // middlewares.validateInput('disableCreditCardSchema'),
-    //     middlewares.clientIntegration(),
-    //     async (req: Request, res: Response, next: NextFunction) => {
-    //         logger.debug('Chamando endpoint para desabilitar cartão de crédito');
-    //         try {
-    //             const creditCardServiceInstance = Container.get(creditCardService);
-    //             const request: Interfaces.DisableCreditCard = {
-    //                 clientId: +res.locals.data.clientId,
-    //                 id: +res.locals.data.id,
-    //                 id_paymentsystem: +res.locals.client.id_paymentsystem,
-    //                 cod_marketplace: res.locals.client.cod_marketplace
-    //             }
-    //             await creditCardServiceInstance.generateToken(request);
-    //             res.status(200).json({ message: "Cartão de crédito desabilitado com sucesso." });
-    //         } catch (e) {
-    //             logger.error('🔥 Falha ao desabilitar cartão de crédito: %o', e);
-    //             return next(e);
-    //         }
-    //     });
 
     route.get('/',
         async (req: Request, res: Response, next: NextFunction) => {
