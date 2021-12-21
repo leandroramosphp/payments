@@ -15,14 +15,24 @@ export default {
         level: process.env.LOG_LEVEL,
     },
 
-    api: {
-        root: '/mos',
-        version: '/v1',
-        prefix: '/payment-management'
-    },
+    privateKey: process.env.PRIVATE_KEY,
 
+    apiMos: {
+        root: "/mos",
+        version: "/v1",
+        prefix: "/payment-management"
+    },
+    
+    apiMosStore: {
+        root: "/mos-store",
+        version: "/v1",
+        prefix: "/payment-management",
+    },
+      
     authApi: {
-        host: process.env.AUTH_API_HOST + '/mos/v1/auth-api',
+        host: process.env.AUTH_API_HOST,
+        mosMallPrefix: '/mos/v1/auth-api',
+        mosStorePrefix: '/mos-store/v1/auth-api',
         authInternalEndpoint: '/authorization',
     },
 
@@ -41,7 +51,8 @@ export default {
             createPayment: '$MARKETPLACEID' + '/transactions',
             reversePayment: '$MARKETPLACEID' + '/transactions/{transaction_id}/void',
             getAccountBalance: '$MARKETPLACEID' + '/sellers/{seller_id}/balances',
-            createBankTransfer: '$MARKETPLACEID' + '/bank_accounts/{bank_account_id}/transfers'
+            createBankTransfer: '$MARKETPLACEID' + '/bank_accounts/{bank_account_id}/transfers',
+            generateToken: '$MARKETPLACEID' + '/cards/tokens'
         }
     },
 
@@ -50,6 +61,4 @@ export default {
         algorithm: 'aes-256-ctr',
         iv: process.env.IV,
     }
-
-
 };

@@ -1,9 +1,13 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../interfaces/IStore';
-import storeService from '../../services/store';
-import middlewares from '../middlewares';
-import logger from '../../loaders/logger';
+
+import middlewares from '../../middlewares';
+import logger from '../../../loaders/logger';
+import config from '../../../config';
+
+import * as Interfaces from '../../../interfaces/IStore';
+import storeService from '../../../services/mosStore/store';
+
 
 const route = Router();
 
@@ -12,12 +16,14 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.query.storeId,
-                mallId: req.query.mallId
             };
             next();
         },
-        middlewares.authRequest(false),
-        middlewares.validateInput('getStoreBalanceSchema'),
+        middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_BALANCE")
+        },
+        middlewares.validateInput('getStoreBalanceMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar saldo do lojista');
@@ -25,7 +31,6 @@ export default (app: Router) => {
                 const storeServiceInstance = Container.get(storeService);
                 const request: Interfaces.GetStoreBalance = {
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     cod_external: res.locals.store.cod_external,
                     cod_marketplace: res.locals.store.cod_marketplace
                 }
@@ -36,17 +41,42 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-    
-    route.post('/qrcode',
+
+    route.get('/marketplace',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.body.storeId,
-                mallId: req.query.mallId
+                storeId: req.query.storeId,
             };
             next();
         },
-        middlewares.authRequest(false),
-        middlewares.validateInput('generateQrcodeSchema'),
+        middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_MARKETPLACE")
+        },
+        middlewares.validateInput('getStoreBalanceMosStoreSchema'),
+        middlewares.storeIntegration(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            logger.debug('Chamando endpoint para buscar cod. marketplace da loja');
+            try {
+                const response = { marketplaceId: res.locals.store.cod_marketplace }
+                res.status(200).json(response);
+            } catch (e) {
+                logger.error('🔥 Falha ao buscar  cod. marketplace da loja: %o', e);
+                return next(e);
+            }
+        });
+
+    route.post('/qrcode',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.query.storeId,
+            };
+            next();
+        },
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_QRCODE")
+        },
+        middlewares.validateInput('generateQrcodeMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para gerar qrcode de uma loja');
@@ -63,5 +93,5 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-    app.use('/stores', route);
+    app.use(config.apiMosStore.root + config.apiMosStore.version + config.apiMosStore.prefix + '/stores', route);
 }

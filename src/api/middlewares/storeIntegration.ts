@@ -10,10 +10,24 @@ let storeIntegration = () => {
             if (!res.locals.data.storeId) {
                 return next();
             }
+
+            const getStore = await prisma.store.findFirst({
+                where: {
+                    id: +res.locals.data.storeId,
+                },
+                select: {
+                    mall_id: true
+                }
+            })
+
+            if (!getStore) {
+                return res.status(400).json({ message: 'A loja informada não foi encontrada.' });
+            }
+
             const initialData = await prisma.$transaction([
                 prisma.paymentsystem.findFirst({
                     where: {
-                        id_mall: +res.locals.data.mallId,
+                        id_mall: getStore.mall_id,
                         flg_active: true
                     },
                     select: {
@@ -25,7 +39,7 @@ let storeIntegration = () => {
                     where: {
                         store_id_mall_id_key: {
                             id: +res.locals.data.storeId,
-                            mall_id: +res.locals.data.mallId
+                            mall_id: getStore.mall_id
                         }
                     },
                     select: {
@@ -68,7 +82,7 @@ let storeIntegration = () => {
             const dupStore = await prisma.paymentsystem_store.findFirst({
                 where: {
                     store: {
-                        mall_id: +res.locals.data.mallId,
+                        id: +res.locals.data.storeId,
                         cnpj: store.cnpj
                     }
                 },

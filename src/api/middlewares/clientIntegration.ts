@@ -11,20 +11,25 @@ let clientIntegration = () => {
                 return next();
             }
             const initialData = await prisma.$transaction([
-                prisma.paymentsystem.findFirst({
+                prisma.paymentsystem_client.findFirst({
                     where: {
-                        id_mall: +res.locals.data.mallId,
-                        flg_active: true
+                        id_client: +res.locals.data.clientId,
+                        paymentsystem: {
+                            flg_active: true
+                        }
                     },
                     select: {
-                        id_paymentsystem: true,
-                        cod_marketplace: true
+                        paymentsystem: {
+                            select: {
+                                id_paymentsystem: true,
+                                cod_marketplace: true
+                            }
+                        }
                     }
                 }),
                 prisma.client.findFirst({
                     where: {
                         id: +res.locals.data.clientId,
-                        id_mall: +res.locals.data.mallId
                     },
                     select: {
                         cpf: true
@@ -48,7 +53,7 @@ let clientIntegration = () => {
                 where: {
                     id_client_id_paymentsystem: {
                         id_client: +res.locals.data.clientId,
-                        id_paymentsystem: paymentSystem.id_paymentsystem
+                        id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem
                     }
                 },
                 select: {
@@ -58,12 +63,12 @@ let clientIntegration = () => {
 
             if (paymentSystemClient) {
                 /* Cliente já registrado no sistema de pagamentos */
-                res.locals.client = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.cod_marketplace };
+                res.locals.client = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace };
                 return next();
             }
 
             const registeredClient: { id: string } = (await axios.post(
-                config.paymentApi.host + config.paymentApi.endpoints.createClient.replace('$MARKETPLACEID', paymentSystem.cod_marketplace),
+                config.paymentApi.host + config.paymentApi.endpoints.createClient.replace('$MARKETPLACEID', paymentSystem.paymentsystem.cod_marketplace),
                 {
                     taxpayer_id: client.cpf
                 },
@@ -81,12 +86,12 @@ let clientIntegration = () => {
             await prisma.paymentsystem_client.create({
                 data: {
                     id_client: +res.locals.data.clientId,
-                    id_paymentsystem: paymentSystem.id_paymentsystem,
+                    id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem,
                     cod_external: registeredClient.id
                 }
             })
 
-            res.locals.client = { id_paymentsystem: paymentSystem.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.cod_marketplace };
+            res.locals.client = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace };
 
             return next();
         }

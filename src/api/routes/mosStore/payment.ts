@@ -1,9 +1,13 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../interfaces/IPayment';
-import paymentService from '../../services/payment';
-import middlewares from '../middlewares';
-import logger from '../../loaders/logger';
+
+import middlewares from '../../middlewares';
+import logger from '../../../loaders/logger';
+import config from '../../../config';
+
+import * as Interfaces from '../../../interfaces/IPayment';
+import paymentService from '../../../services/mosStore/payment';
+
 
 const route = Router();
 
@@ -11,16 +15,17 @@ export default (app: Router) => {
     route.post('/:id/accept',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.body.storeId,
-                mallId: req.query.mallId,
+                storeId: req.query.storeId,
                 id: req.params.id,
                 invoiceNumber: req.body.invoiceNumber
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('acceptPaymentSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
+        },
+        middlewares.validateInput('acceptPaymentMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para aprovar pagamento');
@@ -28,7 +33,6 @@ export default (app: Router) => {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.AcceptPayment = {
                     storeId: res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
                     invoiceNumber: res.locals.data.invoiceNumber,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
@@ -44,15 +48,16 @@ export default (app: Router) => {
     route.post('/:id/reject',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.body.storeId,
-                mallId: req.query.mallId,
+                storeId: req.query.storeId,
                 id: req.params.id
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('rejectPaymentSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
+        },
+        middlewares.validateInput('rejectPaymentMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para rejeitar pagamento');
@@ -60,7 +65,6 @@ export default (app: Router) => {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.RejectPayment = {
                     storeId: res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     id: +res.locals.data.id,
                     id_paymentsystem: +res.locals.store.id_paymentsystem,
                     cod_external: res.locals.store.cod_external,
@@ -79,7 +83,6 @@ export default (app: Router) => {
             res.locals.data = {
                 clientId: req.query.clientId,
                 storeId: req.query.storeId,
-                mallId: req.query.mallId,
                 status: req.query.status,
                 startDateTime: req.query.startDateTime,
                 endDateTime: req.query.endDateTime,
@@ -93,8 +96,10 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('getAllPaymentsSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
+        },
+        middlewares.validateInput('getAllPaymentsMosStoreSchema'),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -104,7 +109,6 @@ export default (app: Router) => {
                 const request: Interfaces.GetAllPaymentsInput = {
                     clientId: +res.locals.data.clientId,
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     status: res.locals.data.status,
                     startDateTime: res.locals.data.startDateTime,
                     endDateTime: res.locals.data.endDateTime,
@@ -123,13 +127,12 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-    
+
     route.get('/items',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 clientId: req.query.clientId,
                 storeId: req.query.storeId,
-                mallId: req.query.mallId,
                 origin: req.query.origin,
                 status: req.query.status,
                 startDateTime: req.query.startDateTime,
@@ -144,8 +147,10 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('getAllPaymentItemsSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
+        },
+        middlewares.validateInput('getAllPaymentItemsMosStoreSchema'),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -155,7 +160,6 @@ export default (app: Router) => {
                 const request: Interfaces.GetAllPaymentItemsInput = {
                     clientId: +res.locals.data.clientId,
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     origin: res.locals.data.origin,
                     status: res.locals.data.status,
                     startDateTime: res.locals.data.startDateTime,
@@ -174,48 +178,7 @@ export default (app: Router) => {
                 logger.error('🔥 Falha ao buscar conciliações de pagamentos do lojista: %o', e);
                 return next(e);
             }
-    });
-
-    route.post('/',
-        async (req: Request, res: Response, next: NextFunction) => {
-            res.locals.data = {
-                storeId: req.body.storeId,
-                clientId: req.body.clientId,
-                mallId: req.query.mallId,
-                value: req.body.value,
-                installments: req.body.installments,
-                creditCardId: req.body.creditCardId
-            };
-            next();
-        },
-        middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('createPaymentSchema'),
-        middlewares.storeIntegration(),
-        middlewares.clientIntegration(),
-        async (req: Request, res: Response, next: NextFunction) => {
-            logger.debug('Chamando endpoint para criar pagamento');
-            try {
-                const paymentServiceInstance = Container.get(paymentService);
-                const request: Interfaces.CreatePayment = {
-                    storeId: +res.locals.data.storeId,
-                    clientId: res.locals.data.clientId,
-                    mallId: +res.locals.data.mallId,
-                    value: +res.locals.data.value,
-                    installments: +res.locals.data.installments,
-                    creditCardId: +res.locals.data.creditCardId,
-                    storeName: res.locals.store.name,
-                    id_paymentsystem: +res.locals.store.id_paymentsystem,
-                    cod_external: res.locals.store.cod_external,
-                    cod_marketplace: res.locals.store.cod_marketplace
-                }
-                await paymentServiceInstance.createPayment(request);
-                res.status(201).json({ message: "Pagamento cadastrado com sucesso." });
-            } catch (e) {
-                logger.error('🔥 Falha ao criar pagamento: %o', e);
-                return next(e);
-            }
-    });
-
-    app.use('/payments', route);
+        });
+    
+    app.use(config.apiMosStore.root + config.apiMosStore.version + config.apiMosStore.prefix + '/payments', route);
 }

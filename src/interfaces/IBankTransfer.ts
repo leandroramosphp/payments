@@ -1,5 +1,4 @@
 export interface CreateBankTransfer {
-    mallId: number;
     storeId: number;
     bankAccountId: number;
     value: number;
@@ -9,7 +8,6 @@ export interface CreateBankTransfer {
 
 export interface GetBankTransfers {
     storeId: number;
-    mallId: number;
     endDateTime: string;
     startDateTime: string;
     search: string;

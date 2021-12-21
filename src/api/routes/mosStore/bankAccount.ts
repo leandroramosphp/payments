@@ -1,9 +1,14 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../interfaces/IBankAccount';
-import bankAccountService from '../../services/bankAccount';
-import middlewares from '../middlewares';
-import logger from '../../loaders/logger';
+
+import middlewares from '../../middlewares';
+import logger from '../../../loaders/logger';
+import config from '../../../config';
+
+import * as Interfaces from '../../../interfaces/IBankAccount';
+import bankAccountService from '../../../services/mosStore/bankAccount';
+
+
 
 const route = Router();
 
@@ -11,15 +16,16 @@ export default (app: Router) => {
     route.post('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                storeId: req.body.storeId,
+                storeId: req.query.storeId,
                 bankAccountToken: req.body.bankAccountToken,
-                mallId: req.query.mallId
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('createBankAccountSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
+        },
+        middlewares.validateInput('createBankAccountMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para cadastro de conta bancária');
@@ -28,7 +34,6 @@ export default (app: Router) => {
                 const request: Interfaces.CreateBankAccount = {
                     storeId: +res.locals.data.storeId,
                     bankAccountToken: res.locals.data.bankAccountToken,
-                    mallId: +res.locals.data.mallId,
                     cod_external: res.locals.store.cod_external,
                     cod_marketplace: res.locals.store.cod_marketplace,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
@@ -45,14 +50,15 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 id: req.params.id,
-                storeId: req.body.storeId,
-                mallId: req.query.mallId
+                storeId: req.query.storeId,
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('disableBankAccountSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
+        },
+        middlewares.validateInput('disableBankAccountMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para desabilitar conta bancária');
@@ -61,7 +67,6 @@ export default (app: Router) => {
                 const request: Interfaces.DisableBankAccount = {
                     id: +res.locals.data.id,
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     cod_external: res.locals.store.cod_external,
                     cod_marketplace: res.locals.store.cod_marketplace,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
@@ -78,13 +83,14 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.query.storeId,
-                mallId: req.query.mallId
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('getBankAccountsSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_BANK_ACCOUNT")
+        },
+        middlewares.validateInput('getBankAccountsMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para listar todas as contas bancárias do lojista');
@@ -92,7 +98,6 @@ export default (app: Router) => {
                 const bankAccountServiceInstance = Container.get(bankAccountService);
                 const request: Interfaces.GetBankAccounts = {
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
                 };
                 const response = await bankAccountServiceInstance.getBankAccounts(request);
@@ -103,5 +108,5 @@ export default (app: Router) => {
             }
         });
 
-    app.use('/bankaccounts', route);
+    app.use(config.apiMosStore.root + config.apiMosStore.version + config.apiMosStore.prefix + '/bankaccounts', route);
 }
