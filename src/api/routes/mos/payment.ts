@@ -53,6 +53,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 clientId: req.query.clientId,
+                mallId: req.query.mallId,
                 storeId: req.query.storeId,
                 status: req.query.status,
                 startDateTime: req.query.startDateTime,
@@ -79,6 +80,7 @@ export default (app: Router) => {
                 const paymentServiceInstance = Container.get(paymentService);
                 const request: Interfaces.GetAllPaymentsInput = {
                     clientId: +res.locals.data.clientId,
+                    mallId: +res.locals.data.mallId,
                     storeId: +res.locals.data.storeId,
                     status: res.locals.data.status,
                     startDateTime: res.locals.data.startDateTime,
