@@ -27,6 +27,7 @@ export interface RejectPayment {
 }
 
 export interface GetAllPaymentsInput {
+    mallId?: number;
     clientId: number;
     storeId: number;
     status: string;
