@@ -1,6 +1,6 @@
-const createBankTransferSchema =
+const createBankTransferMosStoreSchema =
 {
-    "title": "createBankTransferSchema",
+    "title": "createBankTransferMosStoreSchema",
     "type": "object",
     "properties": {
         "storeId": {
@@ -12,25 +12,17 @@ const createBankTransferSchema =
         },
         "value": {
             "type": "number"
-        },
-        "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
         }
     },
-    "required": ["storeId", "bankAccountId", "value", "mallId"]
+    "required": ["storeId", "bankAccountId", "value"]
 }
 
-const getBankTransfersSchema =
+const getBankTransfersMosStoreSchema =
 {
-    "title": "getBankTransfersSchema",
+    "title": "getBankTransfersMosStoreSchema",
     "type": "object",
     "properties": {
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
-        "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         },
@@ -66,16 +58,16 @@ const getBankTransfersSchema =
             "enum": ["asc", "desc"]
         }
     },
-    "required": ["storeId", "mallId"]
+    "required": ["storeId"]
 }
 
 export default [
     {
-        name: "createBankTransferSchema",
-        schema: createBankTransferSchema
+        name: "createBankTransferMosStoreSchema",
+        schema: createBankTransferMosStoreSchema
     },
     {
-        name: "getBankTransfersSchema",
-        schema: getBankTransfersSchema
+        name: "getBankTransfersMosStoreSchema",
+        schema: getBankTransfersMosStoreSchema
     }
 ]

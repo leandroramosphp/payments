@@ -1,9 +1,11 @@
 import { Service, Inject } from 'typedi';
-import * as Interfaces from '../interfaces/IBankAccount';
 import axios from 'axios';
-import config from '../config';
-import logger from '../loaders/logger';
-import prisma from '../loaders/prisma';
+
+import prisma from '../../loaders/prisma';
+import logger from '../../loaders/logger';
+import config from '../../config';
+
+import * as Interfaces from '../../interfaces/IBankAccount';
 
 @Service()
 export default class bankAccountService {

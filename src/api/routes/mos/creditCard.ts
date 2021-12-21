@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../interfaces/ICreditCard';
-import creditCardService from '../../services/creditCard';
-import middlewares from '../middlewares';
-import logger from '../../loaders/logger';
+import * as Interfaces from '../../../interfaces/ICreditCard';
+import creditCardService from '../../../services/mos/creditCard';
+import middlewares from '../../middlewares';
+import logger from '../../../loaders/logger';
+import config from '../../../config';
 
 const route = Router();
 
@@ -13,7 +14,7 @@ export default (app: Router) => {
             res.locals.data = {
                 mallId: req.query.mallId,
                 clientId: req.body.clientId,
-                creditCardToken: req.body.creditCardToken
+                encryptedCreditCard: req.body.encryptedCreditCard
             };
             next();
         },
@@ -25,8 +26,8 @@ export default (app: Router) => {
             try {
                 const creditCardServiceInstance = Container.get(creditCardService);
                 const request: Interfaces.CreateCreditCard = {
+                    encryptedCreditCard: res.locals.data.encryptedCreditCard,
                     clientId: +res.locals.data.clientId,
-                    creditCardToken: res.locals.data.creditCardToken,
                     cod_external: res.locals.client.cod_external,
                     id_paymentsystem: +res.locals.client.id_paymentsystem,
                     cod_marketplace: res.locals.client.cod_marketplace
@@ -96,5 +97,5 @@ export default (app: Router) => {
             }
         });
 
-    app.use('/creditcards', route);
+    app.use(config.apiMos.root + config.apiMos.version + config.apiMos.prefix + '/creditcards', route);
 }

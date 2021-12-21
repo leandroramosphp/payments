@@ -2,6 +2,7 @@ import validateInput from './validateInput';
 import authRequest from './authRequest';
 import storeIntegration from './storeIntegration';
 import clientIntegration from './clientIntegration';
+import authRequestMosStore from './authRequestMosStore';
 import decoder from './decoder';
 
 export default {
@@ -9,5 +10,6 @@ export default {
   authRequest,
   storeIntegration,
   clientIntegration,
-  decoder
+  decoder,
+  authRequestMosStore
 };

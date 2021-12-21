@@ -1,7 +1,15 @@
-import store from "./store";
-import creditCard from "./creditCard";
-import bankAccount from "./bankAccount";
-import payment from "./payment";
-import bankTransfer from "./bankTransfer";
+import store from "./mosStore/store";
+import creditCardMos from "./mos/creditCard";
+import bankAccount from "./mosStore/bankAccount";
+import paymentMos from "./mos/payment";
+import paymentMosStore from "./mosStore/payment";
+import bankTransfer from "./mosStore/bankTransfer";
 
-export default [store, creditCard, bankAccount, payment, bankTransfer];
+export default [
+  store,
+  creditCardMos,
+  bankAccount,
+  paymentMos,
+  paymentMosStore,
+  bankTransfer
+];

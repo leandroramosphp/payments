@@ -1,33 +1,38 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import * as Interfaces from '../../interfaces/IBankTransfer';
-import bankTransferService from '../../services/bankTransfer';
-import middlewares from '../middlewares';
-import logger from '../../loaders/logger';
+
+import middlewares from '../../middlewares';
+import logger from '../../../loaders/logger';
+import config from '../../../config';
+
+import * as Interfaces from '../../../interfaces/IBankTransfer';
+import bankTransferService from '../../../services/mosStore/bankTransfer';
+
 
 const route = Router();
 
 export default (app: Router) => {
+    
     route.post('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
-                mallId: req.query.mallId,
-                storeId: req.body.storeId,
+                storeId: req.query.storeId,
                 bankAccountId: req.body.bankAccountId,
                 value: req.body.value
             };
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('createBankTransferSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_TRANSFERS")
+        },
+        middlewares.validateInput('createBankTransferMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para criação de transferência bancária');
             try {
                 const bankTransferServiceInstance = Container.get(bankTransferService);
                 const request: Interfaces.CreateBankTransfer = {
-                    mallId: +res.locals.data.mallId,
                     storeId: +res.locals.data.storeId,
                     bankAccountId: res.locals.data.bankAccountId,
                     value: res.locals.data.value,
@@ -46,7 +51,6 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.query.storeId,
-                mallId: req.query.mallId,
                 startDateTime: req.query.startDateTime,
                 endDateTime: req.query.endDateTime,
                 search: req.query.search,
@@ -59,8 +63,10 @@ export default (app: Router) => {
             next();
         },
         middlewares.decoder,
-        middlewares.authRequest(false),
-        middlewares.validateInput('getBankTransfersSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_BANK_TRANSFERS")
+        },
+        middlewares.validateInput('getBankTransfersMosStoreSchema'),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar transferências bancárias');
@@ -68,7 +74,6 @@ export default (app: Router) => {
                 const bankTransferServiceInstance = Container.get(bankTransferService);
                 const request: Interfaces.GetBankTransfers = {
                     storeId: +res.locals.data.storeId,
-                    mallId: +res.locals.data.mallId,
                     startDateTime: res.locals.data.startDateTime,
                     endDateTime: res.locals.data.endDateTime,
                     search: res.locals.data.search,
@@ -86,6 +91,5 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-
-    app.use('/banktransfers', route);
+    app.use(config.apiMosStore.root + config.apiMosStore.version + config.apiMosStore.prefix + '/banktransfers', route);
 }

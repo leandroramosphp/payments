@@ -1,14 +1,10 @@
-const createPaymentSchema =
+const createPaymentMosStoreSchema =
 {
-    "title": "createPaymentSchema",
+    "title": "createPaymentMosStoreSchema",
     "type": "object",
     "properties": {
         "storeId": {
             "type": ["integer", "string"],
-        },
-        "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
         },
         "clientId": {
             "type": "number"
@@ -23,20 +19,16 @@ const createPaymentSchema =
             "type": "number"
         }
     },
-    "required": ["storeId", "mallId", "clientId", "value", "creditCardId", "installments"]
+    "required": ["storeId","clientId", "value", "creditCardId", "installments"]
 }
 
-const acceptPaymentSchema =
+const acceptPaymentMosStoreSchema =
 {
-    "title": "acceptPaymentSchema",
+    "title": "acceptPaymentMosStoreSchema",
     "type": "object",
     "properties": {
         "storeId": {
             "type": ["integer", "string"],
-        },
-        "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
         },
         "id": {
             "type": "string",
@@ -47,32 +39,28 @@ const acceptPaymentSchema =
             "pattern": "^[0-9]+$"
         }
     },
-    "required": ["storeId", "mallId", "id", "invoiceNumber"]
+    "required": ["storeId", "id", "invoiceNumber"]
 }
 
-const rejectPaymentSchema =
+const rejectPaymentMosStoreSchema =
 {
-    "title": "rejectPaymentSchema",
+    "title": "rejectPaymentMosStoreSchema",
     "type": "object",
     "properties": {
         "storeId": {
             "type": ["integer", "string"],
-        },
-        "mallId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
         },
         "id": {
             "type": "string",
             "pattern": "^[0-9]+$"
         }
     },
-    "required": ["storeId", "mallId", "id"]
+    "required": ["storeId", "id"]
 }
 
-const getAllPaymentsSchema =
+const getAllPaymentsMosStoreSchema =
 {
-    "title": "getAllPaymentsSchema",
+    "title": "getAllPaymentsMosStoreSchema",
     "type": "object",
     "properties": {
         "clientId": {
@@ -80,10 +68,6 @@ const getAllPaymentsSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
-        "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         },
@@ -136,16 +120,15 @@ const getAllPaymentsSchema =
             "enum": ["asc", "desc"]
         }
     },
-    "required": ["mallId"],
     "anyOf": [
         { "required": ["clientId"] },
         { "required": ["storeId"] }
     ]
 }
 
-const getAllPaymentItemsSchema =
+const getAllPaymentItemsMosStoreSchema =
 {
-    "title": "getAllPaymentItemsSchema",
+    "title": "getAllPaymentItemsMosStoreSchema",
     "type": "object",
     "properties": {
         "clientId": {
@@ -153,10 +136,6 @@ const getAllPaymentItemsSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": "string",
-            "pattern": "^[0-9]+$"
-        },
-        "mallId": {
             "type": "string",
             "pattern": "^[0-9]+$"
         },
@@ -215,7 +194,6 @@ const getAllPaymentItemsSchema =
             "enum": ["asc", "desc"]
         }
     },
-    "required": ["mallId"],
     "anyOf": [
         { "required": ["clientId"] },
         { "required": ["storeId"] }
@@ -224,23 +202,23 @@ const getAllPaymentItemsSchema =
 
 export default [
     {
-        name: "createPaymentSchema",
-        schema: createPaymentSchema
+        name: "createPaymentMosStoreSchema",
+        schema: createPaymentMosStoreSchema
     },
     {
-        name: "acceptPaymentSchema",
-        schema: acceptPaymentSchema
+        name: "acceptPaymentMosStoreSchema",
+        schema: acceptPaymentMosStoreSchema
     },
     {
-        name: "rejectPaymentSchema",
-        schema: rejectPaymentSchema
+        name: "rejectPaymentMosStoreSchema",
+        schema: rejectPaymentMosStoreSchema
     },
     {
-        name: "getAllPaymentsSchema",
-        schema: getAllPaymentsSchema
+        name: "getAllPaymentsMosStoreSchema",
+        schema: getAllPaymentsMosStoreSchema
     },
     {
-        name: "getAllPaymentItemsSchema",
-        schema: getAllPaymentItemsSchema
+        name: "getAllPaymentItemsMosStoreSchema",
+        schema: getAllPaymentItemsMosStoreSchema
     }
 ]
