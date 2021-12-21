@@ -87,11 +87,12 @@ const getAllPaymentsMosSchema =
         "order": {
             "type": "string",
             "enum": ["asc", "desc"]
-        }
+        } 
     },
+    "required": ["mallId"],
     "anyOf": [
         { "required": ["clientId"] },
-        { "required": ["mallId"] }
+        { "required": ["storeId"] }
     ]
 }
 
