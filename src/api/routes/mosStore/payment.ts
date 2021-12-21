@@ -6,7 +6,8 @@ import logger from '../../../loaders/logger';
 import config from '../../../config';
 
 import * as Interfaces from '../../../interfaces/IPayment';
-import paymentService from '../../../services/mosStore/payment';
+import paymentServiceMosStore from '../../../services/mosStore/payment';
+import paymentServiceMos from '../../../services/mos/payment';
 
 
 const route = Router();
@@ -30,7 +31,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para aprovar pagamento');
             try {
-                const paymentServiceInstance = Container.get(paymentService);
+                const paymentServiceInstance = Container.get(paymentServiceMosStore);
                 const request: Interfaces.AcceptPayment = {
                     storeId: res.locals.data.storeId,
                     id: +res.locals.data.id,
@@ -62,7 +63,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para rejeitar pagamento');
             try {
-                const paymentServiceInstance = Container.get(paymentService);
+                const paymentServiceInstance = Container.get(paymentServiceMosStore);
                 const request: Interfaces.RejectPayment = {
                     storeId: res.locals.data.storeId,
                     id: +res.locals.data.id,
@@ -105,7 +106,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar todas os pagamentos do lojista');
             try {
-                const paymentServiceInstance = Container.get(paymentService);
+                const paymentServiceInstance = Container.get(paymentServiceMos);
                 const request: Interfaces.GetAllPaymentsInput = {
                     clientId: +res.locals.data.clientId,
                     storeId: +res.locals.data.storeId,
@@ -156,7 +157,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar conciliações de todos os pagamentos do lojista');
             try {
-                const paymentServiceInstance = Container.get(paymentService);
+                const paymentServiceInstance = Container.get(paymentServiceMosStore);
                 const request: Interfaces.GetAllPaymentItemsInput = {
                     clientId: +res.locals.data.clientId,
                     storeId: +res.locals.data.storeId,
