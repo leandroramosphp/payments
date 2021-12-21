@@ -113,4 +113,137 @@ export default class paymentService {
             return Promise.reject(e);
         }
     }
+
+    public getAllPayments = async (input: Interfaces.GetAllPaymentsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsOutput>, total: number }> => {
+        try {
+            logger.silly('Calling getAllPayments');
+            const sortBy: string = {
+                "id": "id",
+                "createdAt": "createdAt",
+                "clientName": "clientName",
+                "storeName": "storeName",
+                "installments": "installments",
+                "invoiceNumber": "invoiceNumber",
+                "status": "status",
+                "value": "value"
+            }[input.sortBy];
+
+            let store = ``;
+            let client = ``;
+            let limit = ``;
+            let page = ``;
+            let search = ``;
+            let startDateTime = ``;
+            let endDateTime = ``;
+            let status = ``;
+            let orderBy = ``;
+
+            orderBy = `ORDER BY ${sortBy || '"createdAt"'} ${input.order || 'DESC'}`
+
+            if (input.limit) {
+                limit = `LIMIT ${input.limit || input.limitByPage}`;
+            }
+
+            if (input.page && input.limit) {
+                page = `OFFSET (${(input.page > 0) ? input.page - 1 : 0} * ${input.limit || input.limitByPage})`;
+            }
+
+            if (input.search) {
+                search = `
+                    AND (
+                        UNACCENT(c.full_name) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(p.invoicenumber) ILIKE UNACCENT('%${input.search}%')
+                        OR UNACCENT(s.name) ILIKE UNACCENT('%${input.search}%')
+                    )`
+            }
+
+            if (input.startDateTime) {
+                startDateTime = `
+                    AND p.created_at >= '${input.startDateTime}'
+                `;
+            }
+
+            if (input.endDateTime) {
+                endDateTime = `
+                    AND p.created_at <= '${input.endDateTime}'
+                `;
+            }
+
+            if (input.status) {
+                status = `
+                    AND p.status = '${input.status}'
+                `;
+            }
+
+            if (input.storeId) {
+                store = `
+                    AND p.id_store = ${input.storeId}
+                `;
+            }
+
+            if (input.clientId) {
+                client = `
+                    AND p.id_client = ${input.clientId}
+                `;
+            }
+
+            const query: {
+                total: number,
+                id: number,
+                createdAt: string,
+                clientName: string,
+                storeName: string,
+                installments: number,
+                invoiceNumber: string,
+                status: string,
+                value: number
+            }[] = await prisma.$queryRaw(`
+                WITH result AS (
+                    SELECT
+                        p.id_payment AS id,
+                        p.created_at AS "createdAt",
+                        c.full_name AS "clientName",
+                        s.name AS "storeName",
+                        p.installments,
+                        p.invoicenumber AS "invoiceNumber",
+                        p.status,
+                        SUM(pi.val_value) AS value
+                    FROM
+                        payment p
+                        JOIN paymentitem pi USING (id_payment)
+                        JOIN paymentsystem_client psc USING (id_client, id_paymentsystem)
+                        JOIN client c ON (c.id = psc.id_client)
+                        JOIN paymentsystem_store pss USING (id_store, id_paymentsystem)
+                        JOIN store s ON (s.id = pss.id_store)
+                    WHERE
+                        p.id_paymentsystem = ${input.id_paymentsystem}
+                        ${store}
+                        ${client}
+                        ${startDateTime}
+                        ${endDateTime}
+                        ${status}
+                        ${search}
+                    GROUP BY
+                        1, 2, 3, 4, 5
+                )
+                SELECT
+                    *
+                FROM (
+                    TABLE result
+                    ${orderBy}
+                    ${limit}
+                    ${page}
+                ) result_paginated
+                JOIN (SELECT COUNT(*) AS total FROM result) AS total ON true
+            `);
+
+            return Promise.resolve({
+                data: query.map(({ total, ...item }) => item),
+                total: (query.length) ? +query[0].total : 0
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
 }
