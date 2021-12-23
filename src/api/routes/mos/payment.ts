@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import * as Interfaces from '../../../interfaces/IPayment';
 import paymentService from '../../../services/mos/payment';
+import mosStorepaymentService from '../../../services/mosStore/payment';
 import middlewares from '../../middlewares';
 import logger from '../../../loaders/logger';
 import config from '../../../config';
@@ -99,5 +100,54 @@ export default (app: Router) => {
             }
         });
 
+    route.get('/',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                clientId: req.query.clientId,
+                storeId: req.query.storeId,
+                status: req.query.status,
+                startDateTime: req.query.startDateTime,
+                endDateTime: req.query.endDateTime,
+                search: req.query.search,
+                limit: req.query.limit,
+                limitByPage: req.query.limitByPage,
+                page: req.query.page,
+                sortBy: req.query.sortBy,
+                order: req.query.order
+            };
+            next();
+        },
+        middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
+        },
+        middlewares.validateInput('getAllPaymentsMosStoreSchema'),
+        middlewares.storeIntegration(),
+        middlewares.clientIntegration(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            logger.debug('Chamando endpoint para buscar todas os pagamentos do lojista');
+            try {
+                const paymentServiceInstance = Container.get(mosStorepaymentService);
+                const request: Interfaces.GetAllPaymentsInput = {
+                    clientId: +res.locals.data.clientId,
+                    storeId: +res.locals.data.storeId,
+                    status: res.locals.data.status,
+                    startDateTime: res.locals.data.startDateTime,
+                    endDateTime: res.locals.data.endDateTime,
+                    search: res.locals.data.search,
+                    limit: +res.locals.data.limit,
+                    limitByPage: +res.locals.data.limitByPage,
+                    page: +res.locals.data.page,
+                    sortBy: +res.locals.data.sortBy,
+                    order: res.locals.data.order,
+                    id_paymentsystem: (res.locals.store) ? +res.locals.store.id_paymentsystem : +res.locals.client.id_paymentsystem
+                }
+                const response = await paymentServiceInstance.getAllPayments(request);
+                res.status(200).json(response);
+            } catch (e) {
+                logger.error('🔥 Falha ao buscar pagamentos do lojista: %o', e);
+                return next(e);
+            }
+        });
     app.use(config.apiMos.root + config.apiMos.version + config.apiMos.prefix + '/payments', route);
 }

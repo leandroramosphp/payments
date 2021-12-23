@@ -33,14 +33,14 @@ export default class bankTransferService {
 
             /* TODO:
                 Adicionar condicionais para saldos provenientes de múltiplas origens (Zoop e Moneri) */
-            
+
             var bankTransfers: Array<{ originId: number, value: number, externalId: string }> = [];
 
             const registeredBankTransfer: { id: string } = (await axios.post(
                 config.paymentApi.host + config.paymentApi.endpoints.createBankTransfer.replace('$MARKETPLACEID', input.cod_marketplace)
                     .replace('{bank_account_id}', bankAccount.cod_external),
                 {
-                    amount: input.value
+                    amount: input.value * 100
                 },
                 {
                     headers: {
@@ -88,6 +88,8 @@ export default class bankTransferService {
         catch (e) {
             /* TODO
                 Corrigir tratamento de erro para saldo insuficiente */
+            console.log(e);
+
             if (e?.response?.data?.error?.message === 'Sender is delinquent') {
                 return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
             }
