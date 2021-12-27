@@ -39,7 +39,6 @@ export default (app: Router) => {
                     cod_marketplace: res.locals.store.cod_marketplace,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
                 }
-                console.log("-----------------", request);
 
                 await bankTransferServiceInstance.createBankTransfer(request);
                 res.status(201).json({ message: "Transferência bancária realizada com sucesso." });

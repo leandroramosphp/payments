@@ -88,8 +88,6 @@ export default class bankTransferService {
         catch (e) {
             /* TODO
                 Corrigir tratamento de erro para saldo insuficiente */
-            console.log(e);
-
             if (e?.response?.data?.error?.message === 'Sender is delinquent') {
                 return Promise.reject({ message: "Saldo insuficiente.", status: 400 });
             }
