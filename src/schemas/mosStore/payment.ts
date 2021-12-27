@@ -10,7 +10,8 @@ const createPaymentMosStoreSchema =
             "type": "number"
         },
         "value": {
-            "type": "number"
+            "type": "string",
+            "pattern": "-?^\\d*(.\\d{0,2})?$"
         },
         "installments": {
             "type": "number"
@@ -19,7 +20,7 @@ const createPaymentMosStoreSchema =
             "type": "number"
         }
     },
-    "required": ["storeId","clientId", "value", "creditCardId", "installments"]
+    "required": ["storeId", "clientId", "value", "creditCardId", "installments"]
 }
 
 const acceptPaymentMosStoreSchema =
