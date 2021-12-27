@@ -1,7 +1,7 @@
 {
     "name": "payments-api",
     "version": "1.0.0",
-    "description": "This is the API for the payments-api module.",
+    "description": "This is the API for the payments-api module",
     "main": "src/app.ts",
     "repository": "https://git.wiseit.com.br:1443/spotmetrics/payments-api",
     "author": "Spot Metrics <ti@spotmetrics.com>",
