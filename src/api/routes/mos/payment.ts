@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import * as Interfaces from '../../../interfaces/IPayment';
 import paymentService from '../../../services/mos/payment';
+import mosStorepaymentService from '../../../services/mosStore/payment';
 import middlewares from '../../middlewares';
 import logger from '../../../loaders/logger';
 import config from '../../../config';
@@ -98,6 +99,5 @@ export default (app: Router) => {
                 return next(e);
             }
         });
-
     app.use(config.apiMos.root + config.apiMos.version + config.apiMos.prefix + '/payments', route);
 }
