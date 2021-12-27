@@ -31,7 +31,6 @@ export default async function Authorize(req: Request, res: Response, next: NextF
             method: req.method,
             path: req.originalUrl.substring(req.originalUrl.length - 1) === '/' ? req.originalUrl.substring(0, req.originalUrl.length - 1) : req.originalUrl
         }
-        console.log(authObjectRequest);
 
         let response = await axios.post(config.authApi.host + config.authApi.mosStorePrefix + config.authApi.authInternalEndpoint, authObjectRequest)
 
