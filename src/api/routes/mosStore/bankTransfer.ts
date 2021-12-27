@@ -12,7 +12,7 @@ import bankTransferService from '../../../services/mosStore/bankTransfer';
 const route = Router();
 
 export default (app: Router) => {
-    
+
     route.post('/',
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
@@ -39,6 +39,7 @@ export default (app: Router) => {
                     cod_marketplace: res.locals.store.cod_marketplace,
                     id_paymentsystem: +res.locals.store.id_paymentsystem
                 }
+
                 await bankTransferServiceInstance.createBankTransfer(request);
                 res.status(201).json({ message: "Transferência bancária realizada com sucesso." });
             } catch (e) {
