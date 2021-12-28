@@ -9,6 +9,7 @@ import config from '../../../config';
 
 const route = Router();
 
+
 export default (app: Router) => {
     route.post('/',
         async (req: Request, res: Response, next: NextFunction) => {
