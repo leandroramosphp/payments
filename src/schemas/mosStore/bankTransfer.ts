@@ -11,7 +11,8 @@ const createBankTransferMosStoreSchema =
             "type": "number"
         },
         "value": {
-            "type": "number"
+            "type": "string",
+            "pattern": "-?^\\d*(.\\d{0,2})?$"
         }
     },
     "required": ["storeId", "bankAccountId", "value"]

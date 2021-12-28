@@ -2,8 +2,8 @@ const createPaymentMosSchema =
 {
     "title": "createPaymentMosSchema",
     "type": "object",
-  "properties": {
-      
+    "properties": {
+
         "storeId": {
             "type": ["integer", "string"],
         },
@@ -11,7 +11,8 @@ const createPaymentMosSchema =
             "type": "number"
         },
         "value": {
-            "type": "number"
+            "type": "string",
+            "pattern": "-?^\\d*(.\\d{0,2})?$"
         },
         "installments": {
             "type": "number"
@@ -20,7 +21,7 @@ const createPaymentMosSchema =
             "type": "number"
         }
     },
-    "required": ["storeId","clientId", "value", "creditCardId", "installments"]
+    "required": ["storeId", "clientId", "value", "creditCardId", "installments"]
 }
 
 const getAllPaymentsMosSchema =
@@ -87,7 +88,7 @@ const getAllPaymentsMosSchema =
         "order": {
             "type": "string",
             "enum": ["asc", "desc"]
-        } 
+        }
     },
     "anyOf": [
         { "required": ["clientId"] },
@@ -104,5 +105,5 @@ export default [
         name: "getAllPaymentsMosSchema",
         schema: getAllPaymentsMosSchema
     },
-  
+
 ]
