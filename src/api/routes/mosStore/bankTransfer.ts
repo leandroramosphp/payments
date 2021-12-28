@@ -18,7 +18,7 @@ export default (app: Router) => {
             res.locals.data = {
                 storeId: req.query.storeId,
                 bankAccountId: req.body.bankAccountId,
-                value: req.body.value
+                value: req.body.value.toString()
             };
             next();
         },
