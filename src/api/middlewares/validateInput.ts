@@ -13,6 +13,11 @@ function errorResponse(schemaErrors: ErrorObject[]) {
     let oneOf = [];
 
     schemaErrors.forEach((error: any) => {
+        if (error.params.multipleOf || error.params.keyword === 'multipleOf') {
+            if (errors.filter((e) => e.property === error.instancePath.replace('/', '') && e.message === `Property ${error.message}`).length === 0)
+                errors.push({ property: error.instancePath.replace('/', ''), message: `Property ${error.message}` })
+        }
+
         if (error.params.type || error.params.format) {
             if (errors.filter((e) => e.property === error.instancePath.replace('/', '') && e.message === `Property ${error.message}`).length === 0)
                 errors.push({ property: error.instancePath.replace('/', ''), message: `Property ${error.message}` })
