@@ -16,7 +16,7 @@ export default (app: Router) => {
                 storeId: req.body.storeId,
                 clientId: req.body.clientId,
                 mallId: req.query.mallId,
-                value: req.body.value,
+                value: req.body.value.toString(),
                 installments: req.body.installments,
                 creditCardId: req.body.creditCardId
             };
