@@ -24,7 +24,7 @@ export default (app: Router) => {
         },
         middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
-            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_TRANSFERS")
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_TRANSFER")
         },
         middlewares.validateInput('createBankTransferMosStoreSchema'),
         middlewares.storeIntegration(),
@@ -65,7 +65,7 @@ export default (app: Router) => {
         },
         middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
-            await middlewares.authRequestMosStore(req, res, next, "READ_BANK_TRANSFERS")
+            await middlewares.authRequestMosStore(req, res, next, "READ_BANK_TRANSFER")
         },
         middlewares.validateInput('getBankTransfersMosStoreSchema'),
         middlewares.storeIntegration(),
