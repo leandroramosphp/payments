@@ -51,7 +51,7 @@ export default (app: Router) => {
         },
         middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
-            await middlewares.authRequestMosStore(req, res, next, "READ_BANK_ACCOUNT")
+            await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
         },
         middlewares.validateInput('getStoreBalanceMosStoreSchema'),
         middlewares.storeIntegration(),
