@@ -26,6 +26,7 @@ export default (app: Router) => {
         middlewares.decoder,
         middlewares.authRequest(false),
         middlewares.validateInput('createPaymentMosSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -72,6 +73,7 @@ export default (app: Router) => {
         middlewares.decoder,
         middlewares.authRequest(false),
         middlewares.validateInput('getAllPaymentsMosSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {

@@ -24,6 +24,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_BANK_ACCOUNT")
         },
         middlewares.validateInput('getStoreBalanceMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar saldo do lojista');
@@ -54,6 +55,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
         },
         middlewares.validateInput('getStoreBalanceMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar cod. marketplace da loja');
@@ -77,6 +79,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_QRCODE")
         },
         middlewares.validateInput('generateQrcodeMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para gerar qrcode de uma loja');

@@ -10,40 +10,17 @@ let clientIntegration = () => {
             if (!res.locals.data.clientId) {
                 return next();
             }
-            const initialData = await prisma.$transaction([
-                prisma.paymentsystem_client.findFirst({
-                    where: {
-                        id_client: +res.locals.data.clientId,
-                        paymentsystem: {
-                            flg_active: true
-                        }
-                    },
-                    select: {
-                        paymentsystem: {
-                            select: {
-                                id_paymentsystem: true,
-                                cod_marketplace: true
-                            }
-                        }
-                    }
-                }),
-                prisma.client.findFirst({
-                    where: {
-                        id: +res.locals.data.clientId,
-                    },
-                    select: {
-                        cpf: true
-                    }
-                })
-            ])
-
-            const paymentSystem = initialData[0]; /* Dados do sistema de pagamento do shopping */
-
-            if (!paymentSystem) {
-                return res.status(400).json({ message: 'Shopping não está configurado para integrar com sistema de pagamentos.' });
-            }
-
-            const client = initialData[1]; /* Dados do cliente */
+            /* Dados do cliente */
+            const client = await prisma.client.findFirst({
+                where: {
+                    id: +res.locals.data.clientId,
+                    id_mall: res.locals.paymentSystem.id_mall
+                },
+                select: {
+                    cpf: true,
+                    id_mall: true
+                }
+            })
 
             if (!client) {
                 return res.status(400).json({ message: 'Cliente não registrado.' });
@@ -53,7 +30,7 @@ let clientIntegration = () => {
                 where: {
                     id_client_id_paymentsystem: {
                         id_client: +res.locals.data.clientId,
-                        id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem
+                        id_paymentsystem: res.locals.paymentSystem.id_paymentsystem
                     }
                 },
                 select: {
@@ -63,12 +40,12 @@ let clientIntegration = () => {
 
             if (paymentSystemClient) {
                 /* Cliente já registrado no sistema de pagamentos */
-                res.locals.client = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace };
+                res.locals.client = { id_paymentsystem: res.locals.paymentSystem.id_paymentsystem, cod_external: paymentSystemClient.cod_external, cod_marketplace: res.locals.paymentSystem.cod_marketplace };
                 return next();
             }
 
             const registeredClient: { id: string } = (await axios.post(
-                config.paymentApi.host + config.paymentApi.endpoints.createClient.replace('$MARKETPLACEID', paymentSystem.paymentsystem.cod_marketplace),
+                config.paymentApi.host + config.paymentApi.endpoints.createClient.replace('$MARKETPLACEID', res.locals.paymentSystem.cod_marketplace),
                 {
                     taxpayer_id: client.cpf
                 },
@@ -86,12 +63,12 @@ let clientIntegration = () => {
             await prisma.paymentsystem_client.create({
                 data: {
                     id_client: +res.locals.data.clientId,
-                    id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem,
+                    id_paymentsystem: res.locals.paymentSystem.id_paymentsystem,
                     cod_external: registeredClient.id
                 }
             })
 
-            res.locals.client = { id_paymentsystem: paymentSystem.paymentsystem.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: paymentSystem.paymentsystem.cod_marketplace };
+            res.locals.client = { id_paymentsystem: res.locals.paymentSystem.id_paymentsystem, cod_external: registeredClient.id, cod_marketplace: res.locals.paymentSystem.cod_marketplace };
 
             return next();
         }
