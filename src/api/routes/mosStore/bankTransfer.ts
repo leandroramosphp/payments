@@ -27,6 +27,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_TRANSFER")
         },
         middlewares.validateInput('createBankTransferMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para criação de transferência bancária');
@@ -68,6 +69,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_BANK_TRANSFER")
         },
         middlewares.validateInput('getBankTransfersMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para buscar transferências bancárias');

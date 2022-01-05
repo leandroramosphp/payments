@@ -27,6 +27,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
         },
         middlewares.validateInput('acceptPaymentMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para aprovar pagamento');
@@ -59,6 +60,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
         },
         middlewares.validateInput('rejectPaymentMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para rejeitar pagamento');
@@ -101,6 +103,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
         },
         middlewares.validateInput('getAllPaymentsMosSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
@@ -152,6 +155,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
         },
         middlewares.validateInput('getAllPaymentItemsMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
