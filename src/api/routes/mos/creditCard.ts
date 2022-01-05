@@ -20,6 +20,7 @@ export default (app: Router) => {
         },
         middlewares.authRequest(false),
         middlewares.validateInput('createCreditCardSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para cadastrar cartão de crédito');
@@ -51,6 +52,7 @@ export default (app: Router) => {
         },
         middlewares.authRequest(false),
         middlewares.validateInput('disableCreditCardSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para desabilitar cartão de crédito');
@@ -80,6 +82,7 @@ export default (app: Router) => {
         },
         middlewares.authRequest(false),
         middlewares.validateInput('getCreditCardsSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.clientIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para listar cartões de crédito do cliente');

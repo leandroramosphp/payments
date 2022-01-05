@@ -26,6 +26,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
         },
         middlewares.validateInput('createBankAccountMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para cadastro de conta bancária');
@@ -59,6 +60,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "DELETE_BANK_ACCOUNT")
         },
         middlewares.validateInput('disableBankAccountMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para desabilitar conta bancária');
@@ -91,6 +93,7 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_BANK_ACCOUNT")
         },
         middlewares.validateInput('getBankAccountsMosStoreSchema'),
+        middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para listar todas as contas bancárias do lojista');
