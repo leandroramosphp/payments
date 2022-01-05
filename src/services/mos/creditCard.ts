@@ -40,7 +40,7 @@ export default class creditCardService {
                 id: token.id
             }
         } catch (e) {
-            if(e?.message.includes('decoding error')) {
+            if (e?.message.includes('decoding error') || e?.message.includes('Incorrect data or key')) {
                 return Promise.reject({ message: "Falha ao decodificar dados do cartão, verifique se dados foram encriptados utilizando a chave pública fornecida pelo administrador com criptografia RSA OAEP e codificados em base64", status: 400 });
             }
             if (e instanceof SyntaxError) {
