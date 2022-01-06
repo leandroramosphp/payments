@@ -33,8 +33,8 @@ export default (app: Router) => {
                     id_paymentsystem: +res.locals.client.id_paymentsystem,
                     cod_marketplace: res.locals.client.cod_marketplace
                 }
-                await creditCardServiceInstance.createCreditCard(request);
-                res.status(201).json({ message: "Cartão de crédito cadastrado com sucesso." });
+                const creditCard = await creditCardServiceInstance.createCreditCard(request);
+                res.status(201).json(creditCard);
             } catch (e) {
                 logger.error('🔥 Falha ao cadastrar cartão de crédito: %o', e);
                 return next(e);
