@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import config from '../../config';
 async function decoder(req: Request, res: Response, next: NextFunction) {
   try {
-    if (typeof (req.body.storeId) === 'string') {
+    if (res.locals.data.storeCode) {
       const algorithm = config.encryption.algorithm
       const key = config.encryption.key
       const iv = config.encryption.iv
@@ -17,7 +17,7 @@ async function decoder(req: Request, res: Response, next: NextFunction) {
       }
 
       const decipher = crypto.createDecipheriv(algorithm, key, iv)
-      let deciphered: any = decipher.update(req.body.storeId, 'hex', 'utf-8')
+      let deciphered: any = decipher.update(res.locals.data.storeCode, 'hex', 'utf-8')
       deciphered += decipher.final('utf-8')
 
       if (isNaN(deciphered)) {

@@ -15,6 +15,7 @@ export default (app: Router) => {
         async (req: Request, res: Response, next: NextFunction) => {
             res.locals.data = {
                 storeId: req.body.storeId,
+                storeCode: req.body.storeCode,
                 clientId: req.body.clientId,
                 mallId: req.query.mallId,
                 value: req.body.value.toString(),
@@ -23,9 +24,9 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         middlewares.authRequest(false),
         middlewares.validateInput('createPaymentMosSchema'),
+        middlewares.decoder,
         middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
@@ -58,6 +59,7 @@ export default (app: Router) => {
                 clientId: req.query.clientId,
                 mallId: req.query.mallId,
                 storeId: req.query.storeId,
+                storeCode: req.query.storeCode,
                 status: req.query.status,
                 startDateTime: req.query.startDateTime,
                 endDateTime: req.query.endDateTime,
@@ -70,9 +72,9 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         middlewares.authRequest(false),
         middlewares.validateInput('getAllPaymentsMosSchema'),
+        middlewares.decoder,
         middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
