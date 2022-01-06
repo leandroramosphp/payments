@@ -70,33 +70,8 @@ let storeIntegration = () => {
                 })
 
                 res.locals.store = { id_paymentsystem: res.locals.paymentSystem.id_paymentsystem, cod_external: dupStore.cod_external, cod_marketplace: res.locals.paymentSystem.cod_marketplace, name: store.name };
-            } else { /* cnpj não cadastrado no sistema de pagamentos, novo cadastro será realizado */
-                const registeredStore: { id: string } = (await axios.post(
-                    config.paymentApi.host + config.paymentApi.endpoints.createStore.replace('$MARKETPLACEID', res.locals.paymentSystem.cod_marketplace),
-                    {
-                        ein: store.cnpj,
-                        business_name: store.name
-                    },
-                    {
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        auth: {
-                            username: config.paymentApi.username,
-                            password: config.paymentApi.password
-                        },
-                    }
-                )).data;
-
-                await prisma.paymentsystem_store.create({
-                    data: {
-                        cod_external: registeredStore.id,
-                        id_paymentsystem: res.locals.paymentSystem.id_paymentsystem,
-                        id_store: +res.locals.data.storeId
-                    }
-                })
-
-                res.locals.store = { id_paymentsystem: res.locals.paymentSystem.id_paymentsystem, cod_external: registeredStore.id, cod_marketplace: res.locals.paymentSystem.cod_marketplace, name: store.name };
+            } else { /* Loja não registrada na Zoop */
+                return res.status(400).json({ message: "Loja não está configurada para integrar com sistema de pagamentos." });
             }
 
             return next();
