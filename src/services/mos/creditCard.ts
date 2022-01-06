@@ -53,7 +53,7 @@ export default class creditCardService {
         }
     }
 
-    public createCreditCard = async (input: Interfaces.CreateCreditCard): Promise<void> => {
+    public createCreditCard = async (input: Interfaces.CreateCreditCard): Promise<{ id: number }> => {
         try {
             logger.silly('Calling createCreditCard');
 
@@ -75,7 +75,7 @@ export default class creditCardService {
                 }
             )).data;
 
-            await prisma.creditcard.create({
+            const creditCard = await prisma.creditcard.create({
                 data: {
                     id_client: input.clientId,
                     id_paymentsystem: input.id_paymentsystem,
@@ -90,11 +90,14 @@ export default class creditCardService {
                 }
             })
 
-            return Promise.resolve();
+            return Promise.resolve({ id: creditCard.id_creditcard });
         }
         catch (e) {
             if (e?.response?.data?.error?.type === 'invalid_request_error') {
                 return Promise.reject({ message: "Token do cartão de crédito inválido ou expirado.", status: 400 });
+            }
+            if (e?.response?.data?.error?.type === 'card_error') {
+                return Promise.reject({ message: "Dados do cartão de crédito são inválidos.", status: 400 });
             }
             return Promise.reject(e);
         }
