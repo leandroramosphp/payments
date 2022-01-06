@@ -3,12 +3,18 @@ const createPaymentMosSchema =
     "title": "createPaymentMosSchema",
     "type": "object",
     "properties": {
-
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "integer",
+        },
+        "storeCode": {
+            "type": "string",
         },
         "clientId": {
             "type": "number"
+        },
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
         },
         "value": {
             "type": "string",
@@ -21,7 +27,11 @@ const createPaymentMosSchema =
             "type": "number"
         }
     },
-    "required": ["storeId", "clientId", "value", "creditCardId", "installments"]
+    "required": ["clientId", "value", "creditCardId", "installments"],
+    "anyOf": [
+        { "required": ["storeId"] },
+        { "required": ["storeCode"] }
+    ]
 }
 
 const getAllPaymentsMosSchema =
@@ -40,6 +50,9 @@ const getAllPaymentsMosSchema =
         "storeId": {
             "type": "string",
             "pattern": "^[0-9]+$"
+        },
+        "storeCode": {
+            "type": "string",
         },
         "status": {
             "type": "string",
@@ -90,9 +103,15 @@ const getAllPaymentsMosSchema =
             "enum": ["asc", "desc"]
         }
     },
+    "required": ["mallId"],
     "anyOf": [
         { "required": ["clientId"] },
-        { "required": ["storeId"] }
+        {
+            "anyOf": [
+                { "required": ["storeId"] },
+                { "required": ["storeCode"] },
+            ]
+        }
     ]
 }
 

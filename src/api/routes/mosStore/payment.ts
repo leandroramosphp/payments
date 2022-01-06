@@ -22,7 +22,6 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
         },
@@ -55,7 +54,6 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_PAYMENT")
         },
@@ -98,11 +96,10 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
         },
-        middlewares.validateInput('getAllPaymentsMosSchema'),
+        middlewares.validateInput('getAllPaymentsMosStoreSchema'),
         middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         middlewares.clientIntegration(),
@@ -150,7 +147,6 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_PAYMENT")
         },

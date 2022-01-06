@@ -19,7 +19,6 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "READ_BANK_ACCOUNT")
         },
@@ -50,11 +49,10 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.decoder,
         async (req: Request, res: Response, next: NextFunction) => {
             await middlewares.authRequestMosStore(req, res, next, "WRITE_BANK_ACCOUNT")
         },
-        middlewares.validateInput('getStoreBalanceMosStoreSchema'),
+        middlewares.validateInput('getStoreMarketplaceMosStoreSchema'),
         middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {

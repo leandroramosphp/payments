@@ -29,7 +29,8 @@ const acceptPaymentMosStoreSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
+            "pattern": "^[0-9]+$"
         },
         "id": {
             "type": "string",
@@ -49,7 +50,8 @@ const rejectPaymentMosStoreSchema =
     "type": "object",
     "properties": {
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
+            "pattern": "^[0-9]+$"
         },
         "id": {
             "type": "string",
@@ -57,6 +59,74 @@ const rejectPaymentMosStoreSchema =
         }
     },
     "required": ["storeId", "id"]
+}
+
+const getAllPaymentsMosStoreSchema =
+{
+    "title": "getAllPaymentsMosStoreSchema",
+    "type": "object",
+    "properties": {
+        "clientId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "storeId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "succeeded",
+                "refunded"
+            ]
+        },
+        "startDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "endDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "search": {
+            "type": "string"
+        },
+        "page": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limitByPage": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "limit": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+        },
+        "sortBy": {
+            "type": "string",
+            "enum": [
+                "id",
+                "invoiceNumber",
+                "createdAt",
+                "storeName",
+                "clientName",
+                "installments",
+                "value",
+                "status"
+            ]
+        },
+        "order": {
+            "type": "string",
+            "enum": ["asc", "desc"]
+        }
+    },
+    "anyOf": [
+        { "required": ["clientId"] },
+        { "required": ["storeId"] }
+    ]
 }
 
 const getAllPaymentItemsMosStoreSchema =
@@ -145,6 +215,10 @@ export default [
     {
         name: "rejectPaymentMosStoreSchema",
         schema: rejectPaymentMosStoreSchema
+    },
+    {
+        name: "getAllPaymentsMosStoreSchema",
+        schema: getAllPaymentsMosStoreSchema
     },
     {
         name: "getAllPaymentItemsMosStoreSchema",
