@@ -7,7 +7,8 @@ const createBankAccountMosStoreSchema =
             "type": "string"
         },
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
+            "pattern": "^[0-9]+$"
         },
     },
     "required": ["bankAccountToken", "storeId"]
@@ -23,7 +24,7 @@ const disableBankAccountMosStoreSchema =
             "pattern": "^[0-9]+$"
         },
         "storeId": {
-            "type": ["integer", "string"],
+            "type": "string",
             "pattern": "^[0-9]+$"
         },
     },
