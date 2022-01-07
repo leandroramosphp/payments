@@ -120,21 +120,23 @@ export default class paymentService {
                 })
             }
 
-            axios.post(config.promocao.host, {
-                "cpf": payment.paymentsystem_client.client.cpf,
-                "cnpj": payment.paymentsystem_store.store.cnpj,
-                "data": moment.utc().format('YYYY-MM-DD'),
-                "numero": payment.id_payment.toString(),
-                "valor": input.value,
-                "codOrigemNota": 1,
-                "obj": "NOTAFISCAL",
-                "codigoMobits": payment.id_payment.toString()
-            }, {
-                auth: {
-                    username: config.promocao.login,
-                    password: config.promocao.password
-                }
-            })
+            if (config.promocao.login) {
+                await axios.post(config.promocao.host, {
+                    "cpf": payment.paymentsystem_client.client.cpf,
+                    "cnpj": payment.paymentsystem_store.store.cnpj,
+                    "data": moment.utc().format('YYYY-MM-DD'),
+                    "numero": payment.id_payment.toString(),
+                    "valor": input.value,
+                    "codOrigemNota": 1,
+                    "obj": "NOTAFISCAL",
+                    "codigoMobits": payment.id_payment.toString()
+                }, {
+                    auth: {
+                        username: config.promocao.login,
+                        password: config.promocao.password
+                    }
+                })
+            }
 
             return Promise.resolve();
         }
