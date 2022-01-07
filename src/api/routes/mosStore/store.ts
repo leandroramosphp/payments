@@ -74,7 +74,7 @@ export default (app: Router) => {
             next();
         },
         async (req: Request, res: Response, next: NextFunction) => {
-            await middlewares.authRequestMosStore(req, res, next, "WRITE_QRCODE")
+            await middlewares.authRequestMosStore(req, res, next)
         },
         middlewares.validateInput('generateQrcodeMosStoreSchema'),
         middlewares.paymentSystemIntegration(),
