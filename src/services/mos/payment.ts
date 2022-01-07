@@ -5,6 +5,7 @@ import * as Interfaces from '../../interfaces/IPayment';
 import config from '../../config';
 import logger from '../../loaders/logger';
 import prisma from '../../loaders/prisma';
+import moment from 'moment';
 
 @Service()
 export default class paymentService {
@@ -84,6 +85,27 @@ export default class paymentService {
                     id_paymentsystem: input.id_paymentsystem,
                     id_store: input.storeId,
                     installments: input.installments
+                },
+                select: {
+                    id_payment: true,
+                    paymentsystem_client: {
+                        select: {
+                            client: {
+                                select: {
+                                    cpf: true
+                                }
+                            }
+                        }
+                    },
+                    paymentsystem_store: {
+                        select: {
+                            store: {
+                                select: {
+                                    cnpj: true
+                                }
+                            }
+                        }
+                    }
                 }
             })
 
@@ -94,6 +116,24 @@ export default class paymentService {
                         cod_external: item.externalId,
                         id_paymentorigin: item.originId,
                         id_payment: payment.id_payment
+                    }
+                })
+            }
+
+            if (config.promocao.login) {
+                await axios.post(config.promocao.host, {
+                    "cpf": payment.paymentsystem_client.client.cpf,
+                    "cnpj": payment.paymentsystem_store.store.cnpj,
+                    "data": moment.utc().format('YYYY-MM-DD'),
+                    "numero": payment.id_payment.toString(),
+                    "valor": input.value,
+                    "codOrigemNota": 1,
+                    "obj": "NOTAFISCAL",
+                    "codigoMobits": payment.id_payment.toString()
+                }, {
+                    auth: {
+                        username: config.promocao.login,
+                        password: config.promocao.password
                     }
                 })
             }
