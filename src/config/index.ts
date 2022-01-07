@@ -60,5 +60,11 @@ export default {
         key: process.env.KEY,
         algorithm: 'aes-256-ctr',
         iv: process.env.IV,
+    },
+
+    promocao: {
+        host: 'https://mospromo.spotmetrics.com/app/api/shopping/SANDBOX/campanha/136/promocao/notafiscal',
+        login: process.env.PROMOCAO_LOGIN,
+        password: process.env.PROMOCAO_SENHA
     }
 };
