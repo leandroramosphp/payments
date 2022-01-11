@@ -2,6 +2,7 @@ import { Service, Inject } from 'typedi';
 import { toString } from 'qrcode';
 import crypto from 'crypto'
 import axios from 'axios';
+import prisma from '../../loaders/prisma';
 
 import config from '../../config';
 import logger from '../../loaders/logger';
@@ -58,7 +59,11 @@ export default class storeService {
         
             const storeObj = JSON.stringify({
                 id: crypted,
-                name: input.name
+                name: (await prisma.store.findUnique({
+                    where: {
+                        id: input.storeId
+                    }
+                })).name
             })
             const qrcode = await toString(storeObj, qrCodeOptions)
 
