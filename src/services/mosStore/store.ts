@@ -61,7 +61,7 @@ export default class storeService {
                 id: crypted,
                 name: (await prisma.store.findUnique({
                     where: {
-                        id: input.storeId
+                        id: +input.storeId
                     }
                 })).name
             })
