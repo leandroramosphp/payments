@@ -77,8 +77,6 @@ export default (app: Router) => {
             await middlewares.authRequestMosStore(req, res, next)
         },
         middlewares.validateInput('generateQrcodeMosStoreSchema'),
-        middlewares.paymentSystemIntegration(),
-        middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
             logger.debug('Chamando endpoint para gerar qrcode de uma loja');
             try {
