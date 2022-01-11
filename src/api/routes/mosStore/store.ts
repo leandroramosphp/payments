@@ -82,8 +82,7 @@ export default (app: Router) => {
             try {
                 const storeServiceInstance = Container.get(storeService);
                 const request = {
-                    storeId: res.locals.data.storeId,
-                    name: res.locals.store.name
+                    storeId: res.locals.data.storeId
                 }
                 const response = await storeServiceInstance.generateQrcode(request);
                 res.status(200).send(response);

@@ -3,7 +3,6 @@ export interface CreateStore {
 }
 export interface CreateQRCode {
     storeId: number;
-    name: string;
 }
 export interface GetStoreBalance {
     storeId: number;
