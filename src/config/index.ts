@@ -22,13 +22,13 @@ export default {
         version: "/v1",
         prefix: "/payment-management"
     },
-    
+
     apiMosStore: {
         root: "/mos-store",
         version: "/v1",
         prefix: "/payment-management",
     },
-      
+
     authApi: {
         host: process.env.AUTH_API_HOST,
         mosMallPrefix: '/mos/v1/auth-api',
@@ -63,7 +63,7 @@ export default {
     },
 
     promocao: {
-        host: 'https://mospromo.spotmetrics.com/app/api/shopping/SANDBOX/campanha/136/promocao/notafiscal',
+        host: 'https://mospromo.spotmetrics.com/app/api/shopping/SPL/campanha/1/notafiscal',
         login: process.env.PROMOCAO_LOGIN,
         password: process.env.PROMOCAO_SENHA
     }
