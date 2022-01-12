@@ -8,7 +8,7 @@ import prisma from '../../loaders/prisma';
 
 @Service()
 export default class paymentService {
-    
+
     public createPayment = async (input: Interfaces.CreatePayment): Promise<void> => {
         try {
             logger.silly('Calling createPayment');
@@ -178,7 +178,7 @@ export default class paymentService {
                                 .replace('{transaction_id}', paymentItems[i].cod_external),
                             {
                                 on_behalf_of: input.cod_external,
-                                amount: paymentItems[i].val_value
+                                amount: +paymentItems[i].val_value * 100
                             },
                             {
                                 headers: {
@@ -228,10 +228,10 @@ export default class paymentService {
         }
     }
 
-    public getAllPaymentsItems = async(input: Interfaces.GetAllPaymentItemsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsItemsOutput>, total: number }> => {
+    public getAllPaymentsItems = async (input: Interfaces.GetAllPaymentItemsInput): Promise<{ data: Array<Interfaces.GetAllPaymentsItemsOutput>, total: number }> => {
         try {
             logger.silly('Calling getAllPaymentsItems');
-            
+
             let sortBy: string = {
                 "id": "id",
                 "createdAt": "createdAt",
