@@ -46,7 +46,7 @@ export default class paymentService {
                         type: "card",
                         currency: "BRL",
                         usage: "single_use",
-                        amount: input.value * 100,
+                        amount: Math.ceil(input.value * 100),
                         card: {
                             id: creditCard.cod_external
                         },

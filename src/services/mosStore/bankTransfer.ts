@@ -40,7 +40,7 @@ export default class bankTransferService {
                 config.paymentApi.host + config.paymentApi.endpoints.createBankTransfer.replace('$MARKETPLACEID', input.cod_marketplace)
                     .replace('{bank_account_id}', bankAccount.cod_external),
                 {
-                    amount: input.value * 100
+                    amount: Math.ceil(input.value * 100)
                 },
                 {
                     headers: {
