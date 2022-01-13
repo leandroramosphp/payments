@@ -63,7 +63,7 @@ export default {
     },
 
     promocao: {
-        host: 'https://mospromo.spotmetrics.com/app/api/shopping/SPL/campanha/1/notafiscal',
+        host: 'https://mospromo.spotmetrics.com/app/api/shopping/SPL/campanha/1/promocao/notafiscal',
         login: process.env.PROMOCAO_LOGIN,
         password: process.env.PROMOCAO_SENHA
     }
