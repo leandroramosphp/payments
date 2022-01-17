@@ -14,6 +14,14 @@ export default class paymentService {
         try {
             logger.silly('Calling createPayment');
 
+            /* Executar tarefa de deduplicação para verificar se pagamento é duplicado (Duplicado = Transação no último minuto com mesmo valor, loja e cliente) */
+            const duplicate = await this.paymentDeduplication({ clientId: input.clientId, storeId: input.storeId, value: input.value });
+
+            if (duplicate) {
+                /* Caso pagamento seja duplicado, responder com sucesso mas não criar pagamento */
+                return Promise.resolve();
+            }
+
             /* TODO: Adicionar lógica para pagamento com cashback (Moneri) */
 
             const creditCard = await prisma.creditcard.findFirst({
@@ -285,5 +293,25 @@ export default class paymentService {
         catch (e) {
             return Promise.reject(e);
         }
+    }
+
+    public paymentDeduplication = async (input: { value: number, clientId: number, storeId: number }) => {
+        var duplicateFlag = false;
+        const duplicatePayment = await prisma.paymentitem.findFirst({
+            where: {
+                val_value: input.value.toFixed(2),
+                payment: {
+                    id_client: input.clientId,
+                    id_store: input.storeId,
+                    created_at: {
+                        gte: moment().subtract(1, 'minute').toDate()
+                    }
+                }
+            }
+        })
+        if (duplicatePayment) {
+            duplicateFlag = true;
+        }
+        return duplicateFlag;
     }
 }
