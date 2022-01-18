@@ -217,7 +217,7 @@ export default class paymentService {
                 `;
             }
 
-            if (input.status) {
+            if (input.status === 'succeeded' || input.status === 'refunded') {
                 status = `
                     AND p.status = '${input.status}'
                 `;

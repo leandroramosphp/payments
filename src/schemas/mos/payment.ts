@@ -55,12 +55,7 @@ const getAllPaymentsMosSchema =
             "type": "string",
         },
         "status": {
-            "type": "string",
-            "enum": [
-                "pending",
-                "succeeded",
-                "refunded"
-            ]
+            "type": "string"
         },
         "startDateTime": {
             "type": "string",

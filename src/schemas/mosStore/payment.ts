@@ -75,12 +75,7 @@ const getAllPaymentsMosStoreSchema =
             "pattern": "^[0-9]+$"
         },
         "status": {
-            "type": "string",
-            "enum": [
-                "pending",
-                "succeeded",
-                "refunded"
-            ]
+            "type": "string"
         },
         "startDateTime": {
             "type": "string",
@@ -150,12 +145,7 @@ const getAllPaymentItemsMosStoreSchema =
             ]
         },
         "status": {
-            "type": "string",
-            "enum": [
-                "pending",
-                "succeeded",
-                "refunded"
-            ]
+            "type": "string"
         },
         "startDateTime": {
             "type": "string",
