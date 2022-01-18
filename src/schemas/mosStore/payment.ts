@@ -77,7 +77,6 @@ const getAllPaymentsMosStoreSchema =
         "status": {
             "type": "string",
             "enum": [
-                "pending",
                 "succeeded",
                 "refunded"
             ]
@@ -152,7 +151,6 @@ const getAllPaymentItemsMosStoreSchema =
         "status": {
             "type": "string",
             "enum": [
-                "pending",
                 "succeeded",
                 "refunded"
             ]

@@ -15,19 +15,17 @@ export default class paymentService {
 
             const isAccepted = await prisma.payment.updateMany({
                 data: {
-                    status: 'succeeded',
                     invoicenumber: input.invoiceNumber
                 },
                 where: {
                     id_payment: input.id,
-                    status: 'pending',
                     id_store: +input.storeId,
                     id_paymentsystem: input.id_paymentsystem
                 }
             })
 
             if (isAccepted.count === 0) {
-                return Promise.reject({ message: "Pagamento não existente ou já aprovado/rejeitado.", status: 400 });
+                return Promise.reject({ message: "Pagamento não existente.", status: 400 });
             }
 
             return Promise.resolve();
@@ -46,7 +44,7 @@ export default class paymentService {
                     id_payment: input.id,
                     payment: {
                         id_paymentsystem: input.id_paymentsystem,
-                        status: 'pending',
+                        status: 'succeeded',
                         id_store: +input.storeId
                     }
                 },
@@ -62,7 +60,7 @@ export default class paymentService {
             })
 
             if (!paymentItems.length) {
-                return Promise.reject({ message: "Pagamento não existente ou já aprovado/rejeitado.", status: 400 });
+                return Promise.reject({ message: "Pagamento não existente ou já rejeitado.", status: 400 });
             }
 
             for (let i = 0; i < paymentItems.length; i++) {
@@ -100,14 +98,14 @@ export default class paymentService {
                 },
                 where: {
                     id_payment: input.id,
-                    status: 'pending',
+                    status: 'succeeded',
                     id_store: +input.storeId,
                     id_paymentsystem: input.id_paymentsystem
                 }
             })
 
             if (isRejected.count === 0) {
-                return Promise.reject({ message: "Pagamento não existente ou já aprovado/rejeitado.", status: 400 });
+                return Promise.reject({ message: "Pagamento não existente ou já rejeitado.", status: 400 });
             }
 
             return Promise.resolve();
