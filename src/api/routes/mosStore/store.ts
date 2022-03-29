@@ -100,9 +100,12 @@ export default (app: Router) => {
             };
             next();
         },
-        middlewares.authRequest(false),
         middlewares.validateInput('getSalesPlanMosstoreSchema'),
         middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            req.query.storeId = res.locals.data.storeId
+            await middlewares.authRequestMosStore(req, res, next)
+        },
         middlewares.paymentSystemIntegration(),
         middlewares.storeIntegration(),
         async (req: Request, res: Response, next: NextFunction) => {
