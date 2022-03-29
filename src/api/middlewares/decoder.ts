@@ -5,8 +5,6 @@ import config from '../../config';
 async function decoder(req: Request, res: Response, next: NextFunction) {
   try {
     if (res.locals.data.storeCode) {
-      console.log('entroooooou aqui');
-      
       const algorithm = config.encryption.algorithm
       const key = config.encryption.key
       const iv = config.encryption.iv
