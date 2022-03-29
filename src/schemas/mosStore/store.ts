@@ -37,6 +37,24 @@ const generateQrcodeMosStoreSchema =
     "required": ["storeId"]
 }
 
+const getSalesPlanMosstoreSchema = {
+    "title": "getSalesPlanMosstoreSchema",
+    "type": "object",
+    "properties": {
+        "storeId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "storeCode": {
+            "type": "string",
+        },
+    },
+    "anyOf": [
+        { "required": ["storeId"] },
+        { "required": ["storeCode"] }
+    ]
+}
+
 export default [
     {
         name: "getStoreBalanceMosStoreSchema",
@@ -49,5 +67,9 @@ export default [
     {
         name: "generateQrcodeMosStoreSchema",
         schema: generateQrcodeMosStoreSchema
+    },
+    {
+        name: "getSalesPlanMosstoreSchema",
+        schema: getSalesPlanMosstoreSchema
     }
 ]
