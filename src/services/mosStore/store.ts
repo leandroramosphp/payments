@@ -8,6 +8,7 @@ import config from '../../config';
 import logger from '../../loaders/logger';
 
 import * as Interfaces from '../../interfaces/IStore';
+import { Interface } from 'readline';
 
 @Service()
 export default class storeService {
@@ -74,6 +75,105 @@ export default class storeService {
                 return Promise.reject({ status: e.response.status, data: e.response.data });
             else
                 return Promise.reject(e);
+        }
+    }
+
+    public getSalesPlans = async (input: Interfaces.IRequestGetStoreSalesPlans): Promise<Interfaces.IResponseGetStoreSalesPlans> => {
+        try {
+            const store = await prisma.store.findUnique({
+                where: {
+                    id: input.storeId
+                },
+                select: {
+                    name: true,
+                    id: true
+                }
+            }) 
+            
+            const response: Interfaces.IResponseGetStoreSalesPlans = {
+                id: store.id,
+                name: store.name,
+                fee_details: [
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 1
+                    },
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 2
+                    },
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 3
+                    },
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 4
+                    },
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 5
+                    },
+                    {
+                        card_brand: "Visa",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 6
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 1
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 2
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 3
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 4
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 5
+                    },
+                    {
+                        card_brand: "MasterCard",
+                        percent_amount: 0,
+                        payment_type: "credit",
+                        number_installments: 6
+                    }
+                ]
+            }
+
+            return response
+    
+        }
+        catch (e) {
+            return Promise.reject(e);
         }
     }
 }

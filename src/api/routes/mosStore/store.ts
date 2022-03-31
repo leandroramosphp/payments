@@ -91,5 +91,37 @@ export default (app: Router) => {
                 return next(e);
             }
         });
+    
+    route.get('/sales-plans',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                storeId: req.query.storeId,
+                storeCode: req.query.storeCode,
+            };
+            next();
+        },
+        middlewares.validateInput('getSalesPlanMosstoreSchema'),
+        middlewares.decoder,
+        async (req: Request, res: Response, next: NextFunction) => {
+            req.query.storeId = res.locals.data.storeId
+            await middlewares.authRequestMosStore(req, res, next)
+        },
+        middlewares.paymentSystemIntegration(),
+        middlewares.storeIntegration(),
+        async (req: Request, res: Response, next: NextFunction) => {
+            logger.debug('Chamando endpoint para buscar saldo do lojista');
+            try {
+                const storeServiceInstance = Container.get(storeService);
+                const request: Interfaces.IRequestGetStoreSalesPlans = {
+                    storeId: +res.locals.data.storeId,
+                }
+                const response = await storeServiceInstance.getSalesPlans(request);
+                res.status(200).json(response);
+            } catch (e) {
+                logger.error('🔥 Falha ao buscar plano de venda: %o', e);
+                return next(e);
+            }
+        });
+    
     app.use(config.apiMosStore.root + config.apiMosStore.version + config.apiMosStore.prefix + '/stores', route);
 }
