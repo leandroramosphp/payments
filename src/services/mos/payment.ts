@@ -6,11 +6,13 @@ import config from '../../config';
 import logger from '../../loaders/logger';
 import prisma from '../../loaders/prisma';
 import moment from 'moment';
+import crypto from 'crypto'
+import formatter from '../../utils/formatter';
 
 @Service()
 export default class paymentService {
 
-    public createPayment = async (input: Interfaces.CreatePayment): Promise<void> => {
+    public createPayment = async (input: Interfaces.CreatePayment): Promise<{ codeTransaction: string }> => {
         try {
             logger.silly('Calling createPayment');
 
@@ -19,7 +21,7 @@ export default class paymentService {
 
             if (duplicate) {
                 /* Caso pagamento seja duplicado, responder com sucesso mas não criar pagamento */
-                return Promise.resolve();
+                return Promise.resolve({ codeTransaction: duplicate });
             }
 
             /* TODO: Adicionar lógica para pagamento com cashback (Moneri) */
@@ -86,13 +88,14 @@ export default class paymentService {
                 value: input.value,
                 externalId: registeredPayment.id
             });
-
+            const cod_payment = crypto.randomUUID();
             const payment = await prisma.payment.create({
                 data: {
                     id_client: input.clientId,
                     id_paymentsystem: input.id_paymentsystem,
                     id_store: input.storeId,
-                    installments: input.installments
+                    installments: input.installments,
+                    cod_payment: cod_payment
                 },
                 select: {
                     id_payment: true,
@@ -128,7 +131,7 @@ export default class paymentService {
                 })
             }
 
-            return Promise.resolve();
+            return Promise.resolve({ codeTransaction: cod_payment });
         }
         catch (e) {
             if (e?.response?.data?.error?.category === 'expired_card_error') {
@@ -226,6 +229,7 @@ export default class paymentService {
                 installments: number,
                 invoiceNumber: string,
                 status: string,
+                codPayment: string,
                 value: number
             }[] = await prisma.$queryRaw(`
                 WITH result AS (
@@ -237,6 +241,7 @@ export default class paymentService {
                         p.installments,
                         p.invoicenumber AS "invoiceNumber",
                         p.status,
+                        p.cod_payment AS "codPayment",
                         SUM(pi.val_value) AS value
                     FROM
                         payment p
@@ -268,7 +273,7 @@ export default class paymentService {
             `);
 
             return Promise.resolve({
-                data: query.map(({ total, ...item }) => item),
+                data: query.map(({ total, ...item }) => item).map(d => { return { ...d, value: formatter.toMonetaryNumber(d.value) } }),
                 total: (query.length) ? +query[0].total : 0
             });
         }
@@ -277,8 +282,53 @@ export default class paymentService {
         }
     }
 
-    public paymentDeduplication = async (input: { value: number, clientId: number, storeId: number }) => {
-        var duplicateFlag = false;
+    public getPayment = async (input: Interfaces.GetPaymentInput): Promise<Interfaces.GetAllPaymentsOutput> => {
+        try {
+            logger.silly('Calling getPayment');
+
+            const payment = await prisma.payment.findFirst({
+                where: {
+                    cod_payment: input.cod_payment,
+                    paymentsystem_client: {
+                        client: {
+                            id_mall: input.mallId
+                        }
+                    }
+                },
+                include: {
+                    paymentsystem_client: {
+                        include: {
+                            client: true
+                        }
+                    },
+                    paymentsystem_store: {
+                        include: {
+                            store: true
+                        }
+                    },
+                    paymentitem: true
+                }
+            })
+
+            return {
+                id: payment.id_payment,
+                codPayment: payment.cod_payment,
+                clientName: payment.paymentsystem_client.client.full_name,
+                storeName: payment.paymentsystem_store.store.name,
+                installments: payment.installments,
+                status: payment.status,
+                invoiceNumber: payment.invoicenumber,
+                value: payment.paymentitem.map((p) => { return p.val_value }).reduce((p1, p2) => { return p1.plus(p2) }).toNumber(),
+                createdAt: payment.created_at.toISOString()
+            }
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public paymentDeduplication = async (input: { value: number, clientId: number, storeId: number }): Promise<string> => {
+        var cod_payment: string;
         const duplicatePayment = await prisma.paymentitem.findFirst({
             where: {
                 val_value: input.value.toFixed(2),
@@ -289,11 +339,14 @@ export default class paymentService {
                         gte: moment().subtract(1, 'minute').toDate()
                     }
                 }
+            },
+            include: {
+                payment: true
             }
         })
         if (duplicatePayment) {
-            duplicateFlag = true;
+            cod_payment = duplicatePayment.payment.cod_payment;
         }
-        return duplicateFlag;
+        return cod_payment;
     }
 }

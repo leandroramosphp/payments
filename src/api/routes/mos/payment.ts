@@ -46,8 +46,8 @@ export default (app: Router) => {
                     cod_external: res.locals.store.cod_external,
                     cod_marketplace: res.locals.store.cod_marketplace
                 }
-                await paymentServiceInstance.createPayment(request);
-                res.status(201).json({ message: "Pagamento cadastrado com sucesso." });
+                const newPayment = await paymentServiceInstance.createPayment(request);
+                res.status(201).json(newPayment);
             } catch (e) {
                 logger.error('🔥 Falha ao criar pagamento: %o', e);
                 return next(e);
@@ -101,6 +101,29 @@ export default (app: Router) => {
                 res.status(200).json(response);
             } catch (e) {
                 logger.error('🔥 Falha ao buscar pagamentos do lojista: %o', e);
+                return next(e);
+            }
+        });
+    route.get('/:code',
+        async (req: Request, res: Response, next: NextFunction) => {
+            res.locals.data = {
+                mallId: req.query.mallId,
+                code: req.params.code
+            };
+            next();
+        },
+        middlewares.authRequest(false),
+        middlewares.validateInput('getPaymentMosSchema'),
+        async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const paymentServiceInstance = Container.get(paymentService);
+                const request: Interfaces.GetPaymentInput = {
+                    mallId: +res.locals.data.mallId,
+                    cod_payment: res.locals.data.code
+                }
+                const response = await paymentServiceInstance.getPayment(request);
+                res.status(200).json(response);
+            } catch (e) {
                 return next(e);
             }
         });

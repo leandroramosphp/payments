@@ -110,6 +110,22 @@ const getAllPaymentsMosSchema =
     ]
 }
 
+const getPaymentMosSchema =
+{
+    "title": "getPaymentMosSchema",
+    "type": "object",
+    "properties": {
+        "mallId": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+        },
+        "code": {
+            "type": "string"
+        }
+    },
+    "required": ["mallId", "code"]
+}
+
 export default [
     {
         name: "createPaymentMosSchema",
@@ -119,5 +135,8 @@ export default [
         name: "getAllPaymentsMosSchema",
         schema: getAllPaymentsMosSchema
     },
-
+    {
+        name: "getPaymentMosSchema",
+        schema: getPaymentMosSchema
+    }
 ]
