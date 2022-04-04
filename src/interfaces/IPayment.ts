@@ -42,6 +42,11 @@ export interface GetAllPaymentsInput {
     id_paymentsystem: number;
 }
 
+export interface GetPaymentInput {
+    mallId?: number;
+    cod_payment: string;
+}
+
 export interface GetAllPaymentItemsInput {
     clientId: number;
     storeId: number;
@@ -66,6 +71,8 @@ export interface GetAllPaymentsOutput {
     installments: number;
     value: number;
     status: string;
+    invoiceNumber: string;
+    codPayment: string;
 }
 
 export interface GetAllPaymentsItemsOutput {
