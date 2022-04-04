@@ -72,7 +72,7 @@ export interface GetAllPaymentsOutput {
     value: number;
     status: string;
     invoiceNumber: string;
-    codPayment: string;
+    codePayment: string;
 }
 
 export interface GetAllPaymentsItemsOutput {

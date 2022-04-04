@@ -12,7 +12,7 @@ import formatter from '../../utils/formatter';
 @Service()
 export default class paymentService {
 
-    public createPayment = async (input: Interfaces.CreatePayment): Promise<{ codeTransaction: string }> => {
+    public createPayment = async (input: Interfaces.CreatePayment): Promise<{ codePayment: string }> => {
         try {
             logger.silly('Calling createPayment');
 
@@ -21,7 +21,7 @@ export default class paymentService {
 
             if (duplicate) {
                 /* Caso pagamento seja duplicado, responder com sucesso mas não criar pagamento */
-                return Promise.resolve({ codeTransaction: duplicate });
+                return Promise.resolve({ codePayment: duplicate });
             }
 
             /* TODO: Adicionar lógica para pagamento com cashback (Moneri) */
@@ -131,7 +131,7 @@ export default class paymentService {
                 })
             }
 
-            return Promise.resolve({ codeTransaction: cod_payment });
+            return Promise.resolve({ codePayment: cod_payment });
         }
         catch (e) {
             if (e?.response?.data?.error?.category === 'expired_card_error') {
@@ -229,7 +229,7 @@ export default class paymentService {
                 installments: number,
                 invoiceNumber: string,
                 status: string,
-                codPayment: string,
+                codePayment: string,
                 value: number
             }[] = await prisma.$queryRaw(`
                 WITH result AS (
@@ -241,7 +241,7 @@ export default class paymentService {
                         p.installments,
                         p.invoicenumber AS "invoiceNumber",
                         p.status,
-                        p.cod_payment AS "codPayment",
+                        p.cod_payment AS "codePayment",
                         SUM(pi.val_value) AS value
                     FROM
                         payment p
@@ -316,7 +316,7 @@ export default class paymentService {
 
             return {
                 id: payment.id_payment,
-                codPayment: payment.cod_payment,
+                codePayment: payment.cod_payment,
                 clientName: payment.paymentsystem_client.client.full_name,
                 storeName: payment.paymentsystem_store.store.name,
                 installments: payment.installments,
