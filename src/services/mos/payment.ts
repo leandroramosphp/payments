@@ -310,6 +310,10 @@ export default class paymentService {
                 }
             })
 
+            if(!payment) {
+                return Promise.reject({status: 400, message: `Pagamento ${input.cod_payment} não encontrado.`})
+            }
+
             return {
                 id: payment.id_payment,
                 codPayment: payment.cod_payment,
